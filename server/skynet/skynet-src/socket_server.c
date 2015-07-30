@@ -290,12 +290,14 @@ static int reserve_id(struct socket_server *ss)
 	return -1;
 }
 
+//清空list
 static inline void clear_wb_list(struct wb_list *list)
 {
 	list->head = NULL;
 	list->tail = NULL;
 }
 
+//初始化socket server，创建pipe，注册将pipe[0]的可读事件注册到epoll上
 struct socket_server *
 socket_server_create()
 {
