@@ -260,6 +260,7 @@ static void socket_keepalive(int fd)
 			sizeof(keepalive));
 }
 
+//为SOCKET_TYPE_RESERVE类型的socket分配一个id
 static int reserve_id(struct socket_server *ss)
 {
 	int i;
@@ -290,12 +291,14 @@ static int reserve_id(struct socket_server *ss)
 	return -1;
 }
 
+//清空列表
 static inline void clear_wb_list(struct wb_list *list)
 {
 	list->head = NULL;
 	list->tail = NULL;
 }
 
+//创建epoll、pipe，监听pipe[0]的可读事件
 struct socket_server *
 socket_server_create()
 {
@@ -346,6 +349,7 @@ socket_server_create()
 	return ss;
 }
 
+//遍历列表list并释放内存
 static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 {
 	struct write_buffer *wb = list->head;
@@ -359,6 +363,7 @@ static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 	list->tail = NULL;
 }
 
+//强制释放socket s，并释放相应资源
 static void force_close(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
 {
@@ -384,6 +389,7 @@ static void force_close(struct socket_server *ss, struct socket *s,
 	s->type = SOCKET_TYPE_INVALID;
 }
 
+//释放所有socket
 void socket_server_release(struct socket_server *ss)
 {
 	int i;
@@ -402,12 +408,14 @@ void socket_server_release(struct socket_server *ss)
 	FREE(ss);
 }
 
+//断言列表s是空列表
 static inline void check_wb_list(struct wb_list *s)
 {
 	assert(s->head == NULL);
 	assert(s->tail == NULL);
 }
 
+//
 static struct socket *
 new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 		bool add)
@@ -435,6 +443,7 @@ new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 	return s;
 }
 
+//主动打开1个tcp连接
 // return -1 when connecting
 static int open_socket(struct socket_server *ss, struct request_open * request,
 		struct socket_message *result)
