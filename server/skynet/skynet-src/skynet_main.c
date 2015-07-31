@@ -86,6 +86,7 @@ static void _init_env(lua_State *L)
 	lua_pop(L, 1);
 }
 
+//ºöÂÔ¹ÜµÀĞÅºÅ
 int sigign()
 {
 	struct sigaction sa;
