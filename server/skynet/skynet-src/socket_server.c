@@ -220,7 +220,7 @@ struct send_object
 #define MALLOC skynet_malloc
 #define FREE skynet_free
 
-//×Ô¶¨ÒåÊı¾İ¶ÔÏó³õÊ¼»¯
+//è‡ªå®šä¹‰æ•°æ®å¯¹è±¡åˆå§‹åŒ–
 static inline bool send_object_init(struct socket_server *ss,
 		struct send_object *so, void *object, int sz)
 {
@@ -240,7 +240,7 @@ static inline bool send_object_init(struct socket_server *ss,
 	}
 }
 
-//ÊÍ·ÅwbµÄbuffer
+//é‡Šæ”¾wbçš„buffer
 static inline void write_buffer_free(struct socket_server *ss,
 		struct write_buffer *wb)
 {
@@ -262,7 +262,6 @@ static void socket_keepalive(int fd)
 			sizeof(keepalive));
 }
 
-//ÎªSOCKET_TYPE_RESERVEÀàĞÍµÄsocket·ÖÅäÒ»¸öid
 static int reserve_id(struct socket_server *ss)
 {
 	int i;
@@ -293,14 +292,14 @@ static int reserve_id(struct socket_server *ss)
 	return -1;
 }
 
-//Çå¿ÕÁĞ±í
+//æ¸…ç©ºlist
 static inline void clear_wb_list(struct wb_list *list)
 {
 	list->head = NULL;
 	list->tail = NULL;
 }
 
-//´´½¨epoll¡¢pipe£¬¼àÌıpipe[0]µÄ¿É¶ÁÊÂ¼ş
+//åˆå§‹åŒ–socket serverï¼Œåˆ›å»ºpipeï¼Œæ³¨å†Œå°†pipe[0]çš„å¯è¯»äº‹ä»¶æ³¨å†Œåˆ°epollä¸Š
 struct socket_server *
 socket_server_create()
 {
@@ -351,7 +350,6 @@ socket_server_create()
 	return ss;
 }
 
-//±éÀúÁĞ±ílist²¢ÊÍ·ÅÄÚ´æ
 static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 {
 	struct write_buffer *wb = list->head;
@@ -365,7 +363,6 @@ static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 	list->tail = NULL;
 }
 
-//Ç¿ÖÆÊÍ·Åsocket s£¬²¢ÊÍ·ÅÏàÓ¦×ÊÔ´
 static void force_close(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
 {
@@ -391,7 +388,6 @@ static void force_close(struct socket_server *ss, struct socket *s,
 	s->type = SOCKET_TYPE_INVALID;
 }
 
-//ÊÍ·ÅËùÓĞsocket
 void socket_server_release(struct socket_server *ss)
 {
 	int i;
@@ -410,14 +406,13 @@ void socket_server_release(struct socket_server *ss)
 	FREE(ss);
 }
 
-//¶ÏÑÔÁĞ±ísÊÇ¿ÕÁĞ±í
 static inline void check_wb_list(struct wb_list *s)
 {
 	assert(s->head == NULL);
 	assert(s->tail == NULL);
 }
 
-//¸ù¾İid´Ósocket_server ssÖĞ·ÖÅäÒ»¸ösocket
+//æ ¹æ®idä»socket_server ssä¸­åˆ†é…ä¸€ä¸ªsocket
 static struct socket *
 new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 		bool add)
@@ -445,7 +440,6 @@ new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 	return s;
 }
 
-//Ö÷¶¯´ò¿ª1¸ötcpÁ¬½Ó
 // return -1 when connecting
 static int open_socket(struct socket_server *ss, struct request_open * request,
 		struct socket_message *result)
@@ -534,7 +528,7 @@ static int open_socket(struct socket_server *ss, struct request_open * request,
 	return SOCKET_ERROR;
 }
 
-//½«listÖĞµÄÈ«²¿Êı¾İÍ¨¹ıtcp·¢ËÍ³öÈ¥²¢ÊÍ·ÅlistµÄbuffer
+//å°†listä¸­çš„å…¨éƒ¨æ•°æ®é€šè¿‡tcpå‘é€å‡ºå»å¹¶é‡Šæ”¾listçš„buffer
 static int send_list_tcp(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -573,8 +567,8 @@ static int send_list_tcp(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
-//½«udp_addressÖĞµÄµØÖ·¸´ÖÆµ½saÖĞ£¬udp_address[0]ÊÇÀàĞÍ£¨PROTOCOL_UDP¡¢PROTOCOL_UDPv6£©
-//udp_address[1¡¢2]ÊÇ¶Ë¿Ú£¬ÆäÓàµÄÊÇipµØÖ·
+//å°†udp_addressä¸­çš„åœ°å€å¤åˆ¶åˆ°saä¸­ï¼Œudp_address[0]æ˜¯ç±»å‹ï¼ˆPROTOCOL_UDPã€PROTOCOL_UDPv6ï¼‰
+//udp_address[1ã€2]æ˜¯ç«¯å£ï¼Œå…¶ä½™çš„æ˜¯ipåœ°å€
 static socklen_t udp_socket_address(struct socket *s,
 		const uint8_t udp_address[UDP_ADDRESS_SIZE], union sockaddr_all *sa)
 {
@@ -603,7 +597,7 @@ static socklen_t udp_socket_address(struct socket *s,
 	return 0;
 }
 
-//½«listÖĞµÄÈ«²¿Êı¾İÍ¨¹ıudp·¢ËÍ³öÈ¥²¢ÊÍ·ÅlistµÄbuffer
+//å°†listä¸­çš„å…¨éƒ¨æ•°æ®é€šè¿‡udpå‘é€å‡ºå»å¹¶é‡Šæ”¾listçš„buffer
 static int send_list_udp(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -644,7 +638,7 @@ static int send_list_udp(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
-//½«listµÄÈ«²¿Êı¾İÍ¨¹ıtcp»òudp·¢ËÍ³öÈ¥
+//å°†listçš„å…¨éƒ¨æ•°æ®é€šè¿‡tcpæˆ–udpå‘é€å‡ºå»
 static int send_list(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -658,7 +652,7 @@ static int send_list(struct socket_server *ss, struct socket *s,
 	}
 }
 
-//¼ì²élistÊÇ·ñÎª¿Õ
+//æ£€æŸ¥listæ˜¯å¦ä¸ºç©º
 static inline int list_uncomplete(struct wb_list *s)
 {
 	struct write_buffer *wb = s->head;
@@ -668,7 +662,7 @@ static inline int list_uncomplete(struct wb_list *s)
 	return (void *) wb->ptr != wb->buffer;
 }
 
-//°Ñsocket sÖĞµÄlow list headÒÆ¶¯µ½high list£¬¼¯low listÖĞÎª·¢ËÍÍêµÄÊı¾İÓÅÏÈ¼¶Ìá¸ß
+//æŠŠsocket sä¸­çš„low list headç§»åŠ¨åˆ°high listï¼Œé›†low listä¸­ä¸ºå‘é€å®Œçš„æ•°æ®ä¼˜å…ˆçº§æé«˜
 static void raise_uncomplete(struct socket * s)
 {
 	struct wb_list *low = &s->low;
@@ -735,7 +729,7 @@ static int send_buffer(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
-//ÔÚlist sÎ²²¿Ìí¼ÓÒ»¸öbuffer
+//åœ¨list så°¾éƒ¨æ·»åŠ ä¸€ä¸ªbuffer
 static struct write_buffer *
 append_sendbuffer_(struct socket_server *ss, struct wb_list *s,
 		struct request_send * request, int size, int n)
@@ -761,7 +755,7 @@ append_sendbuffer_(struct socket_server *ss, struct wb_list *s,
 	return buf;
 }
 
-//Ìí¼ÓÒ»¸öudp ·¢ËÍbufferµ½socket sµÄlistÎ²²¿
+//æ·»åŠ ä¸€ä¸ªudp å‘é€bufferåˆ°socket sçš„listå°¾éƒ¨
 static inline void append_sendbuffer_udp(struct socket_server *ss,
 		struct socket *s, int priority, struct request_send * request,
 		const uint8_t udp_address[UDP_ADDRESS_SIZE])
@@ -774,7 +768,7 @@ static inline void append_sendbuffer_udp(struct socket_server *ss,
 }
 
 
-//Ìí¼ÓÒ»¸ö·¢ËÍbufferµ½socket sµÄhigh listÎ²²¿
+//æ·»åŠ ä¸€ä¸ªå‘é€bufferåˆ°socket sçš„high listå°¾éƒ¨
 static inline void append_sendbuffer(struct socket_server *ss, struct socket *s,
 		struct request_send * request, int n)
 {
@@ -783,7 +777,7 @@ static inline void append_sendbuffer(struct socket_server *ss, struct socket *s,
 	s->wb_size += buf->sz;
 }
 
-//Ìí¼ÓÒ»¸ö·¢ËÍbufferµ½socket sµÄlow listÎ²²¿
+//æ·»åŠ ä¸€ä¸ªå‘é€bufferåˆ°socket sçš„low listå°¾éƒ¨
 static inline void append_sendbuffer_low(struct socket_server *ss,
 		struct socket *s, struct request_send * request)
 {
@@ -792,7 +786,7 @@ static inline void append_sendbuffer_low(struct socket_server *ss,
 	s->wb_size += buf->sz;
 }
 
-//¼ì²ésocket sµÄ·¢ËÍ·¢ËÍlistÊÇ·ñÎª¿Õ
+//æ£€æŸ¥socket sçš„å‘é€å‘é€listæ˜¯å¦ä¸ºç©º
 static inline int send_buffer_empty(struct socket *s)
 {
 	return (s->high.head == NULL && s->low.head == NULL);
@@ -895,7 +889,7 @@ static int send_socket(struct socket_server *ss, struct request_send * request,
 	return -1;
 }
 
-//ÔÚsocket_server ÖĞ·ÖÅäÒ»¸öĞÂµÄsocket½øĞĞ¼àÌı
+//åœ¨socket_server ä¸­åˆ†é…ä¸€ä¸ªæ–°çš„socketè¿›è¡Œç›‘å¬
 static int listen_socket(struct socket_server *ss,
 		struct request_listen * request, struct socket_message *result)
 {
@@ -919,7 +913,7 @@ static int listen_socket(struct socket_server *ss,
 	return SOCKET_ERROR;
 }
 
-//¹Ø±Õsocket£¨ÈôÓĞÊı¾İÎ´·¢ËÍÍê£¬ÏÈ·¢ËÍÊı¾İ£©
+//å…³é—­socketï¼ˆè‹¥æœ‰æ•°æ®æœªå‘é€å®Œï¼Œå…ˆå‘é€æ•°æ®ï¼‰
 static int close_socket(struct socket_server *ss, struct request_close *request,
 		struct socket_message *result)
 {
@@ -951,7 +945,7 @@ static int close_socket(struct socket_server *ss, struct request_close *request,
 	return -1;
 }
 
-//bindÒ»¸ö·Ç×èÈûsocket
+//bindä¸€ä¸ªéé˜»å¡socket
 static int bind_socket(struct socket_server *ss, struct request_bind *request,
 		struct socket_message *result)
 {
@@ -972,7 +966,7 @@ static int bind_socket(struct socket_server *ss, struct request_bind *request,
 	return SOCKET_OPEN;
 }
 
-//socket×´Ì¬×ª»»
+//socketçŠ¶æ€è½¬æ¢
 static int start_socket(struct socket_server *ss, struct request_start *request,
 		struct socket_message *result)
 {
@@ -1023,7 +1017,7 @@ static void setopt_socket(struct socket_server *ss,
 	setsockopt(s->fd, IPPROTO_TCP, request->what, &v, sizeof(v));
 }
 
-//×èÈûµÄ·½Ê½´Ó¹ÜµÀ¶ÁÈ¡Êı¾İ
+//é˜»å¡çš„æ–¹å¼ä»ç®¡é“è¯»å–æ•°æ®
 static void block_readpipe(int pipefd, void *buffer, int sz)
 {
 	for (;;)
@@ -1043,7 +1037,7 @@ static void block_readpipe(int pipefd, void *buffer, int sz)
 	}
 }
 
-//·Ç×èÈû·½Ê½¼ì²éÎÄ¼şÃèÊö·ûÊÇ·ñ¿É¶Á
+//éé˜»å¡æ–¹å¼æ£€æŸ¥æ–‡ä»¶æè¿°ç¬¦æ˜¯å¦å¯è¯»
 static int has_cmd(struct socket_server *ss)
 {
 	struct timeval tv =
@@ -1060,7 +1054,7 @@ static int has_cmd(struct socket_server *ss)
 	return 0;
 }
 
-//³õÊ¼»¯Ò»¸öĞÂµÄudp socket
+//åˆå§‹åŒ–ä¸€ä¸ªæ–°çš„udp socket
 static void add_udp_socket(struct socket_server *ss, struct request_udp *udp)
 {
 	int id = udp->id;
@@ -1084,7 +1078,7 @@ static void add_udp_socket(struct socket_server *ss, struct request_udp *udp)
 	memset(ns->p.udp_address, 0, sizeof(ns->p.udp_address));
 }
 
-//½«request->addressµÄµØÖ·Ìî³äµ½ssÖĞµÄÄ³¸ösocketÖĞ
+//å°†request->addressçš„åœ°å€å¡«å……åˆ°ssä¸­çš„æŸä¸ªsocketä¸­
 static int set_udp_address(struct socket_server *ss,
 		struct request_setudp *request, struct socket_message *result)
 {
@@ -1116,7 +1110,7 @@ static int set_udp_address(struct socket_server *ss,
 	return -1;
 }
 
-//socket serverµÄ¸÷ÖÖÃüÁî²Ù×÷
+//socket serverçš„å„ç§å‘½ä»¤æ“ä½œ
 // return type
 static int ctrl_cmd(struct socket_server *ss, struct socket_message *result)
 {
@@ -1175,7 +1169,7 @@ static int ctrl_cmd(struct socket_server *ss, struct socket_message *result)
 	return -1;
 }
 
-//´Ósocket sÖĞ¶ÁÈ¡Êı¾İµ½resultÖĞ£¨tcp£©
+//ä»socket sä¸­è¯»å–æ•°æ®åˆ°resultä¸­ï¼ˆtcpï¼‰
 // return -1 (ignore) when error
 static int forward_message_tcp(struct socket_server *ss, struct socket *s,
 		struct socket_message * result)
@@ -1230,7 +1224,7 @@ static int forward_message_tcp(struct socket_server *ss, struct socket *s,
 	return SOCKET_DATA;
 }
 
-//´Ósa¹¹ÔìÒ»¸öudpµØÖ·µ½udp_addressÖĞ
+//ä»saæ„é€ ä¸€ä¸ªudpåœ°å€åˆ°udp_addressä¸­
 static int gen_udp_address(int protocol, union sockaddr_all *sa,
 		uint8_t * udp_address)
 {
@@ -1255,7 +1249,7 @@ static int gen_udp_address(int protocol, union sockaddr_all *sa,
 	return addrsz;
 }
 
-//´Ósocket sÖĞ¶ÁÈ¡Êı¾İµ½resultÖĞ£¨UDP£©
+//ä»socket sä¸­è¯»å–æ•°æ®åˆ°resultä¸­ï¼ˆUDPï¼‰
 static int forward_message_udp(struct socket_server *ss, struct socket *s,
 		struct socket_message * result)
 {
@@ -1301,7 +1295,7 @@ static int forward_message_udp(struct socket_server *ss, struct socket *s,
 	return SOCKET_UDP;
 }
 
-//»ñÈ¡Á¬½Ó¶Ô¶ËµÄµØÖ·£¬´æÈëresult
+//è·å–è¿æ¥å¯¹ç«¯çš„åœ°å€ï¼Œå­˜å…¥result
 static int report_connect(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
 {
@@ -1342,7 +1336,7 @@ static int report_connect(struct socket_server *ss, struct socket *s,
 	}
 }
 
-//acceptÒ»¸öÁ¬½Ó£¬·ÖÅäsocket
+//acceptä¸€ä¸ªè¿æ¥ï¼Œåˆ†é…socket
 // return 0 when failed
 static int report_accept(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
@@ -1390,7 +1384,7 @@ static int report_accept(struct socket_server *ss, struct socket *s,
 	return 1;
 }
 
-//Çå³ıeventÖĞtypeÎªSOCKET_CLOSEºÍSOCKET_ERRORµÄsocket
+//æ¸…é™¤eventä¸­typeä¸ºSOCKET_CLOSEå’ŒSOCKET_ERRORçš„socket
 static inline void clear_closed_event(struct socket_server *ss,
 		struct socket_message * result, int type)
 {
@@ -1413,7 +1407,7 @@ static inline void clear_closed_event(struct socket_server *ss,
 	}
 }
 
-//¶ÁÊı¾İµ½resultÖĞ»ò½«socketĞ´¶ÓÁĞÖĞµÄÊı¾İ·¢ËÍ³öÈ¥
+//è¯»æ•°æ®åˆ°resultä¸­æˆ–å°†socketå†™é˜Ÿåˆ—ä¸­çš„æ•°æ®å‘é€å‡ºå»
 // return type
 int socket_server_poll(struct socket_server *ss, struct socket_message * result,
 		int * more)
@@ -1515,7 +1509,7 @@ int socket_server_poll(struct socket_server *ss, struct socket_message * result,
 	}
 }
 
-//·¢ËÍ1¸ösocketÃüÁî
+//å‘é€1ä¸ªsocketå‘½ä»¤
 static void send_request(struct socket_server *ss,
 		struct request_package *request, char type, int len)
 {
@@ -1538,7 +1532,7 @@ static void send_request(struct socket_server *ss,
 	}
 }
 
-//³õÊ¼»¯Ò»¸örequest_package
+//åˆå§‹åŒ–ä¸€ä¸ªrequest_package
 static int open_request(struct socket_server *ss, struct request_package *req,
 		uintptr_t opaque, const char *addr, int port)
 {
@@ -1560,7 +1554,7 @@ static int open_request(struct socket_server *ss, struct request_package *req,
 	return len;
 }
 
-//·¢ËÍÒ»¸öopen connectÃüÁî
+//å‘é€ä¸€ä¸ªopen connectå‘½ä»¤
 int socket_server_connect(struct socket_server *ss, uintptr_t opaque,
 		const char * addr, int port)
 {
@@ -1572,7 +1566,7 @@ int socket_server_connect(struct socket_server *ss, uintptr_t opaque,
 	return request.u.open.id;
 }
 
-//·¢ËÍÊı¾İ£¨¸ßÓÅÏÈ¼¶£©
+//å‘é€æ•°æ®ï¼ˆé«˜ä¼˜å…ˆçº§ï¼‰
 // return -1 when error
 int64_t socket_server_send(struct socket_server *ss, int id,
 		const void * buffer, int sz)
@@ -1592,7 +1586,7 @@ int64_t socket_server_send(struct socket_server *ss, int id,
 	return s->wb_size;
 }
 
-//·¢ËÍÊı¾İ£¨µÍÓÅÏÈ¼¶£©
+//å‘é€æ•°æ®ï¼ˆä½ä¼˜å…ˆçº§ï¼‰
 void socket_server_send_lowpriority(struct socket_server *ss, int id,
 		const void * buffer, int sz)
 {
@@ -1610,14 +1604,14 @@ void socket_server_send_lowpriority(struct socket_server *ss, int id,
 	send_request(ss, &request, 'P', sizeof(request.u.send));
 }
 
-//·¢ËÍÍË³öÃüÁî
+//å‘é€é€€å‡ºå‘½ä»¤
 void socket_server_exit(struct socket_server *ss)
 {
 	struct request_package request;
 	send_request(ss, &request, 'X', 0);
 }
 
-//·¢ËÍ¹Ø±ÕsocketÃüÁî
+//å‘é€å…³é—­socketå‘½ä»¤
 void socket_server_close(struct socket_server *ss, uintptr_t opaque, int id)
 {
 	struct request_package request;
@@ -1626,7 +1620,7 @@ void socket_server_close(struct socket_server *ss, uintptr_t opaque, int id)
 	send_request(ss, &request, 'K', sizeof(request.u.close));
 }
 
-//bindÒ»¸ösocket
+//bindä¸€ä¸ªsocket
 // return -1 means failed
 // or return AF_INET or AF_INET6
 static int do_bind(const char *host, int port, int protocol, int *family)
@@ -1683,7 +1677,7 @@ static int do_bind(const char *host, int port, int protocol, int *family)
 	return -1;
 }
 
-//¼àÌıÒ»¸ösocketµØÖ·
+//ç›‘å¬ä¸€ä¸ªsocketåœ°å€
 static int do_listen(const char * host, int port, int backlog)
 {
 	int family = 0;
@@ -1723,7 +1717,7 @@ int socket_server_listen(struct socket_server *ss, uintptr_t opaque,
 	return id;
 }
 
-//·¢ËÍBind socketÃüÁî
+//å‘é€Bind socketå‘½ä»¤
 int socket_server_bind(struct socket_server *ss, uintptr_t opaque, int fd)
 {
 	struct request_package request;
@@ -1737,7 +1731,7 @@ int socket_server_bind(struct socket_server *ss, uintptr_t opaque, int fd)
 	return id;
 }
 
-//·¢ËÍStart socketÃüÁî
+//å‘é€Start socketå‘½ä»¤
 void socket_server_start(struct socket_server *ss, uintptr_t opaque, int id)
 {
 	struct request_package request;
@@ -1746,7 +1740,7 @@ void socket_server_start(struct socket_server *ss, uintptr_t opaque, int id)
 	send_request(ss, &request, 'S', sizeof(request.u.start));
 }
 
-//·¢ËÍ Set optÃüÁî
+//å‘é€ Set optå‘½ä»¤
 void socket_server_nodelay(struct socket_server *ss, int id)
 {
 	struct request_package request;
@@ -1765,7 +1759,7 @@ void socket_server_userobject(struct socket_server *ss,
 
 // UDP
 
-//´´½¨1¸öUDP socket
+//åˆ›å»º1ä¸ªUDP socket
 int socket_server_udp(struct socket_server *ss, uintptr_t opaque,
 		const char * addr, int port)
 {
@@ -1807,7 +1801,7 @@ int socket_server_udp(struct socket_server *ss, uintptr_t opaque,
 	return id;
 }
 
-//·¢ËÍUDPÊı¾İ°ü
+//å‘é€UDPæ•°æ®åŒ…
 int64_t socket_server_udp_send(struct socket_server *ss, int id,
 		const struct socket_udp_address *addr, const void *buffer, int sz)
 {
@@ -1890,7 +1884,7 @@ int socket_server_udp_connect(struct socket_server *ss, int id,
 	return 0;
 }
 
-//´ÓmsgÖĞÌáÈ¡ socket_udp_address
+//ä»msgä¸­æå– socket_udp_address
 const struct socket_udp_address *
 socket_server_udp_address(struct socket_server *ss, struct socket_message *msg,
 		int *addrsz)
