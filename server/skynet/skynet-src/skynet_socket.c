@@ -13,6 +13,7 @@
 
 static struct socket_server * SOCKET_SERVER = NULL;
 
+//初始化socket
 void skynet_socket_init()
 {
 	SOCKET_SERVER = socket_server_create();
@@ -23,12 +24,14 @@ void skynet_socket_exit()
 	socket_server_exit(SOCKET_SERVER);
 }
 
+//关闭服务的所有socket
 void skynet_socket_free()
 {
 	socket_server_release(SOCKET_SERVER);
 	SOCKET_SERVER = NULL;
 }
 
+//将消息发送的全局队列中
 // mainloop thread
 static void forward_message(int type, bool padding,
 		struct socket_message * result)
@@ -75,6 +78,7 @@ static void forward_message(int type, bool padding,
 	}
 }
 
+//读取socket消息并发送到全局队列中
 int skynet_socket_poll()
 {
 	struct socket_server *ss = SOCKET_SERVER;
@@ -115,6 +119,7 @@ int skynet_socket_poll()
 	return 1;
 }
 
+//检查有多少数据需要发送出去
 static int check_wsz(struct skynet_context *ctx, int id, void *buffer,
 		int64_t wsz)
 {
@@ -135,18 +140,21 @@ static int check_wsz(struct skynet_context *ctx, int id, void *buffer,
 	return 0;
 }
 
+//高优先级发送数据
 int skynet_socket_send(struct skynet_context *ctx, int id, void *buffer, int sz)
 {
 	int64_t wsz = socket_server_send(SOCKET_SERVER, id, buffer, sz);
 	return check_wsz(ctx, id, buffer, wsz);
 }
 
+//低优先级发送数据
 void skynet_socket_send_lowpriority(struct skynet_context *ctx, int id,
 		void *buffer, int sz)
 {
 	socket_server_send_lowpriority(SOCKET_SERVER, id, buffer, sz);
 }
 
+//
 int skynet_socket_listen(struct skynet_context *ctx, const char *host, int port,
 		int backlog)
 {
@@ -154,6 +162,7 @@ int skynet_socket_listen(struct skynet_context *ctx, const char *host, int port,
 	return socket_server_listen(SOCKET_SERVER, source, host, port, backlog);
 }
 
+//主动去连1个地址
 int skynet_socket_connect(struct skynet_context *ctx, const char *host,
 		int port)
 {
@@ -161,41 +170,48 @@ int skynet_socket_connect(struct skynet_context *ctx, const char *host,
 	return socket_server_connect(SOCKET_SERVER, source, host, port);
 }
 
+//发送Bind socket
 int skynet_socket_bind(struct skynet_context *ctx, int fd)
 {
 	uint32_t source = skynet_context_handle(ctx);
 	return socket_server_bind(SOCKET_SERVER, source, fd);
 }
 
+//关闭socket
 void skynet_socket_close(struct skynet_context *ctx, int id)
 {
 	uint32_t source = skynet_context_handle(ctx);
 	socket_server_close(SOCKET_SERVER, source, id);
 }
 
+//
 void skynet_socket_start(struct skynet_context *ctx, int id)
 {
 	uint32_t source = skynet_context_handle(ctx);
 	socket_server_start(SOCKET_SERVER, source, id);
 }
 
+//禁用 Nagle’s Algorithm
 void skynet_socket_nodelay(struct skynet_context *ctx, int id)
 {
 	socket_server_nodelay(SOCKET_SERVER, id);
 }
 
+//创建1个UDP socket
 int skynet_socket_udp(struct skynet_context *ctx, const char * addr, int port)
 {
 	uint32_t source = skynet_context_handle(ctx);
 	return socket_server_udp(SOCKET_SERVER, source, addr, port);
 }
 
+//在socket_server ss中创建一个udp socket地址
 int skynet_socket_udp_connect(struct skynet_context *ctx, int id,
 		const char * addr, int port)
 {
 	return socket_server_udp_connect(SOCKET_SERVER, id, addr, port);
 }
 
+//发送udp数据到地址address
 int skynet_socket_udp_send(struct skynet_context *ctx, int id,
 		const char * address, const void *buffer, int sz)
 {
@@ -204,6 +220,7 @@ int skynet_socket_udp_send(struct skynet_context *ctx, int id,
 	return check_wsz(ctx, id, (void *) buffer, wsz);
 }
 
+//从skynet_socket_message中提取udp地址
 const char *
 skynet_socket_udp_address(struct skynet_socket_message *msg, int *addrsz)
 {

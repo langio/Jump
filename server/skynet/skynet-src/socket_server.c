@@ -262,6 +262,7 @@ static void socket_keepalive(int fd)
 			sizeof(keepalive));
 }
 
+//从socket slot数组中分配1个元素
 static int reserve_id(struct socket_server *ss)
 {
 	int i;
@@ -350,6 +351,7 @@ socket_server_create()
 	return ss;
 }
 
+//释放list
 static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 {
 	struct write_buffer *wb = list->head;
@@ -363,6 +365,7 @@ static void free_wb_list(struct socket_server *ss, struct wb_list *list)
 	list->tail = NULL;
 }
 
+//关闭socket s
 static void force_close(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
 {
@@ -388,6 +391,7 @@ static void force_close(struct socket_server *ss, struct socket *s,
 	s->type = SOCKET_TYPE_INVALID;
 }
 
+//遍历所有socket，将状态不是SOCKET_TYPE_RESERVE的socket全部关闭
 void socket_server_release(struct socket_server *ss)
 {
 	int i;
@@ -966,7 +970,7 @@ static int bind_socket(struct socket_server *ss, struct request_bind *request,
 	return SOCKET_OPEN;
 }
 
-//socket状态转换
+//将socket的状态从SOCKET_TYPE_PLISTEN转换为SOCKET_TYPE_LISTEN，或从SOCKET_TYPE_PACCEPT转换为SOCKET_TYPE_CONNECTED
 static int start_socket(struct socket_server *ss, struct request_start *request,
 		struct socket_message *result)
 {
@@ -1003,7 +1007,7 @@ static int start_socket(struct socket_server *ss, struct request_start *request,
 	return -1;
 }
 
-//
+//设置socket 参数
 static void setopt_socket(struct socket_server *ss,
 		struct request_setopt *request)
 {
@@ -1740,7 +1744,7 @@ void socket_server_start(struct socket_server *ss, uintptr_t opaque, int id)
 	send_request(ss, &request, 'S', sizeof(request.u.start));
 }
 
-//发送 Set opt命令
+//禁用 Nagle’s Algorithm
 void socket_server_nodelay(struct socket_server *ss, int id)
 {
 	struct request_package request;
@@ -1836,6 +1840,7 @@ int64_t socket_server_udp_send(struct socket_server *ss, int id,
 	return s->wb_size;
 }
 
+//在socket_server ss中创建一个udp socket地址
 int socket_server_udp_connect(struct socket_server *ss, int id,
 		const char * addr, int port)
 {
