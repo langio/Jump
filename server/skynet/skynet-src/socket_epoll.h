@@ -25,6 +25,7 @@ static void sp_release(int efd)
 	close(efd);
 }
 
+//注册新的fd到epoll事件中，efd是epoll_create返回值，sock是要监听的fd
 static int sp_add(int efd, int sock, void *ud)
 {
 	struct epoll_event ev;

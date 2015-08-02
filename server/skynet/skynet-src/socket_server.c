@@ -220,6 +220,7 @@ struct send_object
 #define MALLOC skynet_malloc
 #define FREE skynet_free
 
+//自定义数据对象初始化
 static inline bool send_object_init(struct socket_server *ss,
 		struct send_object *so, void *object, int sz)
 {
@@ -239,6 +240,7 @@ static inline bool send_object_init(struct socket_server *ss,
 	}
 }
 
+//释放wb的buffer
 static inline void write_buffer_free(struct socket_server *ss,
 		struct write_buffer *wb)
 {
@@ -415,7 +417,7 @@ static inline void check_wb_list(struct wb_list *s)
 	assert(s->tail == NULL);
 }
 
-//
+//根据id从socket_server ss中分配一个socket
 static struct socket *
 new_fd(struct socket_server *ss, int id, int fd, int protocol, uintptr_t opaque,
 		bool add)
@@ -532,6 +534,7 @@ static int open_socket(struct socket_server *ss, struct request_open * request,
 	return SOCKET_ERROR;
 }
 
+//将list中的全部数据通过tcp发送出去并释放list的buffer
 static int send_list_tcp(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -570,6 +573,8 @@ static int send_list_tcp(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
+//将udp_address中的地址复制到sa中，udp_address[0]是类型（PROTOCOL_UDP、PROTOCOL_UDPv6）
+//udp_address[1、2]是端口，其余的是ip地址
 static socklen_t udp_socket_address(struct socket *s,
 		const uint8_t udp_address[UDP_ADDRESS_SIZE], union sockaddr_all *sa)
 {
@@ -598,6 +603,7 @@ static socklen_t udp_socket_address(struct socket *s,
 	return 0;
 }
 
+//将list中的全部数据通过udp发送出去并释放list的buffer
 static int send_list_udp(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -638,6 +644,7 @@ static int send_list_udp(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
+//将list的全部数据通过tcp或udp发送出去
 static int send_list(struct socket_server *ss, struct socket *s,
 		struct wb_list *list, struct socket_message *result)
 {
@@ -651,6 +658,7 @@ static int send_list(struct socket_server *ss, struct socket *s,
 	}
 }
 
+//检查list是否为空
 static inline int list_uncomplete(struct wb_list *s)
 {
 	struct write_buffer *wb = s->head;
@@ -660,6 +668,7 @@ static inline int list_uncomplete(struct wb_list *s)
 	return (void *) wb->ptr != wb->buffer;
 }
 
+//把socket s中的low list head移动到high list，集low list中为发送完的数据优先级提高
 static void raise_uncomplete(struct socket * s)
 {
 	struct wb_list *low = &s->low;
@@ -726,6 +735,7 @@ static int send_buffer(struct socket_server *ss, struct socket *s,
 	return -1;
 }
 
+//在list s尾部添加一个buffer
 static struct write_buffer *
 append_sendbuffer_(struct socket_server *ss, struct wb_list *s,
 		struct request_send * request, int size, int n)
@@ -751,6 +761,7 @@ append_sendbuffer_(struct socket_server *ss, struct wb_list *s,
 	return buf;
 }
 
+//添加一个udp 发送buffer到socket s的list尾部
 static inline void append_sendbuffer_udp(struct socket_server *ss,
 		struct socket *s, int priority, struct request_send * request,
 		const uint8_t udp_address[UDP_ADDRESS_SIZE])
@@ -762,6 +773,8 @@ static inline void append_sendbuffer_udp(struct socket_server *ss,
 	s->wb_size += buf->sz;
 }
 
+
+//添加一个发送buffer到socket s的high list尾部
 static inline void append_sendbuffer(struct socket_server *ss, struct socket *s,
 		struct request_send * request, int n)
 {
@@ -770,6 +783,7 @@ static inline void append_sendbuffer(struct socket_server *ss, struct socket *s,
 	s->wb_size += buf->sz;
 }
 
+//添加一个发送buffer到socket s的low list尾部
 static inline void append_sendbuffer_low(struct socket_server *ss,
 		struct socket *s, struct request_send * request)
 {
@@ -778,6 +792,7 @@ static inline void append_sendbuffer_low(struct socket_server *ss,
 	s->wb_size += buf->sz;
 }
 
+//检查socket s的发送发送list是否为空
 static inline int send_buffer_empty(struct socket *s)
 {
 	return (s->high.head == NULL && s->low.head == NULL);
@@ -880,6 +895,7 @@ static int send_socket(struct socket_server *ss, struct request_send * request,
 	return -1;
 }
 
+//在socket_server 中分配一个新的socket进行监听
 static int listen_socket(struct socket_server *ss,
 		struct request_listen * request, struct socket_message *result)
 {
@@ -903,6 +919,7 @@ static int listen_socket(struct socket_server *ss,
 	return SOCKET_ERROR;
 }
 
+//关闭socket（若有数据未发送完，先发送数据）
 static int close_socket(struct socket_server *ss, struct request_close *request,
 		struct socket_message *result)
 {
@@ -934,6 +951,7 @@ static int close_socket(struct socket_server *ss, struct request_close *request,
 	return -1;
 }
 
+//bind一个非阻塞socket
 static int bind_socket(struct socket_server *ss, struct request_bind *request,
 		struct socket_message *result)
 {
@@ -954,6 +972,7 @@ static int bind_socket(struct socket_server *ss, struct request_bind *request,
 	return SOCKET_OPEN;
 }
 
+//socket状态转换
 static int start_socket(struct socket_server *ss, struct request_start *request,
 		struct socket_message *result)
 {
@@ -990,6 +1009,7 @@ static int start_socket(struct socket_server *ss, struct request_start *request,
 	return -1;
 }
 
+//
 static void setopt_socket(struct socket_server *ss,
 		struct request_setopt *request)
 {
@@ -1003,6 +1023,7 @@ static void setopt_socket(struct socket_server *ss,
 	setsockopt(s->fd, IPPROTO_TCP, request->what, &v, sizeof(v));
 }
 
+//阻塞的方式从管道读取数据
 static void block_readpipe(int pipefd, void *buffer, int sz)
 {
 	for (;;)
@@ -1022,6 +1043,7 @@ static void block_readpipe(int pipefd, void *buffer, int sz)
 	}
 }
 
+//非阻塞方式检查文件描述符是否可读
 static int has_cmd(struct socket_server *ss)
 {
 	struct timeval tv =
@@ -1038,6 +1060,7 @@ static int has_cmd(struct socket_server *ss)
 	return 0;
 }
 
+//初始化一个新的udp socket
 static void add_udp_socket(struct socket_server *ss, struct request_udp *udp)
 {
 	int id = udp->id;
@@ -1061,6 +1084,7 @@ static void add_udp_socket(struct socket_server *ss, struct request_udp *udp)
 	memset(ns->p.udp_address, 0, sizeof(ns->p.udp_address));
 }
 
+//将request->address的地址填充到ss中的某个socket中
 static int set_udp_address(struct socket_server *ss,
 		struct request_setudp *request, struct socket_message *result)
 {
@@ -1092,6 +1116,7 @@ static int set_udp_address(struct socket_server *ss,
 	return -1;
 }
 
+//socket server的各种命令操作
 // return type
 static int ctrl_cmd(struct socket_server *ss, struct socket_message *result)
 {
@@ -1150,6 +1175,7 @@ static int ctrl_cmd(struct socket_server *ss, struct socket_message *result)
 	return -1;
 }
 
+//从socket s中读取数据到result中（tcp）
 // return -1 (ignore) when error
 static int forward_message_tcp(struct socket_server *ss, struct socket *s,
 		struct socket_message * result)
@@ -1204,6 +1230,7 @@ static int forward_message_tcp(struct socket_server *ss, struct socket *s,
 	return SOCKET_DATA;
 }
 
+//从sa构造一个udp地址到udp_address中
 static int gen_udp_address(int protocol, union sockaddr_all *sa,
 		uint8_t * udp_address)
 {
@@ -1228,6 +1255,7 @@ static int gen_udp_address(int protocol, union sockaddr_all *sa,
 	return addrsz;
 }
 
+//从socket s中读取数据到result中（UDP）
 static int forward_message_udp(struct socket_server *ss, struct socket *s,
 		struct socket_message * result)
 {
@@ -1273,6 +1301,7 @@ static int forward_message_udp(struct socket_server *ss, struct socket *s,
 	return SOCKET_UDP;
 }
 
+//获取连接对端的地址，存入result
 static int report_connect(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
 {
@@ -1313,6 +1342,7 @@ static int report_connect(struct socket_server *ss, struct socket *s,
 	}
 }
 
+//accept一个连接，分配socket
 // return 0 when failed
 static int report_accept(struct socket_server *ss, struct socket *s,
 		struct socket_message *result)
@@ -1360,6 +1390,7 @@ static int report_accept(struct socket_server *ss, struct socket *s,
 	return 1;
 }
 
+//清除event中type为SOCKET_CLOSE和SOCKET_ERROR的socket
 static inline void clear_closed_event(struct socket_server *ss,
 		struct socket_message * result, int type)
 {
@@ -1382,6 +1413,7 @@ static inline void clear_closed_event(struct socket_server *ss,
 	}
 }
 
+//读数据到result中或将socket写队列中的数据发送出去
 // return type
 int socket_server_poll(struct socket_server *ss, struct socket_message * result,
 		int * more)
@@ -1483,6 +1515,7 @@ int socket_server_poll(struct socket_server *ss, struct socket_message * result,
 	}
 }
 
+//发送1个socket命令
 static void send_request(struct socket_server *ss,
 		struct request_package *request, char type, int len)
 {
@@ -1505,6 +1538,7 @@ static void send_request(struct socket_server *ss,
 	}
 }
 
+//初始化一个request_package
 static int open_request(struct socket_server *ss, struct request_package *req,
 		uintptr_t opaque, const char *addr, int port)
 {
@@ -1526,6 +1560,7 @@ static int open_request(struct socket_server *ss, struct request_package *req,
 	return len;
 }
 
+//发送一个open connect命令
 int socket_server_connect(struct socket_server *ss, uintptr_t opaque,
 		const char * addr, int port)
 {
@@ -1537,6 +1572,7 @@ int socket_server_connect(struct socket_server *ss, uintptr_t opaque,
 	return request.u.open.id;
 }
 
+//发送数据（高优先级）
 // return -1 when error
 int64_t socket_server_send(struct socket_server *ss, int id,
 		const void * buffer, int sz)
@@ -1556,6 +1592,7 @@ int64_t socket_server_send(struct socket_server *ss, int id,
 	return s->wb_size;
 }
 
+//发送数据（低优先级）
 void socket_server_send_lowpriority(struct socket_server *ss, int id,
 		const void * buffer, int sz)
 {
@@ -1573,12 +1610,14 @@ void socket_server_send_lowpriority(struct socket_server *ss, int id,
 	send_request(ss, &request, 'P', sizeof(request.u.send));
 }
 
+//发送退出命令
 void socket_server_exit(struct socket_server *ss)
 {
 	struct request_package request;
 	send_request(ss, &request, 'X', 0);
 }
 
+//发送关闭socket命令
 void socket_server_close(struct socket_server *ss, uintptr_t opaque, int id)
 {
 	struct request_package request;
@@ -1587,6 +1626,7 @@ void socket_server_close(struct socket_server *ss, uintptr_t opaque, int id)
 	send_request(ss, &request, 'K', sizeof(request.u.close));
 }
 
+//bind一个socket
 // return -1 means failed
 // or return AF_INET or AF_INET6
 static int do_bind(const char *host, int port, int protocol, int *family)
@@ -1643,6 +1683,7 @@ static int do_bind(const char *host, int port, int protocol, int *family)
 	return -1;
 }
 
+//监听一个socket地址
 static int do_listen(const char * host, int port, int backlog)
 {
 	int family = 0;
@@ -1659,6 +1700,7 @@ static int do_listen(const char * host, int port, int backlog)
 	return listen_fd;
 }
 
+//
 int socket_server_listen(struct socket_server *ss, uintptr_t opaque,
 		const char * addr, int port, int backlog)
 {
@@ -1681,6 +1723,7 @@ int socket_server_listen(struct socket_server *ss, uintptr_t opaque,
 	return id;
 }
 
+//发送Bind socket命令
 int socket_server_bind(struct socket_server *ss, uintptr_t opaque, int fd)
 {
 	struct request_package request;
@@ -1694,6 +1737,7 @@ int socket_server_bind(struct socket_server *ss, uintptr_t opaque, int fd)
 	return id;
 }
 
+//发送Start socket命令
 void socket_server_start(struct socket_server *ss, uintptr_t opaque, int id)
 {
 	struct request_package request;
@@ -1702,6 +1746,7 @@ void socket_server_start(struct socket_server *ss, uintptr_t opaque, int id)
 	send_request(ss, &request, 'S', sizeof(request.u.start));
 }
 
+//发送 Set opt命令
 void socket_server_nodelay(struct socket_server *ss, int id)
 {
 	struct request_package request;
@@ -1711,6 +1756,7 @@ void socket_server_nodelay(struct socket_server *ss, int id)
 	send_request(ss, &request, 'T', sizeof(request.u.setopt));
 }
 
+//
 void socket_server_userobject(struct socket_server *ss,
 		struct socket_object_interface *soi)
 {
@@ -1719,6 +1765,7 @@ void socket_server_userobject(struct socket_server *ss,
 
 // UDP
 
+//创建1个UDP socket
 int socket_server_udp(struct socket_server *ss, uintptr_t opaque,
 		const char * addr, int port)
 {
@@ -1760,6 +1807,7 @@ int socket_server_udp(struct socket_server *ss, uintptr_t opaque,
 	return id;
 }
 
+//发送UDP数据包
 int64_t socket_server_udp_send(struct socket_server *ss, int id,
 		const struct socket_udp_address *addr, const void *buffer, int sz)
 {
@@ -1842,6 +1890,7 @@ int socket_server_udp_connect(struct socket_server *ss, int id,
 	return 0;
 }
 
+//从msg中提取 socket_udp_address
 const struct socket_udp_address *
 socket_server_udp_address(struct socket_server *ss, struct socket_message *msg,
 		int *addrsz)
