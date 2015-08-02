@@ -36,6 +36,7 @@ struct gate
 	struct messagepool mp;
 };
 
+//创建1个gat结构
 struct gate *
 gate_create(void)
 {
@@ -45,6 +46,7 @@ gate_create(void)
 	return g;
 }
 
+//释放gate相关资源
 void gate_release(struct gate *g)
 {
 	int i;
@@ -67,6 +69,7 @@ void gate_release(struct gate *g)
 	skynet_free(g);
 }
 
+//把msg前面部分的命令字符串删掉
 static void _parm(char *msg, int sz, int command_sz)
 {
 	while (command_sz < sz)
@@ -95,6 +98,7 @@ static void _forward_agent(struct gate * g, int fd, uint32_t agentaddr,
 	}
 }
 
+//控制命令处理
 static void _ctrl(struct gate * g, const void * msg, int sz)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -166,6 +170,7 @@ static void _ctrl(struct gate * g, const void * msg, int sz)
 	skynet_error(ctx, "[gate] Unkown command : %s", command);
 }
 
+//
 static void _report(struct gate * g, const char * data, ...)
 {
 	if (g->watchdog == 0)
@@ -182,6 +187,7 @@ static void _report(struct gate * g, const char * data, ...)
 	skynet_send(ctx, 0, g->watchdog, PTYPE_TEXT, 0, tmp, n);
 }
 
+//按照模式将connection中的数据发送出去
 static void _forward(struct gate *g, struct connection * c, int size)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -210,6 +216,7 @@ static void _forward(struct gate *g, struct connection * c, int size)
 	}
 }
 
+//将connection中的数据发送出去
 static void dispatch_message(struct gate *g, struct connection *c, int id,
 		void * data, int sz)
 {
@@ -240,6 +247,7 @@ static void dispatch_message(struct gate *g, struct connection *c, int id,
 	}
 }
 
+//
 static void dispatch_socket_message(struct gate *g,
 		const struct skynet_socket_message * message, int sz)
 {
@@ -368,6 +376,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 	return 0;
 }
 
+//监听一个地址，成功后g->listen_id socket描述符
 static int start_listen(struct gate *g, char * listen_addr)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -402,6 +411,7 @@ static int start_listen(struct gate *g, char * listen_addr)
 	return 0;
 }
 
+//初始化gate相关参数
 int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 {
 	if (parm == NULL)

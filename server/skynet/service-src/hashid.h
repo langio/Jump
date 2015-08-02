@@ -20,6 +20,7 @@ struct hashid
 	struct hashid_node **hash;
 };
 
+//初始化hashid结构
 static void hashid_init(struct hashid *hi, int max)
 {
 	int i;
@@ -42,6 +43,7 @@ static void hashid_init(struct hashid *hi, int max)
 	memset(hi->hash, 0, hashcap * sizeof(struct hashid_node *));
 }
 
+//释放hashid结构
 static void hashid_clear(struct hashid *hi)
 {
 	skynet_free(hi->id);
@@ -53,6 +55,7 @@ static void hashid_clear(struct hashid *hi)
 	hi->count = 0;
 }
 
+//查找hash id的值为id的hash node，返回该node索引
 static int hashid_lookup(struct hashid *hi, int id)
 {
 	int h = id & hi->hashmod;
@@ -66,6 +69,7 @@ static int hashid_lookup(struct hashid *hi, int id)
 	return -1;
 }
 
+//移除id值为id的节点
 static int hashid_remove(struct hashid *hi, int id)
 {
 	int h = id & hi->hashmod;
@@ -95,6 +99,7 @@ static int hashid_remove(struct hashid *hi, int id)
 	return c - hi->id;
 }
 
+//将id插入hashid进行管理，返回id数组的索引
 static int hashid_insert(struct hashid * hi, int id)
 {
 	struct hashid_node *c = NULL;
@@ -122,6 +127,7 @@ static int hashid_insert(struct hashid * hi, int id)
 	return c - hi->id;
 }
 
+//检查hi是否已满
 static inline int hashid_full(struct hashid *hi)
 {
 	return hi->count == hi->cap;

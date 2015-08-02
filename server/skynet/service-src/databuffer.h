@@ -36,7 +36,7 @@ struct messagepool
 };
 
 // use memset init struct
-//是否message_pool链表
+//是放message_pool链表
 static void messagepool_free(struct messagepool *pool)
 {
 	struct messagepool_list *p = pool->pool;
