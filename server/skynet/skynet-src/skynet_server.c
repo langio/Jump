@@ -448,7 +448,7 @@ cmd_timeout(struct skynet_context * context, const char * param)
 	return context->result;
 }
 
-//将param作为名字注册handle
+//将param作为名字注册handle，返回指向handle十六进制的字符串或指向name的字符串
 static const char *
 cmd_reg(struct skynet_context * context, const char * param)
 {

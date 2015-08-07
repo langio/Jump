@@ -246,7 +246,7 @@ static void _insert_name_before(struct handle_storage *s, char *name,
 	s->name_count++;
 }
 
-//插入handle和别名到storage中，插入的结果是按name排序的
+//插入handle和别名到storage中，插入的结果是按name排序的，返回指向name的指针
 static const char *
 _insert_name(struct handle_storage *s, const char * name, uint32_t handle)
 {
