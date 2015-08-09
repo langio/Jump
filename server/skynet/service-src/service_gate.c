@@ -43,6 +43,7 @@ gate_create(void)
 	struct gate * g = skynet_malloc(sizeof(*g));
 	memset(g, 0, sizeof(*g));
 	g->listen_id = -1;
+	pirntf("@@@@@@@@@@@@gate_create");
 	return g;
 }
 
@@ -475,6 +476,9 @@ int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 	g->header_size = header == 'S' ? 2 : 4;
 
 	skynet_callback(ctx, g, _cb);
+
+
+	pirntf("@@@@@@@@@@@@gate_init");
 
 	return start_listen(g, binding);
 }
