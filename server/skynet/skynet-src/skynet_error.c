@@ -10,13 +10,15 @@
 
 #define LOG_MESSAGE_SIZE 256
 
-void 
-skynet_error(struct skynet_context * context, const char *msg, ...) {
+void skynet_error(struct skynet_context * context, const char *msg, ...)
+{
 	static uint32_t logger = 0;
-	if (logger == 0) {
+	if (logger == 0)
+	{
 		logger = skynet_handle_findname("logger");
 	}
-	if (logger == 0) {
+	if (logger == 0)
+	{
 		return;
 	}
 
@@ -25,31 +27,38 @@ skynet_error(struct skynet_context * context, const char *msg, ...) {
 
 	va_list ap;
 
-	va_start(ap,msg);
+	va_start(ap, msg);
 	int len = vsnprintf(tmp, LOG_MESSAGE_SIZE, msg, ap);
 	va_end(ap);
-	if (len < LOG_MESSAGE_SIZE) {
+	if (len < LOG_MESSAGE_SIZE)
+	{
 		data = skynet_strdup(tmp);
-	} else {
+	}
+	else
+	{
 		int max_size = LOG_MESSAGE_SIZE;
-		for (;;) {
+		for (;;)
+		{
 			max_size *= 2;
 			data = skynet_malloc(max_size);
-			va_start(ap,msg);
+			va_start(ap, msg);
 			len = vsnprintf(data, max_size, msg, ap);
 			va_end(ap);
-			if (len < max_size) {
+			if (len < max_size)
+			{
 				break;
 			}
 			skynet_free(data);
 		}
 	}
 
-
 	struct skynet_message smsg;
-	if (context == NULL) {
+	if (context == NULL)
+	{
 		smsg.source = 0;
-	} else {
+	}
+	else
+	{
 		smsg.source = skynet_context_handle(context);
 	}
 	smsg.session = 0;
