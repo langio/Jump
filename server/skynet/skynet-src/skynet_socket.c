@@ -51,8 +51,8 @@ static void forward_message(int type, bool padding,
 	}
 	sm = (struct skynet_socket_message *) skynet_malloc(sz);
 	sm->type = type;
-	sm->id = result->id;
-	sm->ud = result->ud;
+	sm->id = result->id;	//listen socet id
+	sm->ud = result->ud;	//new socket id
 	if (padding)
 	{
 		sm->buffer = NULL;
@@ -184,7 +184,7 @@ void skynet_socket_close(struct skynet_context *ctx, int id)
 	socket_server_close(SOCKET_SERVER, source, id);
 }
 
-//
+//·¢ËÍStartÃüÁî
 void skynet_socket_start(struct skynet_context *ctx, int id)
 {
 	uint32_t source = skynet_context_handle(ctx);

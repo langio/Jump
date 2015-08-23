@@ -2,6 +2,7 @@ PLAT ?= none
 PLATS = linux freebsd macosx
 
 CC ?= gcc
+CPP ?= g++
 
 .PHONY : none $(PLATS) clean all cleanall
 

@@ -43,7 +43,7 @@ gate_create(void)
 	struct gate * g = skynet_malloc(sizeof(*g));
 	memset(g, 0, sizeof(*g));
 	g->listen_id = -1;
-	printf("@@@@@@@@@@@@gate_create");
+	printf("@@@@@@@@@@@@gate_create\n");
 	return g;
 }
 
@@ -171,7 +171,7 @@ static void _ctrl(struct gate * g, const void * msg, int sz)
 	skynet_error(ctx, "[gate] Unkown command : %s", command);
 }
 
-//
+//将消息发送给watchdog
 static void _report(struct gate * g, const char * data, ...)
 {
 	if (g->watchdog == 0)
@@ -404,7 +404,7 @@ static int start_listen(struct gate *g, char * listen_addr)
 		portstr[0] = '\0';
 		host = listen_addr;
 	}
-	g->listen_id = skynet_socket_listen(ctx, host, port, BACKLOG);
+	g->listen_id = skynet_socket_listen(ctx, host, port, BACKLOG);	//skeynet分配的id
 	if (g->listen_id < 0)
 	{
 		return 1;

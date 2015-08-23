@@ -240,6 +240,17 @@ static void bootstrap(struct skynet_context * logger, const char * cmdline)
 	}
 }
 
+static void load_service(struct skynet_context * logger, const char * cmdline)
+{
+	struct skynet_context *ctx = skynet_context_new("gate",
+				"S .logger 127.0.0.1:8888 0 10");
+		if (ctx == NULL)
+		{
+			fprintf(stderr, "Can't launch %s service\n", "gate");
+			exit(1);
+		}
+}
+
 void skynet_start(struct skynet_config * config)
 {
 	if (config->daemon)
@@ -264,7 +275,8 @@ void skynet_start(struct skynet_config * config)
 		exit(1);
 	}
 
-	bootstrap(ctx, config->bootstrap);
+	//bootstrap(ctx, config->bootstrap);
+	load_service(ctx, config->bootstrap);
 
 	start(config->thread);
 
