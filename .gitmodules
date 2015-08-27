@@ -1,0 +1,3 @@
+[submodule "server/skynet/3rd/jemalloc"]
+	path = server/skynet/3rd/jemalloc
+	url = https://github.com/jemalloc/jemalloc.git
