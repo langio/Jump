@@ -21,7 +21,7 @@ $(CSERVICE_PATH) :
 
 define CSERVICE_TEMP
   $$(CSERVICE_PATH)/$(1).so : service_$(1).cpp | $$(CSERVICE_PATH)
-	$$(CPP) $$(CFLAGS) $$(SHARED) $$< -o $$@ -Iskynet-src
+	$$(CPP) $$(CFLAGS) $$(SHARED) $$< -o $$@ $(INCLUDE)
 endef
 
 $(foreach v, $(CSERVICE), $(eval $(call CSERVICE_TEMP,$(v))))
