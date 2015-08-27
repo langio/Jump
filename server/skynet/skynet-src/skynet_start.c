@@ -243,7 +243,7 @@ static void bootstrap(struct skynet_context * logger, const char * cmdline)
 static void load_service(struct skynet_context * logger, const char * cmdline)
 {
 	struct skynet_context *ctx = skynet_context_new("gate",
-				"S .logger 127.0.0.1:8888 0 10");
+				"S .dispatcher 127.0.0.1:8888 0 10");
 		if (ctx == NULL)
 		{
 			fprintf(stderr, "Can't launch %s service\n", "gate");
