@@ -15,5 +15,5 @@ standalone = "0.0.0.0:2013"
 -- preload = "./examples/preload.lua"	-- run preload.lua before every lua service run
 --snax = root.."examples/?.lua;"..root.."test/?.lua"
 -- snax_interface_g = "snax_g"
-cpath = skynet_root .. "cservice/?.so"
+cpath = skynet_root .. "cservice/?.so;" .. "../lib/?.so"
 -- daemon = "./skynet.pid"

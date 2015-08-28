@@ -1,9 +1,9 @@
 #include "skynet.h"
 #include "skynet_socket.h"
-#include "databuffer.h"
-#include "hashid.h"
+//#include "databuffer.h"
+//#include "hashid.h"
 
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <stdint.h>
@@ -36,7 +36,7 @@ void gate_release(DispatcherData *d)
 static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 		uint32_t source, const void * msg, size_t sz)
 {
-	DispatcherData *d = ud;
+	DispatcherData *d = (DispatcherData *)ud;
 
 	switch (type)
 	{
@@ -56,7 +56,7 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 
 	skynet_callback(ctx, d, _cb);
 
-	printf("@@@@@@@@@@@@ dispatcher_init\n");
+	printf("dispatcher_init\n");
 
 	return 0;
 
@@ -68,9 +68,10 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 	int iSpaceCounter = 0;
 	int iPbHeaderIndex = 0;
 
+	const char* tmp = (const char*)msg;
 	while(iSpaceCounter < 2 && iPbHeaderIndex < sz)
 	{
-		if(' ' == msg[iPbHeaderIndex])
+		if(' ' == tmp[iPbHeaderIndex])
 		{
 			++iSpaceCounter;
 		}
