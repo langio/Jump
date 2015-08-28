@@ -43,7 +43,7 @@ gate_create(void)
 	struct gate * g = skynet_malloc(sizeof(*g));
 	memset(g, 0, sizeof(*g));
 	g->listen_id = -1;
-	printf("@@@@@@@@@@@@gate_create\n");
+	fprintf(stderr, "gate_create\n");
 	return g;
 }
 
@@ -415,6 +415,8 @@ static int start_listen(struct gate *g, char * listen_addr)
 //初始化gate相关参数
 int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 {
+	fprintf(stderr, "begin gate_init\n");
+
 	if (parm == NULL)
 		return 1;
 	int max = 0;
@@ -478,7 +480,7 @@ int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 	skynet_callback(ctx, g, _cb);
 
 
-	printf("@@@@@@@@@@@@gate_init");
+	fprintf(stderr, "end gate_init\n");
 
 	return start_listen(g, binding);
 }

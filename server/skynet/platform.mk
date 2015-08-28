@@ -2,7 +2,7 @@ PLAT ?= none
 PLATS = linux freebsd macosx
 
 CC ?= gcc
-CPP ?= g++
+CPP := g++
 
 .PHONY : none $(PLATS) clean all cleanall
 
@@ -38,4 +38,4 @@ macosx : MALLOC_STATICLIB :=
 macosx : SKYNET_DEFINES :=-DNOUSE_JEMALLOC
 
 linux macosx freebsd :
-	$(MAKE) all PLAT=$@ SKYNET_LIBS="$(SKYNET_LIBS)" SHARED="$(SHARED)" EXPORT="$(EXPORT)" MALLOC_STATICLIB="$(MALLOC_STATICLIB)" SKYNET_DEFINES="$(SKYNET_DEFINES)"
+	$(MAKE) all PLAT=$@ SKYNET_LIBS="$(SKYNET_LIBS)" SHARED="$(SHARED)" EXPORT="$(EXPORT)" MALLOC_STATICLIB="$(MALLOC_STATICLIB)" SKYNET_DEFINES="$(SKYNET_DEFINES)" cpp="$(CPP)"

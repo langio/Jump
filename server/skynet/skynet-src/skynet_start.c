@@ -275,6 +275,14 @@ void skynet_start(struct skynet_config * config)
 		exit(1);
 	}
 
+	struct skynet_context *dis = skynet_context_new("dispatcher",
+				NULL);
+	if (dis == NULL)
+	{
+		fprintf(stderr, "Can't launch %s service\n", "dispatcher");
+		exit(1);
+	}
+
 	//bootstrap(ctx, config->bootstrap);
 	load_service(ctx, config->bootstrap);
 
