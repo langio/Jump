@@ -1,0 +1,5 @@
+message reg_req
+{
+	required string account = 1;
+	required string passwd = 2;
+}

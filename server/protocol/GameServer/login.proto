@@ -1,0 +1,4 @@
+message login_req
+{
+	required int32 id = 1;
+};
