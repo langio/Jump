@@ -6,6 +6,7 @@
 #include <stdarg.h>
 
 #include "service_dispatcher.h"
+#include "longin.pb.h"
 
 DispatcherData * dispatcher_create(void)
 {

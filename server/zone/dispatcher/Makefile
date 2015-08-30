@@ -1,5 +1,6 @@
 include ../../skynet/platform.mk
 include ../../skynet/include.mk
+include ../../protocol/proto.mk
 
 CSERVICE_PATH ?= ../GameServer/lib
 
@@ -33,5 +34,5 @@ $(foreach v, $(CSERVICE), $(eval $(call CSERVICE_TEMP,$(v))))
 
 
 clean :
-	rm -f $(CSERVICE_PATH)/*.so
+	rm -f $(CSERVICE_PATH)/*.so && echo $(INCLUDE)
 
