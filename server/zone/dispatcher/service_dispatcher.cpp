@@ -12,7 +12,7 @@ DispatcherData * dispatcher_create(void)
 	DispatcherData * inst = (DispatcherData *)skynet_malloc(sizeof(*inst));
 	inst->reserved = 0;
 
-	printf("@@@@@@@@@@@@ dispatcher_create\n");
+	fprintf(stderr, "dispatcher_create\n");
 
 	return inst;
 }
@@ -28,6 +28,8 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 		uint32_t source, const void * msg, size_t sz)
 {
 	DispatcherData *d = (DispatcherData *)ud;
+	if(d)
+	{}
 
 	switch (type)
 	{
@@ -46,8 +48,9 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 {
 
 	skynet_callback(ctx, d, _cb);
+	skynet_command(ctx, "REG", ".dispatcher");
 
-	printf("dispatcher_init\n");
+	fprintf(stderr, "dispatcher_init\n");
 
 	return 0;
 
@@ -56,8 +59,8 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 void dispatcher::dispatch(const void * msg, size_t sz)
 {
 	//找到msg开始的第二个空格，这个空格之后是pb消息
-	int iSpaceCounter = 0;
-	int iPbHeaderIndex = 0;
+	unsigned iSpaceCounter = 0;
+	unsigned iPbHeaderIndex = 0;
 
 	const char* tmp = (const char*)msg;
 	while(iSpaceCounter < 2 && iPbHeaderIndex < sz)
