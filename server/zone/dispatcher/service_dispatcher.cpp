@@ -1,8 +1,3 @@
-#include "skynet.h"
-#include "skynet_socket.h"
-//#include "databuffer.h"
-//#include "hashid.h"
-
 //#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
@@ -12,18 +7,14 @@
 
 #include "service_dispatcher.h"
 
-
-//根据命令字将消息发到对应的服务中
-//命令字为4个字节整形，字节从高到底依次编号为1~4，低2字节表示服务，第3、4字节表示服务内的命令
-typedef struct dispatcher_data
-{
-	int reserved;
-}DispatcherData;
-
 DispatcherData * dispatcher_create(void)
 {
+	DispatcherData * inst = (DispatcherData *)skynet_malloc(sizeof(*inst));
+	inst->reserved = 0;
+
 	printf("@@@@@@@@@@@@ dispatcher_create\n");
-	return NULL;
+
+	return inst;
 }
 
 //释放gate相关资源
