@@ -7,6 +7,7 @@ RM = rm -vrf
 
 all: $(PBOUTPUTDIR)
 	./gen_pb.sh
+	$(MAKE) -f Makefile.real $@
 	
 $(PBOUTPUTDIR):
 	@mkdir $@

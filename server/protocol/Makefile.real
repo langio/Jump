@@ -1,0 +1,10 @@
+TARGET = libproto.a
+
+SRC_DIR_RECURSION = Y
+
+SRC_FILE_DIRS += ./pb 
+INCLUDE += -I./pb
+LIBS += 
+
+
+include ../mk/rules_inc.mk
