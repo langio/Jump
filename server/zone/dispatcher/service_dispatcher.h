@@ -13,9 +13,6 @@ extern "C"
 {
 
 #include "skynet.h"
-//#include "skynet_socket.h"
-//#include "databuffer.h"
-//#include "hashid.h"
 
 	DispatcherData * dispatcher_create(void);
 	void gate_release(DispatcherData *d);
