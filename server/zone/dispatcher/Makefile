@@ -10,9 +10,9 @@ SKYNET_BUILD_PATH ?= .
 CFLAGS = -g -O2 -Wall $(MYCFLAGS)
 
 
-#JEMALLOC_STATICLIB := 3rd/jemalloc/lib/libjemalloc_pic.a
-#JEMALLOC_INC := 3rd/jemalloc/include/jemalloc
-#MALLOC_STATICLIB := $(JEMALLOC_STATICLIB)
+JEMALLOC_STATICLIB := 3rd/jemalloc/lib/libjemalloc_pic.a
+JEMALLOC_INC := 3rd/jemalloc/include/jemalloc
+MALLOC_STATICLIB := $(JEMALLOC_STATICLIB)
 
 # Server
 
@@ -34,5 +34,4 @@ $(foreach v, $(CSERVICE), $(eval $(call CSERVICE_TEMP,$(v))))
 
 
 clean :
-	rm -f $(CSERVICE_PATH)/*.so && echo $(INCLUDE)
-
+	rm -rvf $(CSERVICE_PATH)/*.so
