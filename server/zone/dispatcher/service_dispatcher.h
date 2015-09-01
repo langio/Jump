@@ -33,6 +33,9 @@ public:
 	void dispatch(const void * msg, size_t sz);
 
 private:
+	int get_sys_cmd(const void * msg, size_t sz, int& cmd);
+
+private:
 	dispatcher(){}
 	~dispatcher(){}
 };

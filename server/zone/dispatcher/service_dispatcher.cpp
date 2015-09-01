@@ -31,7 +31,9 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 {
 	DispatcherData *d = (DispatcherData *)ud;
 	if(d)
-	{}
+	{
+
+	}
 
 	switch (type)
 	{
@@ -84,7 +86,21 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 		//–¥¥ÌŒÛ»’÷æ
 	}
 
+	login_req req;
+
+	int i = 0;
+	for(i=0; i<100; ++i)
+	{
+		req.add_item(i);
+	}
+
 };
 
 
+int dispatcher::get_sys_cmd(const void * msg, size_t sz, int& cmd)
+{
+	int ret = -1;
+
+	return ret;
+}
 
