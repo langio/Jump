@@ -1,4 +1,5 @@
 message login_req
 {
 	required int32 id = 1;
+	repeated int32 item = 2;
 };
