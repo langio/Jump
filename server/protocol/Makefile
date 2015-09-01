@@ -7,11 +7,11 @@ RM = rm -vrf
 
 all: $(PBOUTPUTDIR)
 	./gen_pb.sh
-	$(MAKE) -f Makefile.real $@
+	$(MAKE) -f Makefile.real
 	
 $(PBOUTPUTDIR):
 	@mkdir $@
 	
 clean:
-	@cd $(PBOUTPUTDIR) && $(RM) *pb*
+	@$(RM) libproto.a && cd $(PBOUTPUTDIR) && $(RM) *pb*
 	

@@ -18,9 +18,16 @@ MALLOC_STATICLIB := $(JEMALLOC_STATICLIB)
 
 CSERVICE = dispatcher
 
+PROTOCOL = protocol
+
+.PHONY : $(PROTOCOL)
+
 all : \
+  $(PROTOCOL) \
   $(foreach v, $(CSERVICE), $(CSERVICE_PATH)/$(v).so)
- 
+
+protocol:
+	cd ../../$(PROTOCOL) && make 
 
 $(CSERVICE_PATH) :
 	mkdir $(CSERVICE_PATH)
