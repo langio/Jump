@@ -1,6 +1,7 @@
 include ../../skynet/platform.mk
 include ../../skynet/include.mk
 include ../../protocol/proto.mk
+include ../../3rd/libxl-3.6.2.0/libxl.mk
 
 CSERVICE_PATH ?= ../GameServer/lib
 
