@@ -1,11 +1,6 @@
-#include <string.h>
-#include <assert.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdarg.h>
+#include "comm_def.h"
 
 #include "login.pb.h"
-
 #include "service_dispatcher.h"
 
 
@@ -14,7 +9,9 @@ DispatcherData * dispatcher_create(void)
 	DispatcherData * inst = (DispatcherData *)skynet_malloc(sizeof(*inst));
 	inst->reserved = 0;
 
-	fprintf(stderr, "dispatcher_create\n");
+	//fprintf(stderr, "dispatcher_create\n");
+
+	cout << "dispatcher_create" << endl;
 
 	return inst;
 }
@@ -54,7 +51,8 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 	skynet_callback(ctx, d, _cb);
 	skynet_command(ctx, "REG", ".dispatcher");
 
-	fprintf(stderr, "dispatcher_init\n");
+	//fprintf(stderr, "dispatcher_init\n");
+	cout << "dispatcher_init" << endl;
 
 	return 0;
 
@@ -76,6 +74,10 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 
 		++iPbHeaderIndex;
 	}
+
+	string s = string(tmp, iPbHeaderIndex);
+
+	cout << s << endl;
 
 	if(2 == iSpaceCounter)
 	{
