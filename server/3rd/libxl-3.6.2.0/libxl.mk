@@ -8,6 +8,6 @@ else
   LIBPATH = $(LIBXL_DIR)/lib64
 endif
 
-MYCFLAGS = -L $(LIBPATH) -lxl -Wl,-rpath,$(LIBPATH),-rpath,../$(LIBPATH)
+MYCFLAGS += -L $(LIBPATH) -lxl -Wl,-rpath,$(LIBPATH),-rpath,../$(LIBPATH)
 
 INCLUDE += -I$(LIBXL_DIR)/include_cpp
