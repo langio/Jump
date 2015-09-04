@@ -28,7 +28,8 @@ CFLAGS += -g -Wall -Wno-deprecated -pipe -fPIC -D_GNU_SOURCE -D_REENTRANT
 #CFLAGS += -pg -Wextra -D_NEW_LIC
 
 #SHARED_FLAGS = -shared -z defs -fPIC 
-SHARED_FLAGS += -shared -z defs 
+#SHARED_FLAGS += -shared -z defs 
+SHARED_FLAGS += -shared
 
 SHELL = /bin/bash
 
