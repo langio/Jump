@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 
-//´ò¿ªÒ»¸öÒÔhandleÃüÃûµÄlogÎÄ¼ş
+//æ‰“å¼€ä¸€ä¸ªä»¥handleå‘½åçš„logæ–‡ä»¶
 FILE *
 skynet_log_open(struct skynet_context * ctx, uint32_t handle)
 {
@@ -32,7 +32,7 @@ skynet_log_open(struct skynet_context * ctx, uint32_t handle)
 	return f;
 }
 
-//¹Ø±ÕÈÕÖ¾ÎÄ¼şf
+//å…³é—­æ—¥å¿—æ–‡ä»¶f
 void skynet_log_close(struct skynet_context * ctx, FILE *f, uint32_t handle)
 {
 	skynet_error(ctx, "Close log file :%08x", handle);
@@ -40,7 +40,7 @@ void skynet_log_close(struct skynet_context * ctx, FILE *f, uint32_t handle)
 	fclose(f);
 }
 
-//½«bufferµÄÄÚÈİÒÔ16½øÖÆĞ´µ½logÎÄ¼şfÖĞ
+//å°†bufferçš„å†…å®¹ä»¥16è¿›åˆ¶å†™åˆ°logæ–‡ä»¶fä¸­
 static void log_blob(FILE *f, void * buffer, size_t sz)
 {
 	size_t i;
@@ -51,7 +51,7 @@ static void log_blob(FILE *f, void * buffer, size_t sz)
 	}
 }
 
-//½«messageµÄbufferÒÔ16½øÖÆµÄ·½Ê½Ğ´ÈëlogÎÄ¼şfÖĞ
+//å°†messageçš„bufferä»¥16è¿›åˆ¶çš„æ–¹å¼å†™å…¥logæ–‡ä»¶fä¸­
 static void log_socket(FILE * f, struct skynet_socket_message * message,
 		size_t sz)
 {
@@ -77,7 +77,7 @@ static void log_socket(FILE * f, struct skynet_socket_message * message,
 	fflush(f);
 }
 
-//½«bufferµÄÄÚÈİÒÔ16½øÖÆµÄ·½Ê½Ğ´ÈëlogÎÄ¼şfÖĞ
+//å°†bufferçš„å†…å®¹ä»¥16è¿›åˆ¶çš„æ–¹å¼å†™å…¥logæ–‡ä»¶fä¸­
 void skynet_log_output(FILE *f, uint32_t source, int type, int session,
 		void * buffer, size_t sz)
 {

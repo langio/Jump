@@ -21,7 +21,7 @@ struct modules
 
 static struct modules * M = NULL;
 
-//´ÓËùÓĞ¶¯Ì¬¿âÂ·¾¶ÖĞËÑË÷name±êÃ÷µÄµÚÒ»¸ö¶¯Ì¬¿â²¢½«Æä´ò¿ª£¬È»ºó·µ»Ø¶¯Ì¬¿âµÄhandl
+//ä»æ‰€æœ‰åŠ¨æ€åº“è·¯å¾„ä¸­æœç´¢nameæ ‡æ˜çš„ç¬¬ä¸€ä¸ªåŠ¨æ€åº“å¹¶å°†å…¶æ‰“å¼€ï¼Œç„¶åè¿”å›åŠ¨æ€åº“çš„handl
 static void *
 _try_open(struct modules *m, const char * name)
 {
@@ -72,7 +72,7 @@ _try_open(struct modules *m, const char * name)
 	return dl;
 }
 
-//ÔÚÈ«¾ÖÄ£¿é¹ÜÀíÆ÷ÖĞ²éÑ¯name±êÃ÷µÄÄ£¿é£¬·µ»Ø¸ÃÄ£¿éµÄÖ¸Õë£¬Ã»ÓĞÕÒµ½·µ»ØNULL
+//åœ¨å…¨å±€æ¨¡å—ç®¡ç†å™¨ä¸­æŸ¥è¯¢nameæ ‡æ˜çš„æ¨¡å—ï¼Œè¿”å›è¯¥æ¨¡å—çš„æŒ‡é’ˆï¼Œæ²¡æœ‰æ‰¾åˆ°è¿”å›NULL
 static struct skynet_module *
 _query(const char * name)
 {
@@ -87,7 +87,7 @@ _query(const char * name)
 	return NULL;
 }
 
-//²éÕÒ¶¯Ì¬¿âÖĞxx_create¡¢xx_init¡¢xx_release¡¢xx_signalËÄ¸öº¯ÊıµÄµØÖ·£¬²¢´æÈëmodÖĞ¶ÔÓ¦µÄ×Ö¶Î
+//æŸ¥æ‰¾åŠ¨æ€åº“ä¸­xx_createã€xx_initã€xx_releaseã€xx_signalå››ä¸ªå‡½æ•°çš„åœ°å€ï¼Œå¹¶å­˜å…¥modä¸­å¯¹åº”çš„å­—æ®µ
 static int _open_sym(struct skynet_module *mod)
 {
 	size_t name_size = strlen(mod->name);
@@ -105,7 +105,7 @@ static int _open_sym(struct skynet_module *mod)
 	return mod->init == NULL;
 }
 
-//ÔÚÈ«¾ÖÄ£¿é¹ÜÀíÆ÷ÖĞ²éÑ¯name±êÃ÷µÄÄ£¿é£¬·µ»ØÄ£¿éµÄÖ¸Õë¡£Èç¹ûÃ»ÕÒµ½¾Í´Ó´ÅÅÌ¼ÓÔØ¸Ã¶¯Ì¬¿â²¢´æÈëÈ«¾ÖÄ£¿é¹ÜÀíÆ÷ÖĞ
+//åœ¨å…¨å±€æ¨¡å—ç®¡ç†å™¨ä¸­æŸ¥è¯¢nameæ ‡æ˜çš„æ¨¡å—ï¼Œè¿”å›æ¨¡å—çš„æŒ‡é’ˆã€‚å¦‚æœæ²¡æ‰¾åˆ°å°±ä»ç£ç›˜åŠ è½½è¯¥åŠ¨æ€åº“å¹¶å­˜å…¥å…¨å±€æ¨¡å—ç®¡ç†å™¨ä¸­
 struct skynet_module *
 skynet_module_query(const char * name)
 {
@@ -142,7 +142,7 @@ skynet_module_query(const char * name)
 	return result;
 }
 
-//½«Ä£¿é²åÈëµ½Ä£¿é¹ÜÀíÆ÷µÄÎ²²¿£¨²åÈëÇ°»á¼ì²é¸ÃÄ£¿éÊÇ·ñÒÑ¾­´æÔÚ£©
+//å°†æ¨¡å—æ’å…¥åˆ°æ¨¡å—ç®¡ç†å™¨çš„å°¾éƒ¨ï¼ˆæ’å…¥å‰ä¼šæ£€æŸ¥è¯¥æ¨¡å—æ˜¯å¦å·²ç»å­˜åœ¨ï¼‰
 void skynet_module_insert(struct skynet_module *mod)
 {
 	while (__sync_lock_test_and_set(&M->lock, 1))
@@ -157,7 +157,7 @@ void skynet_module_insert(struct skynet_module *mod)
 	__sync_lock_release(&M->lock);
 }
 
-//µ÷ÓÃ¸ÃÄ£¿é¶ÔÓ¦µÄcreateº¯Êı
+//è°ƒç”¨è¯¥æ¨¡å—å¯¹åº”çš„createå‡½æ•°
 void *
 skynet_module_instance_create(struct skynet_module *m)
 {
@@ -171,14 +171,14 @@ skynet_module_instance_create(struct skynet_module *m)
 	}
 }
 
-//µ÷ÓÃ¸ÃÄ£¿é¶ÔÓ¦µÄinitº¯Êı£¬inst¡¢ctx¡¢parmÒÀ´ÎÎª²ÎÊı
+//è°ƒç”¨è¯¥æ¨¡å—å¯¹åº”çš„initå‡½æ•°ï¼Œinstã€ctxã€parmä¾æ¬¡ä¸ºå‚æ•°
 int skynet_module_instance_init(struct skynet_module *m, void * inst,
 		struct skynet_context *ctx, const char * parm)
 {
 	return m->init(inst, ctx, parm);
 }
 
-//µ÷ÓÃ¸ÃÄ£¿é¶ÔÓ¦µÄreleaseº¯Êı
+//è°ƒç”¨è¯¥æ¨¡å—å¯¹åº”çš„releaseå‡½æ•°
 void skynet_module_instance_release(struct skynet_module *m, void *inst)
 {
 	if (m->release)
@@ -187,7 +187,7 @@ void skynet_module_instance_release(struct skynet_module *m, void *inst)
 	}
 }
 
-//µ÷ÓÃ¸ÃÄ£¿é¶ÔÓ¦µÄĞÅºÅ´¦Àíº¯Êı
+//è°ƒç”¨è¯¥æ¨¡å—å¯¹åº”çš„ä¿¡å·å¤„ç†å‡½æ•°
 void skynet_module_instance_signal(struct skynet_module *m, void *inst,
 		int signal)
 {
@@ -197,7 +197,7 @@ void skynet_module_instance_signal(struct skynet_module *m, void *inst,
 	}
 }
 
-//³õÊ¼»¯È«¾ÖÄ£¿é¹ÜÀíÆ÷M£¬²¢ÉèÖÃsoÎÄ¼şµÄÂ·¾¶
+//åˆå§‹åŒ–å…¨å±€æ¨¡å—ç®¡ç†å™¨Mï¼Œå¹¶è®¾ç½®soæ–‡ä»¶çš„è·¯å¾„
 void skynet_module_init(const char *path)
 {
 	struct modules *m = skynet_malloc(sizeof(*m));

@@ -33,8 +33,8 @@ struct handle_storage
 
 static struct handle_storage *H = NULL;
 
-//Éú³ÉÒ»¸öhandleÖµ£¬¸ß1×Ö½ÚÊÇharborÖµ£¬µÍ3¸ö×Ö½ÚÓÃÀ´Éú³ÉhashÖµ£¬
-//¼´±£´æctxµÄslotÏÂ±ê£¬·ÖÅäslot¹ı³ÌÖĞ·¢ÏÖslotÒÑÓÃÍê£¬ÔòÀ©Èİ2±¶ºóÔÙÖØĞÂ·ÖÅä
+//ç”Ÿæˆä¸€ä¸ªhandleå€¼ï¼Œé«˜1å­—èŠ‚æ˜¯harborå€¼ï¼Œä½3ä¸ªå­—èŠ‚ç”¨æ¥ç”Ÿæˆhashå€¼ï¼Œ
+//å³ä¿å­˜ctxçš„slotä¸‹æ ‡ï¼Œåˆ†é…slotè¿‡ç¨‹ä¸­å‘ç°slotå·²ç”¨å®Œï¼Œåˆ™æ‰©å®¹2å€åå†é‡æ–°åˆ†é…
 uint32_t skynet_handle_register(struct skynet_context *ctx)
 {
 	struct handle_storage *s = H;
@@ -46,8 +46,8 @@ uint32_t skynet_handle_register(struct skynet_context *ctx)
 		int i;
 		for (i = 0; i < s->slot_size; i++)
 		{
-			uint32_t handle = (i + s->handle_index) & HANDLE_MASK;	//È·±£handlµÄÖ»ÄÜÔÚµÍ3¸ö×Ö½ÚÄÚÈ¡Öµ
-			int hash = handle & (s->slot_size - 1);		//Óë²Ù×÷Ö®ºó¿ÉÈ·±£¼ÆËã³öµÄhash²»»á³¬¹ıslotµÄ³¤¶È£¬È·±£Êı×é²»»áÔ½½ç
+			uint32_t handle = (i + s->handle_index) & HANDLE_MASK;	//ç¡®ä¿handlçš„åªèƒ½åœ¨ä½3ä¸ªå­—èŠ‚å†…å–å€¼
+			int hash = handle & (s->slot_size - 1);		//ä¸æ“ä½œä¹‹åå¯ç¡®ä¿è®¡ç®—å‡ºçš„hashä¸ä¼šè¶…è¿‡slotçš„é•¿åº¦ï¼Œç¡®ä¿æ•°ç»„ä¸ä¼šè¶Šç•Œ
 			if (s->slot[hash] == NULL)
 			{
 				s->slot[hash] = ctx;
@@ -76,7 +76,7 @@ uint32_t skynet_handle_register(struct skynet_context *ctx)
 	}
 }
 
-//ÊÍ·Åhandle¶ÔÓ¦µÄslotÒÔ¼°name
+//é‡Šæ”¾handleå¯¹åº”çš„slotä»¥åŠname
 int skynet_handle_retire(uint32_t handle)
 {
 	int ret = 0;
@@ -124,7 +124,7 @@ int skynet_handle_retire(uint32_t handle)
 	return ret;
 }
 
-//ÊÍ·ÅÕû¸östorage
+//é‡Šæ”¾æ•´ä¸ªstorage
 void skynet_handle_retireall()
 {
 	struct handle_storage *s = H;
@@ -153,7 +153,7 @@ void skynet_handle_retireall()
 	}
 }
 
-//¸ù¾İhandle²éÕÒµ½ctx²¢·µ»Ø
+//æ ¹æ®handleæŸ¥æ‰¾åˆ°ctxå¹¶è¿”å›
 struct skynet_context *
 skynet_handle_grab(uint32_t handle)
 {
@@ -175,7 +175,7 @@ skynet_handle_grab(uint32_t handle)
 	return result;
 }
 
-//¸ù¾İhandle±ğÃû2·Ö·¨²éÕÒhandle
+//æ ¹æ®handleåˆ«å2åˆ†æ³•æŸ¥æ‰¾handle
 uint32_t skynet_handle_findname(const char * name)
 {
 	struct handle_storage *s = H;
@@ -211,7 +211,7 @@ uint32_t skynet_handle_findname(const char * name)
 	return handle;
 }
 
-//ÔÚbeforeÎ»ÖÃ²åÈëhandleºÍ±ğÃû£¬²åÈëÇ°¼ì²éstorageÊÇ·ñÒÑÂú£¬ÒÑÂúÔò½øĞĞ2±¶À©Èİ
+//åœ¨beforeä½ç½®æ’å…¥handleå’Œåˆ«åï¼Œæ’å…¥å‰æ£€æŸ¥storageæ˜¯å¦å·²æ»¡ï¼Œå·²æ»¡åˆ™è¿›è¡Œ2å€æ‰©å®¹
 static void _insert_name_before(struct handle_storage *s, char *name,
 		uint32_t handle, int before)
 {
@@ -246,7 +246,7 @@ static void _insert_name_before(struct handle_storage *s, char *name,
 	s->name_count++;
 }
 
-//²åÈëhandleºÍ±ğÃûµ½storageÖĞ£¬²åÈëµÄ½á¹ûÊÇ°´nameÅÅĞòµÄ£¬·µ»ØÖ¸ÏònameµÄÖ¸Õë
+//æ’å…¥handleå’Œåˆ«ååˆ°storageä¸­ï¼Œæ’å…¥çš„ç»“æœæ˜¯æŒ‰nameæ’åºçš„ï¼Œè¿”å›æŒ‡å‘nameçš„æŒ‡é’ˆ
 static const char *
 _insert_name(struct handle_storage *s, const char * name, uint32_t handle)
 {
@@ -277,7 +277,7 @@ _insert_name(struct handle_storage *s, const char * name, uint32_t handle)
 	return result;
 }
 
-//²åÈëhandleºÍ±ğÃûµ½storageÖĞ£¬²åÈëµÄ½á¹ûÊÇ°´nameÅÅĞòµÄ
+//æ’å…¥handleå’Œåˆ«ååˆ°storageä¸­ï¼Œæ’å…¥çš„ç»“æœæ˜¯æŒ‰nameæ’åºçš„
 const char *
 skynet_handle_namehandle(uint32_t handle, const char *name)
 {
@@ -290,7 +290,7 @@ skynet_handle_namehandle(uint32_t handle, const char *name)
 	return ret;
 }
 
-//³õÊ¼»¯handle¹ÜÀíÆ÷
+//åˆå§‹åŒ–handleç®¡ç†å™¨
 void skynet_handle_init(int harbor)
 {
 	assert(H == NULL);

@@ -15,7 +15,7 @@ struct skynet_monitor
 	uint32_t destination;
 };
 
-//³õÊ¼»¯1¸ömonitor
+//åˆå§‹åŒ–1ä¸ªmonitor
 struct skynet_monitor *
 skynet_monitor_new()
 {
@@ -24,13 +24,13 @@ skynet_monitor_new()
 	return ret;
 }
 
-//ÊÇ·ñmonitor
+//æ˜¯å¦monitor
 void skynet_monitor_delete(struct skynet_monitor *sm)
 {
 	skynet_free(sm);
 }
 
-//ÉèÖÃmonitorµÄsourceºÍdestination×Ö¶Î
+//è®¾ç½®monitorçš„sourceå’Œdestinationå­—æ®µ
 void skynet_monitor_trigger(struct skynet_monitor *sm, uint32_t source, uint32_t destination)
 {
 	sm->source = source;

@@ -59,7 +59,7 @@ struct timer
 
 static struct timer * TI = NULL;
 
-//·µ»ØÁ´±íµÄÏÂÒ»¸ö½Úµã£¬²¢Çå¿ÕÁ´±í
+//è¿”å›é“¾è¡¨çš„ä¸‹ä¸€ä¸ªèŠ‚ç‚¹ï¼Œå¹¶æ¸…ç©ºé“¾è¡¨
 static inline struct timer_node *
 link_clear(struct link_list *list)
 {
@@ -70,7 +70,7 @@ link_clear(struct link_list *list)
 	return ret;
 }
 
-//½«Ò»¸ötimer_node½Úµã²åÈëµ½Á´±íµÄÎ²²¿
+//å°†ä¸€ä¸ªtimer_nodeèŠ‚ç‚¹æ’å…¥åˆ°é“¾è¡¨çš„å°¾éƒ¨
 static inline void link(struct link_list *list, struct timer_node *node)
 {
 	list->tail->next = node;
@@ -78,7 +78,7 @@ static inline void link(struct link_list *list, struct timer_node *node)
 	node->next = 0;
 }
 
-//½«timer_node½Úµã¼ÓÈëµ½¶¨Ê±Æ÷ÖĞºÏÊÊµÄÁ´±íÎ²²¿
+//å°†timer_nodeèŠ‚ç‚¹åŠ å…¥åˆ°å®šæ—¶å™¨ä¸­åˆé€‚çš„é“¾è¡¨å°¾éƒ¨
 static void add_node(struct timer *T, struct timer_node *node)
 {
 	uint32_t time = node->expire;
@@ -107,7 +107,7 @@ static void add_node(struct timer *T, struct timer_node *node)
 	}
 }
 
-//½«timer_node½Úµã¼ÓÈëµ½¶¨Ê±Æ÷ÖĞºÏÊÊµÄÁ´±íÎ²²¿
+//å°†timer_nodeèŠ‚ç‚¹åŠ å…¥åˆ°å®šæ—¶å™¨ä¸­åˆé€‚çš„é“¾è¡¨å°¾éƒ¨
 static void timer_add(struct timer *T, void *arg, size_t sz, int time)
 {
 	struct timer_node *node = (struct timer_node *) skynet_malloc(
@@ -122,7 +122,7 @@ static void timer_add(struct timer *T, void *arg, size_t sz, int time)
 	UNLOCK(T);
 }
 
-//°Ñ¶¨Ê±Æ÷ÖĞÄ³¸öÁ´±íÖĞµÄ½Úµã·ÖÅäµ½ÆäËûÁ´±íÖĞ
+//æŠŠå®šæ—¶å™¨ä¸­æŸä¸ªé“¾è¡¨ä¸­çš„èŠ‚ç‚¹åˆ†é…åˆ°å…¶ä»–é“¾è¡¨ä¸­
 static void move_list(struct timer *T, int level, int idx)
 {
 	struct timer_node *current = link_clear(&T->t[level][idx]);
@@ -165,7 +165,7 @@ static void timer_shift(struct timer *T)
 	UNLOCK(T);
 }
 
-//½«ÒÔtimer_nodeÎªÍ·µÄµ½Ê±µÄÁ´±í½ÚµãÈ«²¿Ö´ĞĞ£¨Éú³É1¸öÏûÏ¢Èë¶Óµ½handleµÄÏûÏ¢¶ÓÁĞÖĞ£©
+//å°†ä»¥timer_nodeä¸ºå¤´çš„åˆ°æ—¶çš„é“¾è¡¨èŠ‚ç‚¹å…¨éƒ¨æ‰§è¡Œï¼ˆç”Ÿæˆ1ä¸ªæ¶ˆæ¯å…¥é˜Ÿåˆ°handleçš„æ¶ˆæ¯é˜Ÿåˆ—ä¸­ï¼‰
 static inline void dispatch_list(struct timer_node *current)
 {
 	do
@@ -185,7 +185,7 @@ static inline void dispatch_list(struct timer_node *current)
 	} while (current);
 }
 
-//Ö´ĞĞµ½ÆÚµÄ¶¨Ê±Æ÷Á´±í
+//æ‰§è¡Œåˆ°æœŸçš„å®šæ—¶å™¨é“¾è¡¨
 static inline void timer_execute(struct timer *T)
 {
 	LOCK(T);
@@ -215,7 +215,7 @@ static void timer_update(struct timer *T)
 
 }
 
-//¶¨Ê±Æ÷´æ´¢·ÖÅä
+//å®šæ—¶å™¨å­˜å‚¨åˆ†é…
 static struct timer *
 timer_create_timer()
 {
@@ -243,7 +243,7 @@ timer_create_timer()
 	return r;
 }
 
-//½«handle¼ÓÈëµ½¶¨Ê±Æ÷ÖĞ
+//å°†handleåŠ å…¥åˆ°å®šæ—¶å™¨ä¸­
 int skynet_timeout(uint32_t handle, int time, int session)
 {
 	if (time == 0)
@@ -339,19 +339,19 @@ void skynet_updatetime(void)
 	}
 }
 
-//»ñÈ¡¶¨Ê±Æ÷¿ªÊ¼Ê±¼ä
+//è·å–å®šæ—¶å™¨å¼€å§‹æ—¶é—´
 uint32_t skynet_gettime_fixsec(void)
 {
 	return TI->starttime;
 }
 
-//»ñÈ¡¶¨Ê±Æ÷µ±Ç°Ê±¼ä
+//è·å–å®šæ—¶å™¨å½“å‰æ—¶é—´
 uint32_t skynet_gettime(void)
 {
 	return TI->current;
 }
 
-//³õÊ¼»¯¶¨Ê±Æ÷
+//åˆå§‹åŒ–å®šæ—¶å™¨
 void skynet_timer_init(void)
 {
 	TI = timer_create_timer();

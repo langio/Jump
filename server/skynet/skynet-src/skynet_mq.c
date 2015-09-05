@@ -44,7 +44,7 @@ static struct global_queue *Q = NULL;
 #define LOCK(q) while (__sync_lock_test_and_set(&(q)->lock,1)) {}
 #define UNLOCK(q) __sync_lock_release(&(q)->lock);
 
-//½«ÏûÏ¢¶ÓÁĞÈë¶Óµ½È«¾Ö¶ÓÁĞQµÄÎ²²¿
+//å°†æ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°å…¨å±€é˜Ÿåˆ—Qçš„å°¾éƒ¨
 void skynet_globalmq_push(struct message_queue * queue)
 {
 	struct global_queue *q = Q;
@@ -64,7 +64,7 @@ void skynet_globalmq_push(struct message_queue * queue)
 }
 
 
-//´ÓÈ«¾Ö¶ÓÁĞQµÄÍ·²¿µ¯³öÒ»¸öÏûÏ¢¶ÓÁĞ
+//ä»å…¨å±€é˜Ÿåˆ—Qçš„å¤´éƒ¨å¼¹å‡ºä¸€ä¸ªæ¶ˆæ¯é˜Ÿåˆ—
 struct message_queue *
 skynet_globalmq_pop()
 {
@@ -87,7 +87,7 @@ skynet_globalmq_pop()
 	return mq;
 }
 
-//´´½¨1¸öÏûÏ¢¶ÓÁĞ£¬²¢½«handle±£´æµ½¶ÓÁĞĞÅÏ¢ÖĞ
+//åˆ›å»º1ä¸ªæ¶ˆæ¯é˜Ÿåˆ—ï¼Œå¹¶å°†handleä¿å­˜åˆ°é˜Ÿåˆ—ä¿¡æ¯ä¸­
 struct message_queue *
 skynet_mq_create(uint32_t handle)
 {
@@ -110,7 +110,7 @@ skynet_mq_create(uint32_t handle)
 	return q;
 }
 
-//ÊÍ·ÅÏûÏ¢¶ÓÁĞÖĞÔªËØµÄÄÚ´æ²¢ÊÍ·ÅÏûÏ¢¶ÓÁĞ
+//é‡Šæ”¾æ¶ˆæ¯é˜Ÿåˆ—ä¸­å…ƒç´ çš„å†…å­˜å¹¶é‡Šæ”¾æ¶ˆæ¯é˜Ÿåˆ—
 static void _release(struct message_queue *q)
 {
 	assert(q->next == NULL);
@@ -118,13 +118,13 @@ static void _release(struct message_queue *q)
 	skynet_free(q);
 }
 
-//»ñÈ¡ÏûÏ¢¶ÓÁĞ±£´æµÄhandle
+//è·å–æ¶ˆæ¯é˜Ÿåˆ—ä¿å­˜çš„handle
 uint32_t skynet_mq_handle(struct message_queue *q)
 {
 	return q->handle;
 }
 
-//»ñÈ¡ÏûÏ¢¶ÓÁĞÖĞÔªËØµÄ¸öÊı
+//è·å–æ¶ˆæ¯é˜Ÿåˆ—ä¸­å…ƒç´ çš„ä¸ªæ•°
 int skynet_mq_length(struct message_queue *q)
 {
 	int head, tail, cap;
@@ -142,7 +142,7 @@ int skynet_mq_length(struct message_queue *q)
 	return tail + cap - head;
 }
 
-//¶ÓÁĞÃ»ÓĞ¹ıÔØ·µ»Ø0£¬·ñÔò·µ»Ø¹ıÔØÊıÁ¿ÃûÉèÖÃ¹ıÔØÎª0
+//é˜Ÿåˆ—æ²¡æœ‰è¿‡è½½è¿”å›0ï¼Œå¦åˆ™è¿”å›è¿‡è½½æ•°é‡åè®¾ç½®è¿‡è½½ä¸º0
 int skynet_mq_overload(struct message_queue *q)
 {
 	if (q->overload)
@@ -154,7 +154,7 @@ int skynet_mq_overload(struct message_queue *q)
 	return 0;
 }
 
-//µ¯³öÒ»¸öÏûÏ¢£¬µ½messageÖĞ£¬³É¹¦·µ»Ø0£¬·ñÔò·µ»Ø1
+//å¼¹å‡ºä¸€ä¸ªæ¶ˆæ¯ï¼Œåˆ°messageä¸­ï¼ŒæˆåŠŸè¿”å›0ï¼Œå¦åˆ™è¿”å›1
 int skynet_mq_pop(struct message_queue *q, struct skynet_message *message)
 {
 	int ret = 1;
@@ -199,7 +199,7 @@ int skynet_mq_pop(struct message_queue *q, struct skynet_message *message)
 	return ret;
 }
 
-//½«ÏûÏ¢¶ÓÁĞµÄÈİÁ¿À©´óµ½Ô­À´µÄ2±¶
+//å°†æ¶ˆæ¯é˜Ÿåˆ—çš„å®¹é‡æ‰©å¤§åˆ°åŸæ¥çš„2å€
 static void expand_queue(struct message_queue *q)
 {
 	struct skynet_message *new_queue = skynet_malloc(
@@ -217,7 +217,7 @@ static void expand_queue(struct message_queue *q)
 	q->queue = new_queue;
 }
 
-//½«ÏûÏ¢Èë¶Óµ½ÏûÏ¢¶ÓÁĞµÄÎ²²¿£¬ÈôÏûÏ¢¶ÓÁĞÂıÁË£¬Ôò½øĞĞÀ©Èİ£¬ÈôÏûÏ¢¶ÓÁĞ²»ÔÚÈ«¾Ö¶ÓÁĞÖĞ£¬Ôò°ÑÏûÏ¢¶ÓÁĞÈë¶Óµ½È«¾Ö¶ÓÁĞµÄÎ²²¿
+//å°†æ¶ˆæ¯å…¥é˜Ÿåˆ°æ¶ˆæ¯é˜Ÿåˆ—çš„å°¾éƒ¨ï¼Œè‹¥æ¶ˆæ¯é˜Ÿåˆ—æ…¢äº†ï¼Œåˆ™è¿›è¡Œæ‰©å®¹ï¼Œè‹¥æ¶ˆæ¯é˜Ÿåˆ—ä¸åœ¨å…¨å±€é˜Ÿåˆ—ä¸­ï¼Œåˆ™æŠŠæ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°å…¨å±€é˜Ÿåˆ—çš„å°¾éƒ¨
 void skynet_mq_push(struct message_queue *q, struct skynet_message *message)
 {
 	assert(message);
@@ -243,7 +243,7 @@ void skynet_mq_push(struct message_queue *q, struct skynet_message *message)
 	UNLOCK(q)
 }
 
-//³õÊ¼»¯È«¾ÖÏûÏ¢¶ÓÁĞ
+//åˆå§‹åŒ–å…¨å±€æ¶ˆæ¯é˜Ÿåˆ—
 void skynet_mq_init()
 {
 	struct global_queue *q = skynet_malloc(sizeof(*q));
@@ -251,7 +251,7 @@ void skynet_mq_init()
 	Q = q;
 }
 
-//±ê¼ÇÏûÏ¢¶ÓÁĞÎªÊÍ·Å×´Ì¬£¬ÈôÏûÏ¢¶ÓÁĞ²»ÔÚÈ«¾Ö¶ÓÁĞÖĞ£¬Ôò°ÑÏûÏ¢¶ÓÁĞÈë¶Óµ½È«¾Ö¶ÓÁĞµÄÎ²²¿
+//æ ‡è®°æ¶ˆæ¯é˜Ÿåˆ—ä¸ºé‡Šæ”¾çŠ¶æ€ï¼Œè‹¥æ¶ˆæ¯é˜Ÿåˆ—ä¸åœ¨å…¨å±€é˜Ÿåˆ—ä¸­ï¼Œåˆ™æŠŠæ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°å…¨å±€é˜Ÿåˆ—çš„å°¾éƒ¨
 void skynet_mq_mark_release(struct message_queue *q)
 {
 	LOCK(q)
@@ -264,7 +264,7 @@ void skynet_mq_mark_release(struct message_queue *q)
 	UNLOCK(q)
 }
 
-//¶ÔÏûÏ¢¶ÓÁĞÖĞµÄÃ¿¸öÏûÏ¢µ÷ÓÃdrop_func£¬È»ºóÊÍ·ÅÏûÏ¢¶ÓÁĞ
+//å¯¹æ¶ˆæ¯é˜Ÿåˆ—ä¸­çš„æ¯ä¸ªæ¶ˆæ¯è°ƒç”¨drop_funcï¼Œç„¶åé‡Šæ”¾æ¶ˆæ¯é˜Ÿåˆ—
 static void _drop_queue(struct message_queue *q, message_drop drop_func,
 		void *ud)
 {
@@ -276,7 +276,7 @@ static void _drop_queue(struct message_queue *q, message_drop drop_func,
 	_release(q);
 }
 
-//Èç¹ûÏûÏ¢¶ÓÁĞ±»±ê¼ÇÎªÊÍ·Å×´Ì¬£¬ÄÇÃ´¾ÍÊÍ·Åµô¸ÃÏûÏ¢¶ÓÁĞ£¬·ñÔò½«¸ÃÏûÏ¢¶ÓÁĞÈë¶Óµ½È«¾Ö¶ÓÁĞµÄÎ²²¿
+//å¦‚æœæ¶ˆæ¯é˜Ÿåˆ—è¢«æ ‡è®°ä¸ºé‡Šæ”¾çŠ¶æ€ï¼Œé‚£ä¹ˆå°±é‡Šæ”¾æ‰è¯¥æ¶ˆæ¯é˜Ÿåˆ—ï¼Œå¦åˆ™å°†è¯¥æ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°å…¨å±€é˜Ÿåˆ—çš„å°¾éƒ¨
 void skynet_mq_release(struct message_queue *q, message_drop drop_func,
 		void *ud)
 {

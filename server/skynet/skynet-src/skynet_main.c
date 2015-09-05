@@ -86,7 +86,7 @@ static void _init_env(lua_State *L)
 	lua_pop(L, 1);
 }
 
-//忽略管道信号
+//蹇界暐绠￠亾淇″彿
 int sigign()
 {
 	struct sigaction sa;

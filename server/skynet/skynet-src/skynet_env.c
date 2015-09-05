@@ -18,7 +18,7 @@ static struct skynet_env *E = NULL;
 #define LOCK(q) while (__sync_lock_test_and_set(&(q)->lock,1)) {}
 #define UNLOCK(q) __sync_lock_release(&(q)->lock);
 
-//¸ù¾İkÖµ¶ÁÈ¡Lua»·¾³ÖĞµÄvalue
+//æ ¹æ®kå€¼è¯»å–Luaç¯å¢ƒä¸­çš„value
 const char *
 skynet_getenv(const char *key)
 {
@@ -35,7 +35,7 @@ skynet_getenv(const char *key)
 	return result;
 }
 
-//½«k-vµ¼Èëµ½LuaÖĞ
+//å°†k-vå¯¼å…¥åˆ°Luaä¸­
 void skynet_setenv(const char *key, const char *value)
 {
 	LOCK(E)
@@ -50,7 +50,7 @@ void skynet_setenv(const char *key, const char *value)
 	UNLOCK(E)
 }
 
-//³õÊ¼»¯Lua»·¾³
+//åˆå§‹åŒ–Luaç¯å¢ƒ
 void skynet_env_init()
 {
 	E = skynet_malloc(sizeof(*E));

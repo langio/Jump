@@ -63,25 +63,25 @@ struct skynet_node
 
 static struct skynet_node G_NODE;
 
-//·µ»Ø½Úµã×ÜÊı
+//è¿”å›èŠ‚ç‚¹æ€»æ•°
 int skynet_context_total()
 {
 	return G_NODE.total;
 }
 
-//Ô­×Ó²Ù×÷£¬½Úµã×ÜÊı¼Ó1
+//åŸå­æ“ä½œï¼ŒèŠ‚ç‚¹æ€»æ•°åŠ 1
 static void context_inc()
 {
 	__sync_fetch_and_add(&G_NODE.total, 1);
 }
 
-//Ô­×Ó²Ù×÷£¬½Úµã×ÜÊı¼õ1
+//åŸå­æ“ä½œï¼ŒèŠ‚ç‚¹æ€»æ•°å‡1
 static void context_dec()
 {
 	__sync_fetch_and_sub(&G_NODE.total, 1);
 }
 
-//½«Ö÷Ïß³ÌµÄË½ÓĞÊı¾İ×ª»»Îªhandle
+//å°†ä¸»çº¿ç¨‹çš„ç§æœ‰æ•°æ®è½¬æ¢ä¸ºhandle
 uint32_t skynet_current_handle(void)
 {
 	if (G_NODE.init)
@@ -125,7 +125,7 @@ static void drop_message(struct skynet_message *msg, void *ud)
 	skynet_send(NULL, source, msg->source, PTYPE_ERROR, 0, NULL, 0);
 }
 
-//·µ»ØnameËù±êÃ÷µÄÄ£¿é£¬Ä£¿é´æÔÚ¾Í·µ»ØÒÑÓĞµÄ£¬²»´æÔÚ¾Í´Ó´ÅÅÌ¼ÓÔØ£¬²¢½øĞĞÏà¹ØµÄ³õÊ¼»¯¹¤×÷È»ºó·µ»Ø
+//è¿”å›nameæ‰€æ ‡æ˜çš„æ¨¡å—ï¼Œæ¨¡å—å­˜åœ¨å°±è¿”å›å·²æœ‰çš„ï¼Œä¸å­˜åœ¨å°±ä»ç£ç›˜åŠ è½½ï¼Œå¹¶è¿›è¡Œç›¸å…³çš„åˆå§‹åŒ–å·¥ä½œç„¶åè¿”å›
 struct skynet_context *
 skynet_context_new(const char * name, const char *param)
 {
@@ -199,13 +199,13 @@ int skynet_context_newsession(struct skynet_context *ctx)
 	return session;
 }
 
-//ctxµÄÒıÓÃ¼ÆÊı¼Ó1
+//ctxçš„å¼•ç”¨è®¡æ•°åŠ 1
 void skynet_context_grab(struct skynet_context *ctx)
 {
 	__sync_add_and_fetch(&ctx->ref, 1);
 }
 
-//ctxÒıÓÃ¼ÆÊı¼Ó1£¬µ¥×Ü½ÚµãÊı¼õ1
+//ctxå¼•ç”¨è®¡æ•°åŠ 1ï¼Œå•æ€»èŠ‚ç‚¹æ•°å‡1
 void skynet_context_reserve(struct skynet_context *ctx)
 {
 	skynet_context_grab(ctx);
@@ -214,7 +214,7 @@ void skynet_context_reserve(struct skynet_context *ctx)
 	context_dec();
 }
 
-//ÊÍ·Åctx¼°ÆäÏà¹Ø×ÊÔ´
+//é‡Šæ”¾ctxåŠå…¶ç›¸å…³èµ„æº
 static void delete_context(struct skynet_context *ctx)
 {
 	if (ctx->logfile)
@@ -227,7 +227,7 @@ static void delete_context(struct skynet_context *ctx)
 	context_dec();
 }
 
-//ctxµÄÒıÓÃ¼ÆÊı¼õ1£¬¼ÆÊıÎª0Ê±ÊÍ·Å¸Ãctx
+//ctxçš„å¼•ç”¨è®¡æ•°å‡1ï¼Œè®¡æ•°ä¸º0æ—¶é‡Šæ”¾è¯¥ctx
 struct skynet_context *
 skynet_context_release(struct skynet_context *ctx)
 {
@@ -239,7 +239,7 @@ skynet_context_release(struct skynet_context *ctx)
 	return ctx;
 }
 
-//½«ÏûÏ¢Èë¶Óµ½handle¶ÔÓ¦contextµÄÏûÏ¢¶ÓÁĞµÄÎ²²¿£¬ÈôÏûÏ¢¶ÓÁĞÂúÁË£¬Ôò½øĞĞÀ©Èİ£¬ÈôÏûÏ¢¶ÓÁĞ²»ÔÚÈ«¾Ö¶ÓÁĞÖĞ£¬Ôò°ÑÏûÏ¢¶ÓÁĞÈë¶Óµ½È«¾Ö¶ÓÁĞµÄÎ²²¿
+//å°†æ¶ˆæ¯å…¥é˜Ÿåˆ°handleå¯¹åº”contextçš„æ¶ˆæ¯é˜Ÿåˆ—çš„å°¾éƒ¨ï¼Œè‹¥æ¶ˆæ¯é˜Ÿåˆ—æ»¡äº†ï¼Œåˆ™è¿›è¡Œæ‰©å®¹ï¼Œè‹¥æ¶ˆæ¯é˜Ÿåˆ—ä¸åœ¨å…¨å±€é˜Ÿåˆ—ä¸­ï¼Œåˆ™æŠŠæ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°å…¨å±€é˜Ÿåˆ—çš„å°¾éƒ¨
 int skynet_context_push(uint32_t handle, struct skynet_message *message)
 {
 	struct skynet_context * ctx = skynet_handle_grab(handle);
@@ -253,7 +253,7 @@ int skynet_context_push(uint32_t handle, struct skynet_message *message)
 	return 0;
 }
 
-//ÉèÖÃhandle¶ÔÓ¦contextµÄendlessÎªtrue
+//è®¾ç½®handleå¯¹åº”contextçš„endlessä¸ºtrue
 void skynet_context_endless(uint32_t handle)
 {
 	struct skynet_context * ctx = skynet_handle_grab(handle);
@@ -265,7 +265,7 @@ void skynet_context_endless(uint32_t handle)
 	skynet_context_release(ctx);
 }
 
-//¼ì²éÊÇ·ñÊÇÔ¶³ÌÏûÏ¢£¬harbor²»ÎªNULLµÄ»°£¬¸ÃhandleµÄharbor´æ´¢ÔÚ*harborÖĞ
+//æ£€æŸ¥æ˜¯å¦æ˜¯è¿œç¨‹æ¶ˆæ¯ï¼Œharborä¸ä¸ºNULLçš„è¯ï¼Œè¯¥handleçš„harborå­˜å‚¨åœ¨*harborä¸­
 int skynet_isremote(struct skynet_context * ctx, uint32_t handle, int * harbor)
 {
 	int ret = skynet_harbor_message_isremote(handle);
@@ -276,7 +276,7 @@ int skynet_isremote(struct skynet_context * ctx, uint32_t handle, int * harbor)
 	return ret;
 }
 
-//ÏûÏ¢µÄ¸ß1×Ö½Ú±íÊ¾ÀàĞÍ¡£»Øµ÷´¦ÀíÊı¾İ
+//æ¶ˆæ¯çš„é«˜1å­—èŠ‚è¡¨ç¤ºç±»å‹ã€‚å›è°ƒå¤„ç†æ•°æ®
 static void dispatch_message(struct skynet_context *ctx,
 		struct skynet_message *msg)
 {
@@ -297,7 +297,7 @@ static void dispatch_message(struct skynet_context *ctx,
 	CHECKCALLING_END(ctx)
 }
 
-//±éÀúÏûÏ¢¶ÓÁĞµ¯³öÏûÏ¢²¢Ê¹ÓÃ»Øµ÷´¦Àí¸ÃÏûÏ¢
+//éå†æ¶ˆæ¯é˜Ÿåˆ—å¼¹å‡ºæ¶ˆæ¯å¹¶ä½¿ç”¨å›è°ƒå¤„ç†è¯¥æ¶ˆæ¯
 void skynet_context_dispatchall(struct skynet_context * ctx)
 {
 	// for skynet_error
@@ -309,7 +309,7 @@ void skynet_context_dispatchall(struct skynet_context * ctx)
 	}
 }
 
-//´ÓÈ«¾Ö¶ÓÁĞQÍ·²¿È¡Ò»¸öÏûÏ¢¶ÓÁĞ£¬È»ºó´¦Àí¸ÃÏûÏ¢¶ÓÁĞÖĞµÄµÚÒ»¸öÏûÏ¢£¬È»ºó°Ñ¸ÃÏûÏ¢¶ÓÁĞÈë¶Óµ½QµÄÎ²²¿£¬È»ºó´ÓQÍ·²¿È¡1¸öÏûÏ¢¶ÓÁĞ·µ»Ø
+//ä»å…¨å±€é˜Ÿåˆ—Qå¤´éƒ¨å–ä¸€ä¸ªæ¶ˆæ¯é˜Ÿåˆ—ï¼Œç„¶åå¤„ç†è¯¥æ¶ˆæ¯é˜Ÿåˆ—ä¸­çš„ç¬¬ä¸€ä¸ªæ¶ˆæ¯ï¼Œç„¶åæŠŠè¯¥æ¶ˆæ¯é˜Ÿåˆ—å…¥é˜Ÿåˆ°Qçš„å°¾éƒ¨ï¼Œç„¶åä»Qå¤´éƒ¨å–1ä¸ªæ¶ˆæ¯é˜Ÿåˆ—è¿”å›
 struct message_queue *
 skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue *q, int weight)
 {
@@ -380,7 +380,7 @@ skynet_context_message_dispatch(struct skynet_monitor *sm, struct message_queue 
 	return q;
 }
 
-//½«addrµÄÄÚÈİ¿½±´µ½nameÖĞ
+//å°†addrçš„å†…å®¹æ‹·è´åˆ°nameä¸­
 static void copy_name(char name[GLOBALNAME_LENGTH], const char * addr)
 {
 	int i;
@@ -394,8 +394,8 @@ static void copy_name(char name[GLOBALNAME_LENGTH], const char * addr)
 	}
 }
 
-//¸ù¾İname²éÕÒhandle£¬Èç¹ûnameµÄµÚÒ»¸ö×Ö·ûÊÇ¡°.¡±£¬ÄÇÃ´½«nameµ±×öÃû×ÖÀ´²éÕÒhandle£¬
-//Èç¹ûnameµÄµÚÒ»¸ö×Ö·ûÊÇ¡°:¡±£¬ÄÇÃ´½«name×ªÎªÊ®Áù½øÖÆÊıµ±×öhandle
+//æ ¹æ®nameæŸ¥æ‰¾handleï¼Œå¦‚æœnameçš„ç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯â€œ.â€ï¼Œé‚£ä¹ˆå°†nameå½“åšåå­—æ¥æŸ¥æ‰¾handleï¼Œ
+//å¦‚æœnameçš„ç¬¬ä¸€ä¸ªå­—ç¬¦æ˜¯â€œ:â€ï¼Œé‚£ä¹ˆå°†nameè½¬ä¸ºåå…­è¿›åˆ¶æ•°å½“åšhandle
 uint32_t skynet_queryname(struct skynet_context * context, const char * name)
 {
 	switch (name[0])
@@ -409,7 +409,7 @@ uint32_t skynet_queryname(struct skynet_context * context, const char * name)
 	return 0;
 }
 
-//handleÍË³ö
+//handleé€€å‡º
 static void handle_exit(struct skynet_context * context, uint32_t handle)
 {
 	if (handle == 0)
@@ -436,7 +436,7 @@ struct command_func
 	const char * (*func)(struct skynet_context * context, const char * param);
 };
 
-//½«contextµÄhandle¼ÓÈëµ½¶¨Ê±Æ÷£¬paramÊÇµ±Ç°Ê±¼ä
+//å°†contextçš„handleåŠ å…¥åˆ°å®šæ—¶å™¨ï¼Œparamæ˜¯å½“å‰æ—¶é—´
 static const char *
 cmd_timeout(struct skynet_context * context, const char * param)
 {
@@ -448,7 +448,7 @@ cmd_timeout(struct skynet_context * context, const char * param)
 	return context->result;
 }
 
-//½«param×÷ÎªÃû×Ö×¢²áhandle£¬·µ»ØÖ¸ÏòhandleÊ®Áù½øÖÆµÄ×Ö·û´®»òÖ¸ÏònameµÄ×Ö·û´®
+//å°†paramä½œä¸ºåå­—æ³¨å†Œhandleï¼Œè¿”å›æŒ‡å‘handleåå…­è¿›åˆ¶çš„å­—ç¬¦ä¸²æˆ–æŒ‡å‘nameçš„å­—ç¬¦ä¸²
 static const char *
 cmd_reg(struct skynet_context * context, const char * param)
 {
@@ -468,7 +468,7 @@ cmd_reg(struct skynet_context * context, const char * param)
 	}
 }
 
-//½«param×÷ÎªÃû×Ö²éÑ¯handle
+//å°†paramä½œä¸ºåå­—æŸ¥è¯¢handle
 static const char *
 cmd_query(struct skynet_context * context, const char * param)
 {
@@ -484,7 +484,7 @@ cmd_query(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«param½âÎöÎªname£¨ÒÔ.ÎªÇ°×º£©ºÍhandle_id£¬È»ºó²åÈëµ½storageÖĞ
+//å°†paramè§£æä¸ºnameï¼ˆä»¥.ä¸ºå‰ç¼€ï¼‰å’Œhandle_idï¼Œç„¶åæ’å…¥åˆ°storageä¸­
 static const char *
 cmd_name(struct skynet_context * context, const char * param)
 {
@@ -512,7 +512,7 @@ cmd_name(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//»ñÈ¡µ±Ç°Ê±¼ä
+//è·å–å½“å‰æ—¶é—´
 static const char *
 cmd_now(struct skynet_context * context, const char * param)
 {
@@ -521,7 +521,7 @@ cmd_now(struct skynet_context * context, const char * param)
 	return context->result;
 }
 
-//ÍË³öcontext±íÊ¾µÄ·şÎñ
+//é€€å‡ºcontextè¡¨ç¤ºçš„æœåŠ¡
 static const char *
 cmd_exit(struct skynet_context * context, const char * param)
 {
@@ -529,7 +529,7 @@ cmd_exit(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«param×ªÎªhandle¡£param[0]Îª¡°:¡±Ö±½Ó½«param×ªÎª16½øÖÆÊı×÷Îªhandle£»param[0]Îª¡°.¡±£¬½«param×÷Îªhandle±ğÃû²éÕÒhandle
+//å°†paramè½¬ä¸ºhandleã€‚param[0]ä¸ºâ€œ:â€ç›´æ¥å°†paramè½¬ä¸º16è¿›åˆ¶æ•°ä½œä¸ºhandleï¼›param[0]ä¸ºâ€œ.â€ï¼Œå°†paramä½œä¸ºhandleåˆ«åæŸ¥æ‰¾handle
 static uint32_t tohandle(struct skynet_context * context, const char * param)
 {
 	uint32_t handle = 0;
@@ -549,7 +549,7 @@ static uint32_t tohandle(struct skynet_context * context, const char * param)
 	return handle;
 }
 
-//Í¨¹ıparamÕÒµ½handle£¬È»ºó½«handle±íÊ¾µÄ·şÎñÍË³ö
+//é€šè¿‡paramæ‰¾åˆ°handleï¼Œç„¶åå°†handleè¡¨ç¤ºçš„æœåŠ¡é€€å‡º
 static const char *
 cmd_kill(struct skynet_context * context, const char * param)
 {
@@ -561,7 +561,7 @@ cmd_kill(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«param½âÎöÎªÄ£¿éÃûºÍ²ÎÊı£¬¼ÓÔØ¶ÔÓ¦µÄcÄ£¿é(¶¯Ì¬¿â)
+//å°†paramè§£æä¸ºæ¨¡å—åå’Œå‚æ•°ï¼ŒåŠ è½½å¯¹åº”çš„cæ¨¡å—(åŠ¨æ€åº“)
 static const char *
 cmd_launch(struct skynet_context * context, const char * param)
 {
@@ -583,14 +583,14 @@ cmd_launch(struct skynet_context * context, const char * param)
 	}
 }
 
-//½«param×÷Îªkey¶ÁÈ¡Lua»·¾³ÖĞµÄvalue
+//å°†paramä½œä¸ºkeyè¯»å–Luaç¯å¢ƒä¸­çš„value
 static const char *
 cmd_getenv(struct skynet_context * context, const char * param)
 {
 	return skynet_getenv(param);
 }
 
-//½«param½âÎöÎªk-v²¢µ¼Èëµ½Lua»·¾³
+//å°†paramè§£æä¸ºk-vå¹¶å¯¼å…¥åˆ°Luaç¯å¢ƒ
 static const char *
 cmd_setenv(struct skynet_context * context, const char * param)
 {
@@ -611,7 +611,7 @@ cmd_setenv(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«Ê±¼ä´æÈëcontext->resultÖĞ
+//å°†æ—¶é—´å­˜å…¥context->resultä¸­
 static const char *
 cmd_starttime(struct skynet_context * context, const char * param)
 {
@@ -620,7 +620,7 @@ cmd_starttime(struct skynet_context * context, const char * param)
 	return context->result;
 }
 
-//Èç¹ûcontext->endlessÎªtrue£¬ÄÇÃ´½«endlessÉèÎªfalse£¬²¢½«resultÉèÎª¡°1¡±²¢·µ»Ø¸ÃÖ¸Õë
+//å¦‚æœcontext->endlessä¸ºtrueï¼Œé‚£ä¹ˆå°†endlessè®¾ä¸ºfalseï¼Œå¹¶å°†resultè®¾ä¸ºâ€œ1â€å¹¶è¿”å›è¯¥æŒ‡é’ˆ
 static const char *
 cmd_endless(struct skynet_context * context, const char * param)
 {
@@ -633,7 +633,7 @@ cmd_endless(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//ÊÍ·ÅÕû¸östorage
+//é‡Šæ”¾æ•´ä¸ªstorage
 static const char *
 cmd_abort(struct skynet_context * context, const char * param)
 {
@@ -663,7 +663,7 @@ cmd_monitor(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«ÏûÏ¢¶ÓÁĞµÄ³¤¶È´æÈëcontext->result·µ»Ø
+//å°†æ¶ˆæ¯é˜Ÿåˆ—çš„é•¿åº¦å­˜å…¥context->resultè¿”å›
 static const char *
 cmd_mqlen(struct skynet_context * context, const char * param)
 {
@@ -672,7 +672,7 @@ cmd_mqlen(struct skynet_context * context, const char * param)
 	return context->result;
 }
 
-//´ò¿ªcontextµÄÈÕÖ¾ÎÄ¼ş
+//æ‰“å¼€contextçš„æ—¥å¿—æ–‡ä»¶
 static const char *
 cmd_logon(struct skynet_context * context, const char * param)
 {
@@ -700,7 +700,7 @@ cmd_logon(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//¹Ø±ÕcontextµÄÈÕÖ¾ÎÄ¼ş
+//å…³é—­contextçš„æ—¥å¿—æ–‡ä»¶
 static const char *
 cmd_logoff(struct skynet_context * context, const char * param)
 {
@@ -723,7 +723,7 @@ cmd_logoff(struct skynet_context * context, const char * param)
 	return NULL;
 }
 
-//½«param½âÎöÎªĞÅºÅ£¬µ÷ÓÃcontextµÄĞÅºÅ´¦Àíº¯ÊıÀ´´¦Àí
+//å°†paramè§£æä¸ºä¿¡å·ï¼Œè°ƒç”¨contextçš„ä¿¡å·å¤„ç†å‡½æ•°æ¥å¤„ç†
 static const char *
 cmd_signal(struct skynet_context * context, const char * param)
 {
@@ -769,7 +769,7 @@ static struct command_func cmd_funcs[] =
 		{ NULL, NULL }, };
 
 
-//µ÷ÓÃcmd¶ÔÓ¦µÄÃüÁî
+//è°ƒç”¨cmdå¯¹åº”çš„å‘½ä»¤
 const char *
 skynet_command(struct skynet_context * context, const char * cmd,
 		const char * param)
@@ -787,7 +787,7 @@ skynet_command(struct skynet_context * context, const char * cmd,
 	return NULL;
 }
 
-//¸ù¾İtype¶ÔsessionºÍdata×öÏàÓ¦´¦Àí£¨1.·ÖÅäsession   2.Îªdata·ÖÅä´æ´¢¿Õ¼ä£©
+//æ ¹æ®typeå¯¹sessionå’Œdataåšç›¸åº”å¤„ç†ï¼ˆ1.åˆ†é…session   2.ä¸ºdataåˆ†é…å­˜å‚¨ç©ºé—´ï¼‰
 static void _filter_args(struct skynet_context * context, int type,
 		int *session, void ** data, size_t * sz)
 {
@@ -813,7 +813,7 @@ static void _filter_args(struct skynet_context * context, int type,
 }
 
 
-//½«dataÖĞµÄÏûÏ¢·¢ËÍ³öÈ¥£¨·¢ËÍµ½±¾µØ»òÔ¶³Ì·şÎñ£©
+//å°†dataä¸­çš„æ¶ˆæ¯å‘é€å‡ºå»ï¼ˆå‘é€åˆ°æœ¬åœ°æˆ–è¿œç¨‹æœåŠ¡ï¼‰
 int skynet_send(struct skynet_context * context, uint32_t source,
 		uint32_t destination, int type, int session, void * data, size_t sz)
 {
@@ -837,7 +837,7 @@ int skynet_send(struct skynet_context * context, uint32_t source,
 	}
 	if (skynet_harbor_message_isremote(destination))
 	{
-		//½«ÏûÏ¢·¢ËÍ¸øÔ¶³Ì·şÎñ
+		//å°†æ¶ˆæ¯å‘é€ç»™è¿œç¨‹æœåŠ¡
 		struct remote_message * rmsg = skynet_malloc(sizeof(*rmsg));
 		rmsg->destination.handle = destination;
 		rmsg->message = data;
@@ -846,7 +846,7 @@ int skynet_send(struct skynet_context * context, uint32_t source,
 	}
 	else
 	{
-		//½«ÏûÏ¢·¢ËÍ¸ø±¾µØ·şÎñ
+		//å°†æ¶ˆæ¯å‘é€ç»™æœ¬åœ°æœåŠ¡
 		struct skynet_message smsg;
 		smsg.source = source;
 		smsg.session = session;
@@ -862,7 +862,7 @@ int skynet_send(struct skynet_context * context, uint32_t source,
 	return session;
 }
 
-//¸ù¾İÄ¿µÄµØÃû×Öaddr½«ÏûÏ¢·¢ËÍ³öÈ¥
+//æ ¹æ®ç›®çš„åœ°åå­—addrå°†æ¶ˆæ¯å‘é€å‡ºå»
 int skynet_sendname(struct skynet_context * context, uint32_t source,
 		const char * addr, int type, int session, void * data, size_t sz)
 {
@@ -904,20 +904,20 @@ int skynet_sendname(struct skynet_context * context, uint32_t source,
 	return skynet_send(context, source, des, type, session, data, sz);
 }
 
-//»ñÈ¡contextµÄhandle
+//è·å–contextçš„handle
 uint32_t skynet_context_handle(struct skynet_context *ctx)
 {
 	return ctx->handle;
 }
 
-//ÉèÖÃcontextµÄ»Øµ÷º¯ÊıºÍ»Øµ÷º¯ÊıµÄ²ÎÊı
+//è®¾ç½®contextçš„å›è°ƒå‡½æ•°å’Œå›è°ƒå‡½æ•°çš„å‚æ•°
 void skynet_callback(struct skynet_context * context, void *ud, skynet_cb cb)
 {
 	context->cb = cb;
 	context->cb_ud = ud;
 }
 
-//½«ÏûÏ¢msg·¢ËÍ¸øctx£¨ÏûÏ¢msgÈë¶Óµ½ctxµÄÏûÏ¢¶ÓÁĞÖĞ£©
+//å°†æ¶ˆæ¯msgå‘é€ç»™ctxï¼ˆæ¶ˆæ¯msgå…¥é˜Ÿåˆ°ctxçš„æ¶ˆæ¯é˜Ÿåˆ—ä¸­ï¼‰
 void skynet_context_send(struct skynet_context * ctx, void * msg, size_t sz,
 		uint32_t source, int type, int session)
 {
@@ -930,7 +930,7 @@ void skynet_context_send(struct skynet_context * ctx, void * msg, size_t sz,
 	skynet_mq_push(ctx->queue, &smsg);
 }
 
-//³õÊ¼»¯È«¾Ö½Úµã£¬ÉèÖÃÖ÷Ïß³ÌµÄË½ÓĞÓÉÊı¾İ
+//åˆå§‹åŒ–å…¨å±€èŠ‚ç‚¹ï¼Œè®¾ç½®ä¸»çº¿ç¨‹çš„ç§æœ‰ç”±æ•°æ®
 void skynet_globalinit(void)
 {
 	G_NODE.total = 0;
@@ -945,13 +945,13 @@ void skynet_globalinit(void)
 	skynet_initthread(THREAD_MAIN);
 }
 
-//É¾³ıÖ÷Ïß³ÌµÄË½ÓĞÊı¾İ
+//åˆ é™¤ä¸»çº¿ç¨‹çš„ç§æœ‰æ•°æ®
 void skynet_globalexit(void)
 {
 	pthread_key_delete(G_NODE.handle_key);
 }
 
-//ÉèÖÃÖ÷Ïß³ÌµÄË½ÓĞÊı¾İ
+//è®¾ç½®ä¸»çº¿ç¨‹çš„ç§æœ‰æ•°æ®
 void skynet_initthread(int m)
 {
 	uintptr_t v = (uint32_t)(-m);
