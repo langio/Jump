@@ -7,5 +7,3 @@ LIBS += -L$(PROTO_DIR) -lproto -lprotobuf
 
 DEP_MAKE_SUBDIRS += $(PROTO_DIR)
 TARGET_DEP_OBJS += $(PROTO_DIR)/libproto.a
-
-#MYCFLAGS += -L $(PROTO_DIR) -lproto
