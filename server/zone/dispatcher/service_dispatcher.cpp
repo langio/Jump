@@ -1,4 +1,5 @@
 #include "comm_def.h"
+#include "send_util.h"
 
 #include "login.pb.h"
 #include "service_dispatcher.h"
@@ -16,7 +17,7 @@ DispatcherData * dispatcher_create(void)
 	return inst;
 }
 
-//释放gate相关资源
+//閲婃斁鐩稿叧璧勬簮
 void gate_release(DispatcherData *d)
 {
 	skynet_free(d);
@@ -44,7 +45,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 }
 
 
-//初始化dispatcher相关参数
+//鍒濆鍖杁ispatcher
 int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 {
 
@@ -60,7 +61,7 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 
 void dispatcher::dispatch(const void * msg, size_t sz)
 {
-	//找到msg开始的第二个空格，这个空格之后是pb消息
+	//瑙ｆ瀽msg澶撮儴
 	unsigned iSpaceCounter = 0;
 	unsigned iPbHeaderIndex = 0;
 
@@ -81,11 +82,11 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 
 	if(2 == iSpaceCounter)
 	{
-		//解析消息头部，根据命令字转发
+		//
 	}
 	else
 	{
-		//写错误日志
+		//鍑洪敊
 	}
 
 	login_req req;

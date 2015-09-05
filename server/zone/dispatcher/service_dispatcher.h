@@ -2,8 +2,8 @@
 #define _SERVICE_DISPATCHER_H
 
 
-//���������ֽ���Ϣ������Ӧ�ķ�����
-//������Ϊ4���ֽ����Σ��ֽڴӸߵ������α��Ϊ1~4����2�ֽڱ�ʾ���񣬵�3��4�ֽڱ�ʾ�����ڵ�����
+//根据命令字将消息发到对应的服务中
+//命令字为4个字节整形，字节从高到底依次编号为1~4，低2字节表示服务，第3、4字节表示服务内的命令
 typedef struct dispatcher_data
 {
 	int reserved;
