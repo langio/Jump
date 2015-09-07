@@ -1,7 +1,7 @@
 
 PROTO_DIR := $(shell dirname `echo $(MAKEFILE_LIST) | awk '{for(i=1;i<=NF;++i){if(\$$i~"proto.mk") {print \$$i;exit}}}'`)
 
-INCLUDE += -I$(PROTO_DIR)/pb
+INCLUDE += -I$(PROTO_DIR)/pb -I$(PROTO_DIR)/proto
 
 LIBS += -L$(PROTO_DIR) -lproto -lprotobuf
 
