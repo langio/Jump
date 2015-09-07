@@ -1,5 +1,6 @@
 #include "comm_def.h"
 #include "send_util.h"
+#include "public.h"
 
 #include "login.pb.h"
 #include "service_dispatcher.h"
