@@ -36,7 +36,7 @@ struct gate
 	struct messagepool mp;
 };
 
-//´´½¨1¸ögat½á¹¹
+//åˆ›å»º1ä¸ªgatç»“æ„
 struct gate *
 gate_create(void)
 {
@@ -47,7 +47,7 @@ gate_create(void)
 	return g;
 }
 
-//ÊÍ·ÅgateÏà¹Ø×ÊÔ´
+//é‡Šæ”¾gateç›¸å…³èµ„æº
 void gate_release(struct gate *g)
 {
 	int i;
@@ -70,7 +70,7 @@ void gate_release(struct gate *g)
 	skynet_free(g);
 }
 
-//°ÑmsgÇ°Ãæ²¿·ÖµÄÃüÁî×Ö·û´®É¾µô
+//æŠŠmsgå‰é¢éƒ¨åˆ†çš„å‘½ä»¤å­—ç¬¦ä¸²åˆ æ‰
 static void _parm(char *msg, int sz, int command_sz)
 {
 	while (command_sz < sz)
@@ -99,7 +99,7 @@ static void _forward_agent(struct gate * g, int fd, uint32_t agentaddr,
 	}
 }
 
-//¿ØÖÆÃüÁî´¦Àí
+//æ§åˆ¶å‘½ä»¤å¤„ç†
 static void _ctrl(struct gate * g, const void * msg, int sz)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -171,7 +171,7 @@ static void _ctrl(struct gate * g, const void * msg, int sz)
 	skynet_error(ctx, "[gate] Unkown command : %s", command);
 }
 
-//½«ÏûÏ¢·¢ËÍ¸øwatchdog
+//å°†æ¶ˆæ¯å‘é€ç»™watchdog
 static void _report(struct gate * g, const char * data, ...)
 {
 	if (g->watchdog == 0)
@@ -188,7 +188,7 @@ static void _report(struct gate * g, const char * data, ...)
 	skynet_send(ctx, 0, g->watchdog, PTYPE_TEXT, 0, tmp, n);
 }
 
-//°´ÕÕÄ£Ê½½«connectionÖĞµÄÊı¾İ·¢ËÍ³öÈ¥
+//æŒ‰ç…§æ¨¡å¼å°†connectionä¸­çš„æ•°æ®å‘é€å‡ºå»
 static void _forward(struct gate *g, struct connection * c, int size)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -217,7 +217,7 @@ static void _forward(struct gate *g, struct connection * c, int size)
 	}
 }
 
-//½«connectionÖĞµÄÊı¾İ·¢ËÍ³öÈ¥
+//å°†connectionä¸­çš„æ•°æ®å‘é€å‡ºå»
 static void dispatch_message(struct gate *g, struct connection *c, int id,
 		void * data, int sz)
 {
@@ -377,7 +377,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 	return 0;
 }
 
-//¼àÌıÒ»¸öµØÖ·£¬³É¹¦ºóg->listen_id socketÃèÊö·û
+//ç›‘å¬ä¸€ä¸ªåœ°å€ï¼ŒæˆåŠŸåg->listen_id socketæè¿°ç¬¦
 static int start_listen(struct gate *g, char * listen_addr)
 {
 	struct skynet_context * ctx = g->ctx;
@@ -404,7 +404,7 @@ static int start_listen(struct gate *g, char * listen_addr)
 		portstr[0] = '\0';
 		host = listen_addr;
 	}
-	g->listen_id = skynet_socket_listen(ctx, host, port, BACKLOG);	//skeynet·ÖÅäµÄid
+	g->listen_id = skynet_socket_listen(ctx, host, port, BACKLOG);	//skeynetåˆ†é…çš„id
 	if (g->listen_id < 0)
 	{
 		return 1;
@@ -412,7 +412,7 @@ static int start_listen(struct gate *g, char * listen_addr)
 	return 0;
 }
 
-//³õÊ¼»¯gateÏà¹Ø²ÎÊı
+//åˆå§‹åŒ–gateç›¸å…³å‚æ•°
 int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 {
 	fprintf(stderr, "begin gate_init\n");

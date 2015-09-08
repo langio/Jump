@@ -36,7 +36,7 @@ struct messagepool
 };
 
 // use memset init struct
-//ÊÇ·Åmessage_poolÁ´±í
+//æ˜¯æ”¾message_poolé“¾è¡¨
 static void messagepool_free(struct messagepool *pool)
 {
 	struct messagepool_list *p = pool->pool;
@@ -50,7 +50,7 @@ static void messagepool_free(struct messagepool *pool)
 	pool->freelist = NULL;
 }
 
-//½«dbµÄµÚÒ»¸ömessage£¨bufferÊÍ·Åµô£©ÒÆ¶¯µ½messagepoolµÄfreelistÍ·²¿
+//å°†dbçš„ç¬¬ä¸€ä¸ªmessageï¼ˆbufferé‡Šæ”¾æ‰ï¼‰ç§»åŠ¨åˆ°messagepoolçš„freelistå¤´éƒ¨
 static inline void _return_message(struct databuffer *db,
 		struct messagepool *mp)
 {
@@ -71,7 +71,7 @@ static inline void _return_message(struct databuffer *db,
 	mp->freelist = m;
 }
 
-//´ÓdbÖĞ¿½±´sz´óĞ¡µÄÊı¾İµ½bufferÖĞ
+//ä»dbä¸­æ‹·è´szå¤§å°çš„æ•°æ®åˆ°bufferä¸­
 static void databuffer_read(struct databuffer *db, struct messagepool *mp,
 		void * buffer, int sz)
 {
@@ -105,7 +105,7 @@ static void databuffer_read(struct databuffer *db, struct messagepool *mp,
 	}
 }
 
-//½«³¤¶ÈÎªszµÄdata´æÈëdatabufferÖĞ
+//å°†é•¿åº¦ä¸ºszçš„dataå­˜å…¥databufferä¸­
 static void databuffer_push(struct databuffer *db, struct messagepool *mp,
 		void *data, int sz)
 {
@@ -148,7 +148,7 @@ static void databuffer_push(struct databuffer *db, struct messagepool *mp,
 	}
 }
 
-//¶ÁÈ¡Êı¾İµÄÍ·²¿
+//è¯»å–æ•°æ®çš„å¤´éƒ¨
 static int databuffer_readheader(struct databuffer *db, struct messagepool *mp,
 		int header_size)
 {
@@ -176,13 +176,13 @@ static int databuffer_readheader(struct databuffer *db, struct messagepool *mp,
 	return db->header;
 }
 
-//dbµÄheaderÖÃ0
+//dbçš„headerç½®0
 static inline void databuffer_reset(struct databuffer *db)
 {
 	db->header = 0;
 }
 
-//dbÇå¿Õ
+//dbæ¸…ç©º
 static void databuffer_clear(struct databuffer *db, struct messagepool *mp)
 {
 	while (db->head)

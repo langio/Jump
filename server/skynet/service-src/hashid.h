@@ -20,7 +20,7 @@ struct hashid
 	struct hashid_node **hash;
 };
 
-//³õÊ¼»¯hashid½á¹¹
+//åˆå§‹åŒ–hashidç»“æž„
 static void hashid_init(struct hashid *hi, int max)
 {
 	int i;
@@ -43,7 +43,7 @@ static void hashid_init(struct hashid *hi, int max)
 	memset(hi->hash, 0, hashcap * sizeof(struct hashid_node *));
 }
 
-//ÊÍ·Åhashid½á¹¹
+//é‡Šæ”¾hashidç»“æž„
 static void hashid_clear(struct hashid *hi)
 {
 	skynet_free(hi->id);
@@ -55,7 +55,7 @@ static void hashid_clear(struct hashid *hi)
 	hi->count = 0;
 }
 
-//²éÕÒhash idµÄÖµÎªidµÄhash node£¬·µ»Ø¸ÃnodeË÷Òý
+//æŸ¥æ‰¾hash idçš„å€¼ä¸ºidçš„hash nodeï¼Œè¿”å›žè¯¥nodeç´¢å¼•
 static int hashid_lookup(struct hashid *hi, int id)
 {
 	int h = id & hi->hashmod;
@@ -69,7 +69,7 @@ static int hashid_lookup(struct hashid *hi, int id)
 	return -1;
 }
 
-//ÒÆ³ýidÖµÎªidµÄ½Úµã
+//ç§»é™¤idå€¼ä¸ºidçš„èŠ‚ç‚¹
 static int hashid_remove(struct hashid *hi, int id)
 {
 	int h = id & hi->hashmod;
@@ -99,7 +99,7 @@ static int hashid_remove(struct hashid *hi, int id)
 	return c - hi->id;
 }
 
-//½«id²åÈëhashid½øÐÐ¹ÜÀí£¬·µ»ØidÊý×éµÄË÷Òý
+//å°†idæ’å…¥hashidè¿›è¡Œç®¡ç†ï¼Œè¿”å›židæ•°ç»„çš„ç´¢å¼•
 static int hashid_insert(struct hashid * hi, int id)
 {
 	struct hashid_node *c = NULL;
@@ -127,7 +127,7 @@ static int hashid_insert(struct hashid * hi, int id)
 	return c - hi->id;
 }
 
-//¼ì²éhiÊÇ·ñÒÑÂú
+//æ£€æŸ¥hiæ˜¯å¦å·²æ»¡
 static inline int hashid_full(struct hashid *hi)
 {
 	return hi->count == hi->cap;
