@@ -63,8 +63,8 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 void dispatcher::dispatch(const void * msg, size_t sz)
 {
 	//解析msg头部
-	unsigned iSpaceCounter = 0;
-	unsigned iPbHeaderIndex = 0;
+	uint32_t iSpaceCounter = 0;
+	uint32_t iPbHeaderIndex = 0;
 
 	const char* tmp = (const char*)msg;
 	while(iSpaceCounter < 2 && iPbHeaderIndex < sz)
@@ -83,7 +83,10 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 
 	if(2 == iSpaceCounter)
 	{
-		//
+		//解析包头
+		int8_t * msg_body = const_cast<int8_t*>((const int8_t*)msg + iPbHeaderIndex);
+		PkgHead *head = (PkgHead*)msg_body;
+		head->unpack();
 	}
 	else
 	{
