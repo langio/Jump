@@ -284,8 +284,9 @@ static void dispatch_socket_message(struct gate *g,
 			if (id >= 0)
 			{
 				struct connection *c = &g->conn[id];
-				_report(g, "%d open %d %s:0", message->id, message->id,
-						c->remote_name);
+//				_report(g, "%d open %d %s:0", message->id, message->id,
+//						c->remote_name);
+				_report(g, "%d open ", message->id);
 			}
 			else
 			{
