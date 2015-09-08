@@ -1,6 +1,0 @@
-
-message pkg_head
-{
-	required int32 ttl = 1;
-	required uint32 cmd = 2;
-};
