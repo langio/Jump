@@ -1,10 +1,11 @@
 //此文件中只定义与客户端相关的结构体，命令字
 
-struct pkg_heak
+struct pkg_head
 {
 	int ttl;
-	int cmd;
-	int ret;
+	int cmd;			//客户端请求命令字
+	int client_fd;		//给客户端回包时用的，服务器为每个链接分配的id
+	int ret;			//服务器返回码
 };
 
 
