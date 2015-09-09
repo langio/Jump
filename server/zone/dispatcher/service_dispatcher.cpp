@@ -81,6 +81,8 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 
 	cout << s << endl;
 
+	int8_t tmp_str[20];
+
 	if(2 == iSpaceCounter)
 	{
 		//解析包头
