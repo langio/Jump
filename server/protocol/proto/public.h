@@ -8,17 +8,20 @@ struct PkgHead
 	uint32_t cmd;			//客户端请求命令字
 	uint32_t client_fd;		//给客户端回包时用的，服务器为每个链接分配的id
 	int32_t ret;			//服务器返回码
+	uint32_t body_len;		//
 
 	void unpack()
 	{
 		ttl = ntohs(ttl);
 		cmd = ntohl(cmd);
+		body_len = ntohl(body_len);
 	}
 
 	void pack()
 	{
 		cmd = htonl(cmd);
 		ret = htonl(ret);
+		body_len = htonl(body_len);
 	}
 };
 
