@@ -3,25 +3,25 @@
 #include "util/tc_config.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
 
-TC_ConfigDomain::TC_ConfigDomain(const string &sLine)
+XC_ConfigDomain::XC_ConfigDomain(const string &sLine)
 {
-	_name = TC_Common::trim(sLine);
+	_name = XC_Common::trim(sLine);
 }
 
-TC_ConfigDomain::~TC_ConfigDomain()
+XC_ConfigDomain::~XC_ConfigDomain()
 {
 	destroy();
 }
 
-TC_ConfigDomain::TC_ConfigDomain(const TC_ConfigDomain &tcd)
+XC_ConfigDomain::XC_ConfigDomain(const XC_ConfigDomain &tcd)
 {
     (*this) = tcd;
 }
 
-TC_ConfigDomain& TC_ConfigDomain::operator=(const TC_ConfigDomain &tcd)
+XC_ConfigDomain& XC_ConfigDomain::operator=(const XC_ConfigDomain &tcd)
 {
     if(this != &tcd)
     {
@@ -32,8 +32,8 @@ TC_ConfigDomain& TC_ConfigDomain::operator=(const TC_ConfigDomain &tcd)
         _key   = tcd._key;
         _domain= tcd._domain;
 
-        const map<string, TC_ConfigDomain*> & m = tcd.getDomainMap();
-        map<string, TC_ConfigDomain*>::const_iterator it = m.begin();
+        const map<string, XC_ConfigDomain*> & m = tcd.getDomainMap();
+        map<string, XC_ConfigDomain*>::const_iterator it = m.begin();
         while(it != m.end())
         {
             _subdomain[it->first] = it->second->clone();
@@ -43,76 +43,76 @@ TC_ConfigDomain& TC_ConfigDomain::operator=(const TC_ConfigDomain &tcd)
     return *this;
 }
 
-TC_ConfigDomain::DomainPath TC_ConfigDomain::parseDomainName(const string& path, bool bWithParam)
+XC_ConfigDomain::DomainPath XC_ConfigDomain::parseDomainName(const string& path, bool bWithParam)
 {
-    TC_ConfigDomain::DomainPath dp;
+    XC_ConfigDomain::DomainPath dp;
 
     if(bWithParam)
     {
-    	string::size_type pos1 = path.find_first_of(TC_CONFIG_PARAM_BEGIN);
+    	string::size_type pos1 = path.find_first_of(XC_CONFIG_PARAM_BEGIN);
     	if(pos1 == string::npos)
     	{
-    		throw TC_Config_Exception("[TC_Config::parseDomainName] : param path '" + path + "' is invalid!" );
+    		throw XC_Config_Exception("[XC_Config::parseDomainName] : param path '" + path + "' is invalid!" );
     	}
 
-    	if(path[0] != TC_CONFIG_DOMAIN_SEP)
+    	if(path[0] != XC_CONFIG_DOMAIN_SEP)
     	{
-    		throw TC_Config_Exception("[TC_Config::parseDomainName] : param path '" + path + "' must start with '/'!" );
+    		throw XC_Config_Exception("[XC_Config::parseDomainName] : param path '" + path + "' must start with '/'!" );
     	}
 
-    	string::size_type pos2 = path.find_first_of(TC_CONFIG_PARAM_END);
+    	string::size_type pos2 = path.find_first_of(XC_CONFIG_PARAM_END);
     	if(pos2 == string::npos)
     	{
-    		throw TC_Config_Exception("[TC_Config::parseDomainName] : param path '" + path + "' is invalid!" );
+    		throw XC_Config_Exception("[XC_Config::parseDomainName] : param path '" + path + "' is invalid!" );
     	}
 
-        dp._domains = TC_Common::sepstr<string>(path.substr(1, pos1-1), TC_Common::tostr(TC_CONFIG_DOMAIN_SEP));
+        dp._domains = XC_Common::sepstr<string>(path.substr(1, pos1-1), XC_Common::tostr(XC_CONFIG_DOMAIN_SEP));
         dp._param = path.substr(pos1+1, pos2 - pos1 - 1);
     }
     else
     {
-//    	if(path.length() <= 1 || path[0] != TC_CONFIG_DOMAIN_SEP)
-        if(path[0] != TC_CONFIG_DOMAIN_SEP)
+//    	if(path.length() <= 1 || path[0] != XC_CONFIG_DOMAIN_SEP)
+        if(path[0] != XC_CONFIG_DOMAIN_SEP)
     	{
-    		throw TC_Config_Exception("[TC_Config::parseDomainName] : param path '" + path + "' must start with '/'!" );
+    		throw XC_Config_Exception("[XC_Config::parseDomainName] : param path '" + path + "' must start with '/'!" );
     	}
 
-        dp._domains = TC_Common::sepstr<string>(path.substr(1), TC_Common::tostr(TC_CONFIG_DOMAIN_SEP));
+        dp._domains = XC_Common::sepstr<string>(path.substr(1), XC_Common::tostr(XC_CONFIG_DOMAIN_SEP));
     }
 
     return dp;
 }
 
-TC_ConfigDomain* TC_ConfigDomain::addSubDomain(const string& name)
+XC_ConfigDomain* XC_ConfigDomain::addSubDomain(const string& name)
 {
     if(_subdomain.find(name) == _subdomain.end())
     {
         _domain.push_back(name);
 
-        _subdomain[name] = new TC_ConfigDomain(name);
+        _subdomain[name] = new XC_ConfigDomain(name);
     }
     return _subdomain[name];
 }
 
-string TC_ConfigDomain::getParamValue(const string &name) const
+string XC_ConfigDomain::getParamValue(const string &name) const
 {
     map<string, string>::const_iterator it = _param.find(name);
 	if( it == _param.end())
 	{
-		throw TC_ConfigNoParam_Exception("[TC_ConfigDomain::getParamValue] param '" + name + "' not exits!");
+		throw XC_ConfigNoParam_Exception("[XC_ConfigDomain::getParamValue] param '" + name + "' not exits!");
     }
 
 	return it->second;
 }
 
-TC_ConfigDomain *TC_ConfigDomain::getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd)
+XC_ConfigDomain *XC_ConfigDomain::getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd)
 {
     if(itBegin == itEnd)
     {
         return this;
     }
 
-    map<string, TC_ConfigDomain*>::const_iterator it = _subdomain.find(*itBegin);
+    map<string, XC_ConfigDomain*>::const_iterator it = _subdomain.find(*itBegin);
 
 	//根据匹配规则找不到匹配的子域
 	if(it == _subdomain.end())
@@ -124,14 +124,14 @@ TC_ConfigDomain *TC_ConfigDomain::getSubTcConfigDomain(vector<string>::const_ite
 	return it->second->getSubTcConfigDomain(itBegin + 1, itEnd);
 }
 
-const TC_ConfigDomain *TC_ConfigDomain::getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd) const
+const XC_ConfigDomain *XC_ConfigDomain::getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd) const
 {
     if(itBegin == itEnd)
     {
         return this;
     }
 
-    map<string, TC_ConfigDomain*>::const_iterator it = _subdomain.find(*itBegin);
+    map<string, XC_ConfigDomain*>::const_iterator it = _subdomain.find(*itBegin);
 
 	//根据匹配规则找不到匹配的子域
 	if(it == _subdomain.end())
@@ -143,7 +143,7 @@ const TC_ConfigDomain *TC_ConfigDomain::getSubTcConfigDomain(vector<string>::con
 	return it->second->getSubTcConfigDomain(itBegin + 1, itEnd);
 }
 
-void TC_ConfigDomain::insertParamValue(const map<string, string> &m)
+void XC_ConfigDomain::insertParamValue(const map<string, string> &m)
 {
     _param.insert(m.begin(),  m.end());
 
@@ -169,7 +169,7 @@ void TC_ConfigDomain::insertParamValue(const map<string, string> &m)
     }
 }
 
-void TC_ConfigDomain::setParamValue(const string &name, const string &value)
+void XC_ConfigDomain::setParamValue(const string &name, const string &value)
 {
     _param[name] = value;
 
@@ -186,7 +186,7 @@ void TC_ConfigDomain::setParamValue(const string &name, const string &value)
     _key.push_back(name);
 }
 
-void TC_ConfigDomain::setParamValue(const string &line)
+void XC_ConfigDomain::setParamValue(const string &line)
 {
     if(line.empty())
     {
@@ -203,12 +203,12 @@ void TC_ConfigDomain::setParamValue(const string &line)
                 continue;
             }
 
-            string name  = parse(TC_Common::trim(line.substr(0, pos), " \r\n\t"));
+            string name  = parse(XC_Common::trim(line.substr(0, pos), " \r\n\t"));
 
             string value;
             if(pos < line.length() - 1)
             {
-                value = parse(TC_Common::trim(line.substr(pos + 1), " \r\n\t"));
+                value = parse(XC_Common::trim(line.substr(pos + 1), " \r\n\t"));
             }
 
             setParamValue(name, value);
@@ -219,7 +219,7 @@ void TC_ConfigDomain::setParamValue(const string &line)
     setParamValue(line, "");
 }
 
-string TC_ConfigDomain::parse(const string& s)
+string XC_ConfigDomain::parse(const string& s)
 {
     if(s.empty())
     {
@@ -256,14 +256,14 @@ string TC_ConfigDomain::parse(const string& s)
                 pos++;
                 break;
             default:
-                throw TC_Config_Exception("[TC_ConfigDomain::parse] '" + s + "' is invalid, '" + TC_Common::tostr(s[pos]) + TC_Common::tostr(s[pos+1]) + "' couldn't be parse!" );
+                throw XC_Config_Exception("[XC_ConfigDomain::parse] '" + s + "' is invalid, '" + XC_Common::tostr(s[pos]) + XC_Common::tostr(s[pos+1]) + "' couldn't be parse!" );
             }
 
             param += c;
         }
         else if (s[pos] == '\\')
         {
-            throw TC_Config_Exception("[TC_ConfigDomain::parse] '" + s + "' is invalid, '" + TC_Common::tostr(s[pos]) + "' couldn't be parse!" );
+            throw XC_Config_Exception("[XC_ConfigDomain::parse] '" + s + "' is invalid, '" + XC_Common::tostr(s[pos]) + "' couldn't be parse!" );
         }
         else
         {
@@ -274,7 +274,7 @@ string TC_ConfigDomain::parse(const string& s)
     return param;
 }
 
-string TC_ConfigDomain::reverse_parse(const string &s)
+string XC_ConfigDomain::reverse_parse(const string &s)
 {
     if(s.empty())
     {
@@ -306,7 +306,7 @@ string TC_ConfigDomain::reverse_parse(const string &s)
             break;
         case '<':
         case '>':
-            throw TC_Config_Exception("[TC_ConfigDomain::reverse_parse] '" + s + "' is invalid, couldn't be parse!" );
+            throw XC_Config_Exception("[XC_ConfigDomain::reverse_parse] '" + s + "' is invalid, couldn't be parse!" );
         default:
             param += s[pos];
         }
@@ -315,33 +315,33 @@ string TC_ConfigDomain::reverse_parse(const string &s)
     return param;
 }
 
-string TC_ConfigDomain::getName() const
+string XC_ConfigDomain::getName() const
 {
 	return _name;
 }
 
-void TC_ConfigDomain::setName(const string& name)
+void XC_ConfigDomain::setName(const string& name)
 {
     _name = name;
 }
 
-vector<string> TC_ConfigDomain::getKey() const
+vector<string> XC_ConfigDomain::getKey() const
 {
     return _key;
 }
 
-vector<string> TC_ConfigDomain::getSubDomain() const
+vector<string> XC_ConfigDomain::getSubDomain() const
 {
     return _domain;
 }
 
-void TC_ConfigDomain::destroy()
+void XC_ConfigDomain::destroy()
 {
     _param.clear();
     _key.clear();
     _domain.clear();
 
-    map<string, TC_ConfigDomain*>::iterator it = _subdomain.begin();
+    map<string, XC_ConfigDomain*>::iterator it = _subdomain.begin();
     while(it != _subdomain.end())
     {
         delete it->second;
@@ -351,7 +351,7 @@ void TC_ConfigDomain::destroy()
     _subdomain.clear();
 }
 
-string TC_ConfigDomain::tostr(int i) const
+string XC_ConfigDomain::tostr(int i) const
 {
     string sTab;
     for(int k = 0; k < i; ++k)
@@ -384,7 +384,7 @@ string TC_ConfigDomain::tostr(int i) const
 
     for(size_t n = 0; n < _domain.size(); n++)
     {
-        map<string, TC_ConfigDomain*>::const_iterator itm = _subdomain.find(_domain[n]);
+        map<string, XC_ConfigDomain*>::const_iterator itm = _subdomain.find(_domain[n]);
 
         assert(itm != _subdomain.end());
 
@@ -398,20 +398,20 @@ string TC_ConfigDomain::tostr(int i) const
 }
 
 /********************************************************************/
-/*		TC_Config implement										    */
+/*		XC_Config implement										    */
 /********************************************************************/
 
-TC_Config::TC_Config() : _root("")
+XC_Config::XC_Config() : _root("")
 {
 }
 
-TC_Config::TC_Config(const TC_Config &tc)
+XC_Config::XC_Config(const XC_Config &tc)
 : _root(tc._root)
 {
 
 }
 
-TC_Config& TC_Config::operator=(const TC_Config &tc)
+XC_Config& XC_Config::operator=(const XC_Config &tc)
 {
     if(this != &tc)
     {
@@ -421,17 +421,17 @@ TC_Config& TC_Config::operator=(const TC_Config &tc)
     return *this;
 }
 
-void TC_Config::parse(istream &is)
+void XC_Config::parse(istream &is)
 {
     _root.destroy();
 
-    stack<TC_ConfigDomain*> stkTcCnfDomain;
+    stack<XC_ConfigDomain*> stkTcCnfDomain;
     stkTcCnfDomain.push(&_root);
 
     string line;
     while(getline(is, line))
 	{
-		line = TC_Common::trim(line, " \r\n\t");
+		line = XC_Common::trim(line, " \r\n\t");
 
 		if(line.length() == 0)
 		{
@@ -448,7 +448,7 @@ void TC_Config::parse(istream &is)
 
 			if(posl == string::npos)
 			{
-				throw TC_Config_Exception("[TC_Config::parse]:parse error! line : " + line);
+				throw XC_Config_Exception("[XC_Config::parse]:parse error! line : " + line);
 			}
 
 			if(line[1] == '/')
@@ -457,12 +457,12 @@ void TC_Config::parse(istream &is)
 
 				if(stkTcCnfDomain.size() <= 0)
                 {
-					throw TC_Config_Exception("[TC_Config::parse]:parse error! <" + sName + "> hasn't matched domain.");
+					throw XC_Config_Exception("[XC_Config::parse]:parse error! <" + sName + "> hasn't matched domain.");
                 }
 
                 if(stkTcCnfDomain.top()->getName() != sName)
 				{
-					throw TC_Config_Exception("[TC_Config::parse]:parse error! <" + stkTcCnfDomain.top()->getName() + "> hasn't match <" + sName +">.");
+					throw XC_Config_Exception("[XC_Config::parse]:parse error! <" + stkTcCnfDomain.top()->getName() + "> hasn't match <" + sName +">.");
 				}
 
                 //弹出
@@ -483,28 +483,28 @@ void TC_Config::parse(istream &is)
 
 	if(stkTcCnfDomain.size() != 1)
 	{
-		throw TC_Config_Exception("[TC_Config::parse]:parse error : hasn't match");
+		throw XC_Config_Exception("[XC_Config::parse]:parse error : hasn't match");
     }
 }
 
-void TC_Config::parseFile(const string &sFileName)
+void XC_Config::parseFile(const string &sFileName)
 {
     if(sFileName.length() == 0)
     {
-		throw TC_Config_Exception("[TC_Config::parseFile]:file name is empty");
+		throw XC_Config_Exception("[XC_Config::parseFile]:file name is empty");
     }
 
     ifstream ff;
     ff.open(sFileName.c_str());
 	if (!ff)
 	{
-		throw TC_Config_Exception("[TC_Config::parseFile]:fopen fail: " + sFileName, errno);
+		throw XC_Config_Exception("[XC_Config::parseFile]:fopen fail: " + sFileName, errno);
     }
 
     parse(ff);
 }
 
-void TC_Config::parseString(const string& buffer)
+void XC_Config::parseString(const string& buffer)
 {
     istringstream iss;
     iss.str(buffer);
@@ -512,47 +512,47 @@ void TC_Config::parseString(const string& buffer)
     parse(iss);
 }
 
-string TC_Config::operator[](const string &path)
+string XC_Config::operator[](const string &path)
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, true);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, true);
 
-	TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
-		throw TC_ConfigNoParam_Exception("[TC_Config::operator[]] path '" + path + "' not exits!");
+		throw XC_ConfigNoParam_Exception("[XC_Config::operator[]] path '" + path + "' not exits!");
 	}
 
 	return pTcConfigDomain->getParamValue(dp._param);
 }
 
-string TC_Config::get(const string &sName, const string &sDefault) const
+string XC_Config::get(const string &sName, const string &sDefault) const
 {
     try
     {
-        TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(sName, true);
+        XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(sName, true);
 
-    	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+    	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
     	if(pTcConfigDomain == NULL)
     	{
-    		throw TC_ConfigNoParam_Exception("[TC_Config::get] path '" + sName + "' not exits!");
+    		throw XC_ConfigNoParam_Exception("[XC_Config::get] path '" + sName + "' not exits!");
     	}
 
     	return pTcConfigDomain->getParamValue(dp._param);
     }
-    catch ( TC_ConfigNoParam_Exception &ex )
+    catch ( XC_ConfigNoParam_Exception &ex )
     {
         return sDefault;
     }
     return sDefault;
 }
 
-bool TC_Config::getDomainMap(const string &path, map<string, string> &m) const
+bool XC_Config::getDomainMap(const string &path, map<string, string> &m) const
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, false);
 
-	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
@@ -564,13 +564,13 @@ bool TC_Config::getDomainMap(const string &path, map<string, string> &m) const
     return true;
 }
 
-map<string, string> TC_Config::getDomainMap(const string &path) const
+map<string, string> XC_Config::getDomainMap(const string &path) const
 {
     map<string, string> m;
 
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, false);
 
-	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain != NULL)
 	{
@@ -580,13 +580,13 @@ map<string, string> TC_Config::getDomainMap(const string &path) const
     return m;
 }
 
-vector<string> TC_Config::getDomainKey(const string &path) const
+vector<string> XC_Config::getDomainKey(const string &path) const
 {
     vector<string> v;
 
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, false);
 
-	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain != NULL)
 	{
@@ -596,9 +596,9 @@ vector<string> TC_Config::getDomainKey(const string &path) const
     return v;
 }
 
-bool TC_Config::getDomainVector(const string &path, vector<string> &vtDomains) const
+bool XC_Config::getDomainVector(const string &path, vector<string> &vtDomains) const
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, false);
 
     //根域, 特殊处理
     if(dp._domains.empty())
@@ -607,7 +607,7 @@ bool TC_Config::getDomainVector(const string &path, vector<string> &vtDomains) c
         return !vtDomains.empty();
     }
 
-	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
@@ -619,9 +619,9 @@ bool TC_Config::getDomainVector(const string &path, vector<string> &vtDomains) c
 	return true;
 }
 
-vector<string> TC_Config::getDomainVector(const string &path) const
+vector<string> XC_Config::getDomainVector(const string &path) const
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(path, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(path, false);
 
     //根域, 特殊处理
     if(dp._domains.empty())
@@ -629,7 +629,7 @@ vector<string> TC_Config::getDomainVector(const string &path) const
         return _root.getSubDomain();
     }
 
-	const TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	const XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
@@ -640,26 +640,26 @@ vector<string> TC_Config::getDomainVector(const string &path) const
 }
 
 
-TC_ConfigDomain *TC_Config::newTcConfigDomain(const string &sName)
+XC_ConfigDomain *XC_Config::newTcConfigDomain(const string &sName)
 {
-	return new TC_ConfigDomain(sName);
+	return new XC_ConfigDomain(sName);
 }
 
-TC_ConfigDomain *TC_Config::searchTcConfigDomain(const vector<string>& domains)
+XC_ConfigDomain *XC_Config::searchTcConfigDomain(const vector<string>& domains)
 {
 	return _root.getSubTcConfigDomain(domains.begin(), domains.end());
 }
 
-const TC_ConfigDomain *TC_Config::searchTcConfigDomain(const vector<string>& domains) const
+const XC_ConfigDomain *XC_Config::searchTcConfigDomain(const vector<string>& domains) const
 {
 	return _root.getSubTcConfigDomain(domains.begin(), domains.end());
 }
 
-int TC_Config::insertDomain(const string &sCurDomain, const string &sAddDomain, bool bCreate)
+int XC_Config::insertDomain(const string &sCurDomain, const string &sAddDomain, bool bCreate)
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(sCurDomain, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(sCurDomain, false);
 
-	TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
@@ -683,11 +683,11 @@ int TC_Config::insertDomain(const string &sCurDomain, const string &sAddDomain, 
     return 0;
 }
 
-int TC_Config::insertDomainParam(const string &sCurDomain, const map<string, string> &m, bool bCreate)
+int XC_Config::insertDomainParam(const string &sCurDomain, const map<string, string> &m, bool bCreate)
 {
-    TC_ConfigDomain::DomainPath dp = TC_ConfigDomain::parseDomainName(sCurDomain, false);
+    XC_ConfigDomain::DomainPath dp = XC_ConfigDomain::parseDomainName(sCurDomain, false);
 
-	TC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
+	XC_ConfigDomain *pTcConfigDomain = searchTcConfigDomain(dp._domains);
 
 	if(pTcConfigDomain == NULL)
 	{
@@ -711,12 +711,12 @@ int TC_Config::insertDomainParam(const string &sCurDomain, const map<string, str
     return 0;
 }
 
-string TC_Config::tostr() const
+string XC_Config::tostr() const
 {
     string buffer;
 
-    map<string, TC_ConfigDomain*> msd = _root.getDomainMap();
-    map<string, TC_ConfigDomain*>::const_iterator it = msd.begin();
+    map<string, XC_ConfigDomain*> msd = _root.getDomainMap();
+    map<string, XC_ConfigDomain*>::const_iterator it = msd.begin();
     while (it != msd.end())
     {
         buffer += it->second->tostr(0);
@@ -726,7 +726,7 @@ string TC_Config::tostr() const
     return buffer;
 }
 
-void TC_Config::joinConfig(const TC_Config &cf, bool bUpdate)
+void XC_Config::joinConfig(const XC_Config &cf, bool bUpdate)
 {
     string buffer;
     if(bUpdate)

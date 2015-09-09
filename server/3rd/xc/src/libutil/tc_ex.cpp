@@ -4,32 +4,32 @@
 #include <stdlib.h>
 #include <cerrno>
 
-namespace taf
+namespace xutil
 {
 
-TC_Exception::TC_Exception(const string &buffer)
+XC_Exception::XC_Exception(const string &buffer)
 :_buffer(buffer), _code(0)
 {
 //    getBacktrace();
 }
 
-TC_Exception::TC_Exception(const string &buffer, int err)
+XC_Exception::XC_Exception(const string &buffer, int err)
 {
 	_buffer = buffer + " :" + strerror(err);
     _code   = err;
 //    getBacktrace();
 }
 
-TC_Exception::~TC_Exception() throw()
+XC_Exception::~XC_Exception() throw()
 {
 }
 
-const char* TC_Exception::what() const throw()
+const char* XC_Exception::what() const throw()
 {
     return _buffer.c_str();
 }
 
-void TC_Exception::getBacktrace()
+void XC_Exception::getBacktrace()
 {
     void * array[64];
     int nSize = backtrace(array, 64);

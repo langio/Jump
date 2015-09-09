@@ -3,16 +3,16 @@
 #include <sstream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-TC_Mysql::TC_Mysql()
+XC_Mysql::XC_Mysql()
 :_bConnected(false)
 {
     _pstMql = mysql_init(NULL);
 }
 
-TC_Mysql::TC_Mysql(const string& sHost, const string& sUser, const string& sPasswd, const string& sDatabase, const string &sCharSet, int port, int iFlag)
+XC_Mysql::XC_Mysql(const string& sHost, const string& sUser, const string& sPasswd, const string& sDatabase, const string &sCharSet, int port, int iFlag)
 :_bConnected(false)
 {
     init(sHost, sUser, sPasswd, sDatabase, sCharSet, port, iFlag);
@@ -20,7 +20,7 @@ TC_Mysql::TC_Mysql(const string& sHost, const string& sUser, const string& sPass
     _pstMql = mysql_init(NULL);
 }
 
-TC_Mysql::TC_Mysql(const TC_DBConf& tcDBConf)
+XC_Mysql::XC_Mysql(const XC_DBConf& tcDBConf)
 :_bConnected(false)
 {
     _dbConf = tcDBConf;
@@ -28,7 +28,7 @@ TC_Mysql::TC_Mysql(const TC_DBConf& tcDBConf)
     _pstMql = mysql_init(NULL);
 }
 
-TC_Mysql::~TC_Mysql()
+XC_Mysql::~XC_Mysql()
 {
     if (_pstMql != NULL)
     {
@@ -37,7 +37,7 @@ TC_Mysql::~TC_Mysql()
     }
 }
 
-void TC_Mysql::init(const string& sHost, const string& sUser, const string& sPasswd, const string& sDatabase, const string &sCharSet, int port, int iFlag)
+void XC_Mysql::init(const string& sHost, const string& sUser, const string& sPasswd, const string& sDatabase, const string &sCharSet, int port, int iFlag)
 {
     _dbConf._host = sHost;
     _dbConf._user = sUser;
@@ -48,12 +48,12 @@ void TC_Mysql::init(const string& sHost, const string& sUser, const string& sPas
     _dbConf._flag = iFlag;
 }
 
-void TC_Mysql::init(const TC_DBConf& tcDBConf)
+void XC_Mysql::init(const XC_DBConf& tcDBConf)
 {
     _dbConf = tcDBConf;
 }
 
-void TC_Mysql::connect()
+void XC_Mysql::connect()
 {
     disconnect();
 
@@ -65,19 +65,19 @@ void TC_Mysql::connect()
     //建立连接后, 自动调用设置字符集语句
     if(!_dbConf._charset.empty())  {
         if (mysql_options(_pstMql, MYSQL_SET_CHARSET_NAME, _dbConf._charset.c_str())) {
-    		throw TC_Mysql_Exception(string("TC_Mysql::connect: mysql_options MYSQL_SET_CHARSET_NAME ") + _dbConf._charset + ":" + string(mysql_error(_pstMql)));
+    		throw XC_Mysql_Exception(string("XC_Mysql::connect: mysql_options MYSQL_SET_CHARSET_NAME ") + _dbConf._charset + ":" + string(mysql_error(_pstMql)));
         }
     }
 
     if (mysql_real_connect(_pstMql, _dbConf._host.c_str(), _dbConf._user.c_str(), _dbConf._password.c_str(), _dbConf._database.c_str(), _dbConf._port, NULL, _dbConf._flag) == NULL)
     {
-        throw TC_Mysql_Exception("[TC_Mysql::connect]: mysql_real_connect: " + string(mysql_error(_pstMql)));
+        throw XC_Mysql_Exception("[XC_Mysql::connect]: mysql_real_connect: " + string(mysql_error(_pstMql)));
     }
 
 	_bConnected = true;
 }
 
-void TC_Mysql::disconnect()
+void XC_Mysql::disconnect()
 {
     if (_pstMql != NULL)
     {
@@ -88,7 +88,7 @@ void TC_Mysql::disconnect()
 	_bConnected = false;
 }
 
-string TC_Mysql::escapeString(const string& sFrom)
+string XC_Mysql::escapeString(const string& sFrom)
 {
 	if(!_bConnected)
 	{
@@ -110,12 +110,12 @@ string TC_Mysql::escapeString(const string& sFrom)
     return sTo;
 }
 
-MYSQL *TC_Mysql::getMysql(void)
+MYSQL *XC_Mysql::getMysql(void)
 {
     return _pstMql;
 }
 
-string TC_Mysql::buildInsertSQL(const string &sTableName, const RECORD_DATA &mpColumns)
+string XC_Mysql::buildInsertSQL(const string &sTableName, const RECORD_DATA &mpColumns)
 {
     ostringstream sColumnNames;
     ostringstream sColumnValues;
@@ -155,7 +155,7 @@ string TC_Mysql::buildInsertSQL(const string &sTableName, const RECORD_DATA &mpC
     return os.str();
 }
 
-string TC_Mysql::buildReplaceSQL(const string &sTableName, const RECORD_DATA &mpColumns)
+string XC_Mysql::buildReplaceSQL(const string &sTableName, const RECORD_DATA &mpColumns)
 {
     ostringstream sColumnNames;
     ostringstream sColumnValues;
@@ -194,7 +194,7 @@ string TC_Mysql::buildReplaceSQL(const string &sTableName, const RECORD_DATA &mp
     return os.str();
 }
 
-string TC_Mysql::buildUpdateSQL(const string &sTableName,const RECORD_DATA &mpColumns, const string &sWhereFilter)
+string XC_Mysql::buildUpdateSQL(const string &sTableName,const RECORD_DATA &mpColumns, const string &sWhereFilter)
 {
     ostringstream sColumnNameValueSet;
 
@@ -227,7 +227,7 @@ string TC_Mysql::buildUpdateSQL(const string &sTableName,const RECORD_DATA &mpCo
     return os.str();
 }
 
-string TC_Mysql::getVariables(const string &sName)
+string XC_Mysql::getVariables(const string &sName)
 {
     string sql = "SHOW VARIABLES LIKE '" + sName + "'";
 
@@ -245,7 +245,7 @@ string TC_Mysql::getVariables(const string &sName)
     return "";
 }
 
-void TC_Mysql::execute(const string& sSql)
+void XC_Mysql::execute(const string& sSql)
 {
 	/**
 	没有连上, 连接数据库
@@ -273,11 +273,11 @@ void TC_Mysql::execute(const string& sSql)
 
     if (iRet != 0)
     {
-        throw TC_Mysql_Exception("[TC_Mysql::execute]: mysql_query: [ " + sSql+" ] :" + string(mysql_error(_pstMql)));
+        throw XC_Mysql_Exception("[XC_Mysql::execute]: mysql_query: [ " + sSql+" ] :" + string(mysql_error(_pstMql)));
     }
 }
 
-TC_Mysql::MysqlData TC_Mysql::queryRecord(const string& sSql)
+XC_Mysql::MysqlData XC_Mysql::queryRecord(const string& sSql)
 {
     MysqlData   data;
 
@@ -307,14 +307,14 @@ TC_Mysql::MysqlData TC_Mysql::queryRecord(const string& sSql)
 
     if (iRet != 0)
     {
-        throw TC_Mysql_Exception("[TC_Mysql::execute]: mysql_query: [ " + sSql+" ] :" + string(mysql_error(_pstMql)));
+        throw XC_Mysql_Exception("[XC_Mysql::execute]: mysql_query: [ " + sSql+" ] :" + string(mysql_error(_pstMql)));
     }
 
     MYSQL_RES *pstRes = mysql_store_result(_pstMql);
 
     if(pstRes == NULL)
     {
-        throw TC_Mysql_Exception("[TC_Mysql::queryRecord]: mysql_store_result: " + sSql + " : " + string(mysql_error(_pstMql)));
+        throw XC_Mysql_Exception("[XC_Mysql::queryRecord]: mysql_store_result: " + sSql + " : " + string(mysql_error(_pstMql)));
     }
 
     vector<string> vtFields;
@@ -351,7 +351,7 @@ TC_Mysql::MysqlData TC_Mysql::queryRecord(const string& sSql)
     return data;
 }
 
-size_t TC_Mysql::updateRecord(const string &sTableName, const RECORD_DATA &mpColumns, const string &sCondition)
+size_t XC_Mysql::updateRecord(const string &sTableName, const RECORD_DATA &mpColumns, const string &sCondition)
 {
     string sSql = buildUpdateSQL(sTableName, mpColumns, sCondition);
     execute(sSql);
@@ -359,7 +359,7 @@ size_t TC_Mysql::updateRecord(const string &sTableName, const RECORD_DATA &mpCol
     return mysql_affected_rows(_pstMql);
 }
 
-size_t TC_Mysql::insertRecord(const string &sTableName, const RECORD_DATA &mpColumns)
+size_t XC_Mysql::insertRecord(const string &sTableName, const RECORD_DATA &mpColumns)
 {
     string sSql = buildInsertSQL(sTableName, mpColumns);
     execute(sSql);
@@ -367,7 +367,7 @@ size_t TC_Mysql::insertRecord(const string &sTableName, const RECORD_DATA &mpCol
     return mysql_affected_rows(_pstMql);
 }
 
-size_t TC_Mysql::replaceRecord(const string &sTableName, const RECORD_DATA &mpColumns)
+size_t XC_Mysql::replaceRecord(const string &sTableName, const RECORD_DATA &mpColumns)
 {
     string sSql = buildReplaceSQL(sTableName, mpColumns);
     execute(sSql);
@@ -375,7 +375,7 @@ size_t TC_Mysql::replaceRecord(const string &sTableName, const RECORD_DATA &mpCo
     return mysql_affected_rows(_pstMql);
 }
 
-size_t TC_Mysql::deleteRecord(const string &sTableName, const string &sCondition)
+size_t XC_Mysql::deleteRecord(const string &sTableName, const string &sCondition)
 {
     ostringstream sSql;
     sSql << "delete from " << sTableName << " " << sCondition;
@@ -385,7 +385,7 @@ size_t TC_Mysql::deleteRecord(const string &sTableName, const string &sCondition
     return mysql_affected_rows(_pstMql);
 }
 
-size_t TC_Mysql::getRecordCount(const string& sTableName, const string &sCondition)
+size_t XC_Mysql::getRecordCount(const string& sTableName, const string &sCondition)
 {
     ostringstream sSql;
     sSql << "select count(*) as num from " << sTableName << " " << sCondition;
@@ -398,7 +398,7 @@ size_t TC_Mysql::getRecordCount(const string& sTableName, const string &sConditi
 
 }
 
-size_t TC_Mysql::getSqlCount(const string &sCondition)
+size_t XC_Mysql::getSqlCount(const string &sCondition)
 {
     ostringstream sSql;
     sSql << "select count(*) as num " << sCondition;
@@ -410,7 +410,7 @@ size_t TC_Mysql::getSqlCount(const string &sCondition)
     return n;
 }
 
-int TC_Mysql::getMaxValue(const string& sTableName, const string& sFieldName,const string &sCondition)
+int XC_Mysql::getMaxValue(const string& sTableName, const string& sFieldName,const string &sCondition)
 {
     ostringstream sSql;
     sSql << "select " << sFieldName << " as f from " << sTableName << " " << sCondition << " order by f desc limit 1";
@@ -431,45 +431,45 @@ int TC_Mysql::getMaxValue(const string& sTableName, const string& sFieldName,con
 	return n;
 }
 
-bool TC_Mysql::existRecord(const string& sql)
+bool XC_Mysql::existRecord(const string& sql)
 {
     return queryRecord(sql).size() > 0;
 }
 
-long TC_Mysql::lastInsertID()
+long XC_Mysql::lastInsertID()
 {
     return mysql_insert_id(_pstMql);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TC_Mysql::MysqlRecord::MysqlRecord(const map<string, string> &record)
+XC_Mysql::MysqlRecord::MysqlRecord(const map<string, string> &record)
 : _record(record)
 {
 }
 
-const string& TC_Mysql::MysqlRecord::operator[](const string &s)
+const string& XC_Mysql::MysqlRecord::operator[](const string &s)
 {
     map<string, string>::const_iterator it = _record.find(s);
     if(it == _record.end())
     {
-        throw TC_Mysql_Exception("field '" + s + "' not exists.");
+        throw XC_Mysql_Exception("field '" + s + "' not exists.");
     }
     return it->second;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vector<map<string, string> >& TC_Mysql::MysqlData::data()
+vector<map<string, string> >& XC_Mysql::MysqlData::data()
 {
     return _data;
 }
 
-size_t TC_Mysql::MysqlData::size()
+size_t XC_Mysql::MysqlData::size()
 {
     return _data.size();
 }
 
-TC_Mysql::MysqlRecord TC_Mysql::MysqlData::operator[](size_t i)
+XC_Mysql::MysqlRecord XC_Mysql::MysqlData::operator[](size_t i)
 {
     return MysqlRecord(_data[i]);
 }

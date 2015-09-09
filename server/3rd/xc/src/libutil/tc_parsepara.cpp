@@ -1,26 +1,26 @@
 #include "util/tc_parsepara.h"
 
-namespace taf
+namespace xutil
 {
 
 #define ENCODE_TABLE "=&%\r\n"
 
-TC_Parsepara::TC_Parsepara(const string &sParam)
+XC_Parsepara::XC_Parsepara(const string &sParam)
 {
 	load(sParam);
 }
 
-TC_Parsepara::TC_Parsepara(const map<string, string> &mpParam)
+XC_Parsepara::XC_Parsepara(const map<string, string> &mpParam)
 {
 	load(mpParam);
 }
 
-TC_Parsepara::TC_Parsepara(const TC_Parsepara &para)
+XC_Parsepara::XC_Parsepara(const XC_Parsepara &para)
 {
 	_param = para._param;
 }
 
-TC_Parsepara &TC_Parsepara::operator=(const TC_Parsepara &para)
+XC_Parsepara &XC_Parsepara::operator=(const XC_Parsepara &para)
 {
 	if(this != &para)
 	{
@@ -32,38 +32,38 @@ TC_Parsepara &TC_Parsepara::operator=(const TC_Parsepara &para)
     return *this;
 }
 
-bool TC_Parsepara::operator==(const TC_Parsepara &para)
+bool XC_Parsepara::operator==(const XC_Parsepara &para)
 {
     return _param == para._param;
 }
 
-const TC_Parsepara TC_Parsepara::operator+(const TC_Parsepara &para)
+const XC_Parsepara XC_Parsepara::operator+(const XC_Parsepara &para)
 {
     map<string, string> mpParam;
     mpParam = _param;
     mpParam.insert(para._param.begin(), para._param.end());
 
-    return TC_Parsepara(mpParam);
+    return XC_Parsepara(mpParam);
 }
 
-TC_Parsepara& TC_Parsepara::operator+=(const TC_Parsepara &para)
+XC_Parsepara& XC_Parsepara::operator+=(const XC_Parsepara &para)
 {
     _param.insert(para._param.begin(), para._param.end());
 
     return *this;
 }
 
-TC_Parsepara::~TC_Parsepara()
+XC_Parsepara::~XC_Parsepara()
 {
 	clear();
 }
 
-void TC_Parsepara::clear()
+void XC_Parsepara::clear()
 {
 	_param.clear();
 }
 
-string TC_Parsepara::encodeMap(const map<string, string> &mpParam) const
+string XC_Parsepara::encodeMap(const map<string, string> &mpParam) const
 {
 	string sParsepara("");
 
@@ -84,7 +84,7 @@ string TC_Parsepara::encodeMap(const map<string, string> &mpParam) const
 	return sParsepara;
 }
 
-void TC_Parsepara::decodeMap(const string &sParam, map<string, string> &mpParam) const
+void XC_Parsepara::decodeMap(const string &sParam, map<string, string> &mpParam) const
 {
 	int iFlag = 0;
 	char ch1 = '=';
@@ -129,28 +129,28 @@ void TC_Parsepara::decodeMap(const string &sParam, map<string, string> &mpParam)
 	}
 }
 
-void TC_Parsepara::load(const string &sParam)
+void XC_Parsepara::load(const string &sParam)
 {
 	clear();
 	decodeMap(sParam, _param);
 }
 
-void TC_Parsepara::load(const map<string, string> &mpParam)
+void XC_Parsepara::load(const map<string, string> &mpParam)
 {
 	_param = mpParam;
 }
 
-string TC_Parsepara::tostr() const
+string XC_Parsepara::tostr() const
 {
 	return encodeMap(_param);
 }
 
-string &TC_Parsepara::operator[](const string &sName)
+string &XC_Parsepara::operator[](const string &sName)
 {
     return _param[sName];
 }
 
-string TC_Parsepara::getValue(const string &sName) const
+string XC_Parsepara::getValue(const string &sName) const
 {
     string sValue;
     map<string, string>::const_iterator it;
@@ -163,22 +163,22 @@ string TC_Parsepara::getValue(const string &sName) const
 	return sValue;
 }
 
-void TC_Parsepara::setValue(const string &sName, const string &sValue)
+void XC_Parsepara::setValue(const string &sName, const string &sValue)
 {
 	_param[sName] = sValue;
 }
 
-map<string,string> &TC_Parsepara::toMap()
+map<string,string> &XC_Parsepara::toMap()
 {
     return _param;
 }
 
-const map<string,string> &TC_Parsepara::toMap() const
+const map<string,string> &XC_Parsepara::toMap() const
 {
     return _param;
 }
 
-void TC_Parsepara::traverse(TC_ParseparaTraverseFunc func,void *pParam)
+void XC_Parsepara::traverse(XC_ParseparaTraverseFunc func,void *pParam)
 {
 	map<string, string>::iterator it  = _param.begin();
     map<string, string>::iterator itEnd  = _param.end();
@@ -191,7 +191,7 @@ void TC_Parsepara::traverse(TC_ParseparaTraverseFunc func,void *pParam)
 	}
 }
 
-char TC_Parsepara::x2c(const string &sWhat)
+char XC_Parsepara::x2c(const string &sWhat)
 {
     register char digit;
 
@@ -207,7 +207,7 @@ char TC_Parsepara::x2c(const string &sWhat)
     return(digit);
 }
 
-string TC_Parsepara::decodestr(const string &sParam)
+string XC_Parsepara::decodestr(const string &sParam)
 {
 	string sBuffer("");
 
@@ -237,7 +237,7 @@ string TC_Parsepara::decodestr(const string &sParam)
 	return sBuffer;
 }
 
-string TC_Parsepara::encodestr(const string &sParam)
+string XC_Parsepara::encodestr(const string &sParam)
 {
 	string sBuffer("");
 	static char sHexTable[17] = "0123456789ABCDEF";

@@ -1,13 +1,13 @@
 #include "util/tc_base64.h"
 
-namespace taf
+namespace xutil
 {
 // Base64编码表：将输入数据流每次取6 bit，用此6 bit的值(0-63)作为索引去查表，输出相应字符。这样，每3个字节将编码为4个字符(3×8 → 4×6)；不满4个字符的以'='填充。
-const char  TC_Base64::EnBase64Tab[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+const char  XC_Base64::EnBase64Tab[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     
 // Base64解码表：将64个可打印字符的值作为索引，查表得到的值（范围为0-63）依次连起来得到解码结果。
 // 解码表size为256，非法字符将被解码为ASCII 0
-const char  TC_Base64::DeBase64Tab[] =
+const char  XC_Base64::DeBase64Tab[] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -28,7 +28,7 @@ const char  TC_Base64::DeBase64Tab[] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-string TC_Base64::encode(const string &data, bool bChangeLine/* = false*/)
+string XC_Base64::encode(const string &data, bool bChangeLine/* = false*/)
 {
     if(data.empty())
         return "";    
@@ -44,7 +44,7 @@ string TC_Base64::encode(const string &data, bool bChangeLine/* = false*/)
     return ret;
 }
 
-string TC_Base64::decode(const string &data)
+string XC_Base64::decode(const string &data)
 {
     if(data.empty())
         return "";
@@ -58,7 +58,7 @@ string TC_Base64::decode(const string &data)
     return ret;
 }
 
-int TC_Base64::encode(const unsigned char* pSrc, int nSrcLen, char* pDst, bool bChangeLine/* = false*/)
+int XC_Base64::encode(const unsigned char* pSrc, int nSrcLen, char* pDst, bool bChangeLine/* = false*/)
 {
     unsigned char c1, c2, c3;   
     int nDstLen = 0;             
@@ -115,7 +115,7 @@ int TC_Base64::encode(const unsigned char* pSrc, int nSrcLen, char* pDst, bool b
 }
 
  
-int  TC_Base64::decode(const char* pSrc, int nSrcLen, unsigned char* pDst)
+int  XC_Base64::decode(const char* pSrc, int nSrcLen, unsigned char* pDst)
 {
     int nDstLen;            // 输出的字符计数 
     int nValue;             // 解码用到的整数

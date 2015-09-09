@@ -3,25 +3,25 @@
 
 #include <iostream>
 
-namespace taf
+namespace xutil
 {
 
-TC_ThreadPool::ThreadWorker::ThreadWorker(TC_ThreadPool *tpool)
+XC_ThreadPool::ThreadWorker::ThreadWorker(XC_ThreadPool *tpool)
 : _tpool(tpool)
 , _bTerminate(false)
 {
 }
 
-void TC_ThreadPool::ThreadWorker::terminate()
+void XC_ThreadPool::ThreadWorker::terminate()
 {
     _bTerminate = true;
     _tpool->notifyT();
 }
 
-void TC_ThreadPool::ThreadWorker::run()
+void XC_ThreadPool::ThreadWorker::run()
 {
     //调用初始化部分
-    TC_FunctorWrapperInterface *pst = _tpool->get();
+    XC_FunctorWrapperInterface *pst = _tpool->get();
     if(pst)
     {
         try
@@ -38,10 +38,10 @@ void TC_ThreadPool::ThreadWorker::run()
     //调用处理部分
     while (!_bTerminate)
     {
-        TC_FunctorWrapperInterface *pfw = _tpool->get(this);
+        XC_FunctorWrapperInterface *pfw = _tpool->get(this);
         if(pfw != NULL)
         {
-            auto_ptr<TC_FunctorWrapperInterface> apfw(pfw);
+            auto_ptr<XC_FunctorWrapperInterface> apfw(pfw);
 
             try
             {
@@ -63,10 +63,10 @@ void TC_ThreadPool::ThreadWorker::run()
 //
 //
 
-TC_ThreadPool::KeyInitialize TC_ThreadPool::g_key_initialize;
-pthread_key_t TC_ThreadPool::g_key;
+XC_ThreadPool::KeyInitialize XC_ThreadPool::g_key_initialize;
+pthread_key_t XC_ThreadPool::g_key;
 
-void TC_ThreadPool::destructor(void *p)
+void XC_ThreadPool::destructor(void *p)
 {
     ThreadData *ttd = (ThreadData*)p;
     if(ttd)
@@ -75,25 +75,25 @@ void TC_ThreadPool::destructor(void *p)
     }
 }
 
-void TC_ThreadPool::exit()
+void XC_ThreadPool::exit()
 {
-    TC_ThreadPool::ThreadData *p = getThreadData();
+    XC_ThreadPool::ThreadData *p = getThreadData();
     if(p)
     {
         delete p;
         int ret = pthread_setspecific(g_key, NULL);
         if(ret != 0)
         {
-            throw TC_ThreadPool_Exception("[TC_ThreadPool::setThreadData] pthread_setspecific error", ret);
+            throw XC_ThreadPool_Exception("[XC_ThreadPool::setThreadData] pthread_setspecific error", ret);
         }
     }
 
     _jobqueue.clear();
 }
 
-void TC_ThreadPool::setThreadData(TC_ThreadPool::ThreadData *p)
+void XC_ThreadPool::setThreadData(XC_ThreadPool::ThreadData *p)
 {
-    TC_ThreadPool::ThreadData *pOld = getThreadData();
+    XC_ThreadPool::ThreadData *pOld = getThreadData();
     if(pOld != NULL && pOld != p)
     {
         delete pOld;
@@ -102,18 +102,18 @@ void TC_ThreadPool::setThreadData(TC_ThreadPool::ThreadData *p)
     int ret = pthread_setspecific(g_key, (void *)p);
     if(ret != 0)
     {
-        throw TC_ThreadPool_Exception("[TC_ThreadPool::setThreadData] pthread_setspecific error", ret);
+        throw XC_ThreadPool_Exception("[XC_ThreadPool::setThreadData] pthread_setspecific error", ret);
     }
 }
 
-TC_ThreadPool::ThreadData* TC_ThreadPool::getThreadData()
+XC_ThreadPool::ThreadData* XC_ThreadPool::getThreadData()
 {
     return (ThreadData *)pthread_getspecific(g_key);
 }
 
-void TC_ThreadPool::setThreadData(pthread_key_t pkey, ThreadData *p)
+void XC_ThreadPool::setThreadData(pthread_key_t pkey, ThreadData *p)
 {
-    TC_ThreadPool::ThreadData *pOld = getThreadData(pkey);
+    XC_ThreadPool::ThreadData *pOld = getThreadData(pkey);
     if(pOld != NULL && pOld != p)
     {
         delete pOld;
@@ -122,26 +122,26 @@ void TC_ThreadPool::setThreadData(pthread_key_t pkey, ThreadData *p)
     int ret = pthread_setspecific(pkey, (void *)p);
     if(ret != 0)
     {
-        throw TC_ThreadPool_Exception("[TC_ThreadPool::setThreadData] pthread_setspecific error", ret);
+        throw XC_ThreadPool_Exception("[XC_ThreadPool::setThreadData] pthread_setspecific error", ret);
     }
 }
 
-TC_ThreadPool::ThreadData* TC_ThreadPool::getThreadData(pthread_key_t pkey)
+XC_ThreadPool::ThreadData* XC_ThreadPool::getThreadData(pthread_key_t pkey)
 {
     return (ThreadData *)pthread_getspecific(pkey);
 }
 
-TC_ThreadPool::TC_ThreadPool()
+XC_ThreadPool::XC_ThreadPool()
 {
 }
 
-TC_ThreadPool::~TC_ThreadPool()
+XC_ThreadPool::~XC_ThreadPool()
 {
     stop();
     clear();
 }
 
-void TC_ThreadPool::clear()
+void XC_ThreadPool::clear()
 {
     std::vector<ThreadWorker*>::iterator it = _jobthread.begin();
     while(it != _jobthread.end())
@@ -154,7 +154,7 @@ void TC_ThreadPool::clear()
     _busthread.clear();
 }
 
-void TC_ThreadPool::init(size_t num)
+void XC_ThreadPool::init(size_t num)
 {
     stop();
 
@@ -168,7 +168,7 @@ void TC_ThreadPool::init(size_t num)
     }
 }
 
-void TC_ThreadPool::stop()
+void XC_ThreadPool::stop()
 {
     Lock sync(*this);
 
@@ -184,7 +184,7 @@ void TC_ThreadPool::stop()
     }
 }
 
-void TC_ThreadPool::start()
+void XC_ThreadPool::start()
 {
     Lock sync(*this);
 
@@ -196,12 +196,12 @@ void TC_ThreadPool::start()
     }
 }
 
-bool TC_ThreadPool::finish()
+bool XC_ThreadPool::finish()
 {
     return _startqueue.empty() && _jobqueue.empty() && _busthread.empty();
 }
 
-bool TC_ThreadPool::waitForAllDone(int millsecond)
+bool XC_ThreadPool::waitForAllDone(int millsecond)
 {
     Lock sync(_tmutex);
 
@@ -219,7 +219,7 @@ start1:
         goto start1;
     }
 
-    int64_t iNow= TC_Common::now2ms();
+    int64_t iNow= XC_Common::now2ms();
     int m       = millsecond;
 start2:
 
@@ -235,15 +235,15 @@ start2:
         return false;
     }
 
-    millsecond = max((int64_t)0, m  - (TC_Common::now2ms() - iNow));
+    millsecond = max((int64_t)0, m  - (XC_Common::now2ms() - iNow));
     goto start2;
 
     return false;
 }
 
-TC_FunctorWrapperInterface *TC_ThreadPool::get(ThreadWorker *ptw)
+XC_FunctorWrapperInterface *XC_ThreadPool::get(ThreadWorker *ptw)
 {
-    TC_FunctorWrapperInterface *pFunctorWrapper = NULL;
+    XC_FunctorWrapperInterface *pFunctorWrapper = NULL;
     if(!_jobqueue.pop_front(pFunctorWrapper, 1000))
     {
         return NULL;
@@ -257,9 +257,9 @@ TC_FunctorWrapperInterface *TC_ThreadPool::get(ThreadWorker *ptw)
     return pFunctorWrapper;
 }
 
-TC_FunctorWrapperInterface *TC_ThreadPool::get()
+XC_FunctorWrapperInterface *XC_ThreadPool::get()
 {
-    TC_FunctorWrapperInterface *pFunctorWrapper = NULL;
+    XC_FunctorWrapperInterface *pFunctorWrapper = NULL;
     if(!_startqueue.pop_front(pFunctorWrapper))
     {
         return NULL;
@@ -268,7 +268,7 @@ TC_FunctorWrapperInterface *TC_ThreadPool::get()
     return pFunctorWrapper;
 }
 
-void TC_ThreadPool::idle(ThreadWorker *ptw)
+void XC_ThreadPool::idle(ThreadWorker *ptw)
 {
     Lock sync(_tmutex);
     _busthread.erase(ptw);
@@ -280,7 +280,7 @@ void TC_ThreadPool::idle(ThreadWorker *ptw)
     }
 }
 
-void TC_ThreadPool::notifyT()
+void XC_ThreadPool::notifyT()
 {
     _jobqueue.notifyT();
 }

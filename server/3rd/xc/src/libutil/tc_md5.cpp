@@ -5,20 +5,20 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
 
-unsigned char TC_MD5::PADDING[64] = 
+unsigned char XC_MD5::PADDING[64] = 
 {
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void TC_MD5::md5init (MD5_CTX *context)
+void XC_MD5::md5init (MD5_CTX *context)
 {
     context->count[0] = context->count[1] = 0;
     context->state[0] = 0x67452301;    /* load magic initialization constants.*/
@@ -27,7 +27,7 @@ void TC_MD5::md5init (MD5_CTX *context)
     context->state[3] = 0x10325476;
 }
 
-void TC_MD5::md5_process( MD5_CTX *ctx, const unsigned char data[64] )
+void XC_MD5::md5_process( MD5_CTX *ctx, const unsigned char data[64] )
 {
         unsigned long X[16], A, B, C, D;
     
@@ -150,7 +150,7 @@ void TC_MD5::md5_process( MD5_CTX *ctx, const unsigned char data[64] )
         ctx->state[3] += D;
 }
 
-string TC_MD5::md5file(const string& fileFullName)
+string XC_MD5::md5file(const string& fileFullName)
 {
     unsigned char sOutBuffer[16];
     unsigned char buf[1024];
@@ -169,7 +169,7 @@ string TC_MD5::md5file(const string& fileFullName)
     return bin2str((const void *)s.data(), s.length(), "");
 }
 
-void TC_MD5::md5update(MD5_CTX *ctx, unsigned char *input, unsigned int ilen )
+void XC_MD5::md5update(MD5_CTX *ctx, unsigned char *input, unsigned int ilen )
 {
     unsigned int fill;
     unsigned long left;
@@ -202,7 +202,7 @@ void TC_MD5::md5update(MD5_CTX *ctx, unsigned char *input, unsigned int ilen )
 }
 
 
-void TC_MD5::md5final (unsigned char output[16], MD5_CTX *ctx)
+void XC_MD5::md5final (unsigned char output[16], MD5_CTX *ctx)
 {
     unsigned long last, padn;
     unsigned long high, low;
@@ -227,7 +227,7 @@ void TC_MD5::md5final (unsigned char output[16], MD5_CTX *ctx)
     PUT_ULONG_LE( ctx->state[3], output, 12 );
 }
 
-void TC_MD5::encode (unsigned char *output,UINT4 *input,unsigned int len)
+void XC_MD5::encode (unsigned char *output,UINT4 *input,unsigned int len)
 {
     unsigned int i, j;
 
@@ -240,7 +240,7 @@ void TC_MD5::encode (unsigned char *output,UINT4 *input,unsigned int len)
     }
 }
 
-void TC_MD5::decode (UINT4 *output,unsigned char *input,unsigned int len)
+void XC_MD5::decode (UINT4 *output,unsigned char *input,unsigned int len)
 {
     unsigned int i, j;
 
@@ -253,7 +253,7 @@ void TC_MD5::decode (UINT4 *output,unsigned char *input,unsigned int len)
     }
 }
 
-void TC_MD5::md5_memcpy (POINTER output,POINTER input,unsigned int len)
+void XC_MD5::md5_memcpy (POINTER output,POINTER input,unsigned int len)
 {
     unsigned int i;
 
@@ -263,7 +263,7 @@ void TC_MD5::md5_memcpy (POINTER output,POINTER input,unsigned int len)
     }
 }
 
-void TC_MD5::md5_memset (POINTER output,int value,unsigned int len)
+void XC_MD5::md5_memset (POINTER output,int value,unsigned int len)
 {
     unsigned int i;
 
@@ -273,7 +273,7 @@ void TC_MD5::md5_memset (POINTER output,int value,unsigned int len)
     }
 }
 
-string TC_MD5::md5bin(const string &sString)
+string XC_MD5::md5bin(const string &sString)
 {
     unsigned char sOutBuffer[16];
 
@@ -289,13 +289,13 @@ string TC_MD5::md5bin(const string &sString)
 	return sBinResult;
 }
 
-string TC_MD5::md5str(const string &sString)
+string XC_MD5::md5str(const string &sString)
 {
     string s = md5bin(sString);
     return bin2str((const void *)s.data(), s.length(), "");
 }
 
-string TC_MD5::bin2str(const void *buf, size_t len, const string &sSep)
+string XC_MD5::bin2str(const void *buf, size_t len, const string &sSep)
 {
 	if(buf == NULL || len <=0 )
 	{

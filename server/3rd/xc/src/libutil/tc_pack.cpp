@@ -2,28 +2,28 @@
 #include <iostream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (bool t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (bool t)
 {
     _buffer.append(sizeof(bool), (char)t);
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (char t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (char t)
 {
     _buffer.append(sizeof(char), (char)t);
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned char t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (unsigned char t)
 {
     (*this) << (char)t;
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (short t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (short t)
 {
     t = htons(t);
 
@@ -31,13 +31,13 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (short t)
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned short t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (unsigned short t)
 {
     (*this) << (short)t;
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (int t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (int t)
 {
     t = htonl(t);
 
@@ -45,13 +45,13 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (int t)
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned int t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (unsigned int t)
 {
     (*this) << (int)t;
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (long t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (long t)
 {
     if(sizeof(long) == 8)
     {
@@ -68,7 +68,7 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (long t)
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned long t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (unsigned long t)
 {
     if(sizeof(unsigned long) == 8)
     {
@@ -85,7 +85,7 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned long
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (long long t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (long long t)
 {
     #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = __bswap_64(t);
@@ -95,7 +95,7 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (long long t)
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned long long t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (unsigned long long t)
 {
     #if __BYTE_ORDER == __LITTLE_ENDIAN
     t = __bswap_64(t);
@@ -106,25 +106,25 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (unsigned long
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (float t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (float t)
 {
     _buffer.append((const char *)&t, sizeof(float));
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (double t)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (double t)
 {
     _buffer.append((const char *)&t, sizeof(double));
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (const char *sBuffer)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (const char *sBuffer)
 {
     _buffer.append(sBuffer, strlen(sBuffer) + 1);
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (const string& sBuffer)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (const string& sBuffer)
 {
     uint32_t len = (uint32_t)sBuffer.length();
     if(len < 255)
@@ -142,7 +142,7 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (const string&
     return *this;
 }
 
-TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (const TC_PackIn& pi)
+XC_PackIn::XC_PackInInner& XC_PackIn::XC_PackInInner::operator << (const XC_PackIn& pi)
 {
     _buffer.append(pi.topacket());
     return (*this);
@@ -150,7 +150,7 @@ TC_PackIn::TC_PackInInner& TC_PackIn::TC_PackInInner::operator << (const TC_Pack
 
 /************************************************************************/
 
-bool TC_PackOut::isEnd()
+bool XC_PackOut::isEnd()
 {
     if(_pos >= _length)
     {
@@ -159,12 +159,12 @@ bool TC_PackOut::isEnd()
     return false;
 }
 
-TC_PackOut& TC_PackOut::operator >> (bool &t)
+XC_PackOut& XC_PackOut::operator >> (bool &t)
 {
     size_t len = sizeof(bool);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read bool error.");
+        throw XC_PackOut_Exception("XC_PackOut read bool error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -173,12 +173,12 @@ TC_PackOut& TC_PackOut::operator >> (bool &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (char &t)
+XC_PackOut& XC_PackOut::operator >> (char &t)
 {
     size_t len = sizeof(char);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read char error.");
+        throw XC_PackOut_Exception("XC_PackOut read char error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -187,12 +187,12 @@ TC_PackOut& TC_PackOut::operator >> (char &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (unsigned char &t)
+XC_PackOut& XC_PackOut::operator >> (unsigned char &t)
 {
     size_t len = sizeof(unsigned char);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read unsigned char error.");
+        throw XC_PackOut_Exception("XC_PackOut read unsigned char error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -201,12 +201,12 @@ TC_PackOut& TC_PackOut::operator >> (unsigned char &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (short &t)
+XC_PackOut& XC_PackOut::operator >> (short &t)
 {
     size_t len = sizeof(short);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read short error.");
+        throw XC_PackOut_Exception("XC_PackOut read short error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -218,12 +218,12 @@ TC_PackOut& TC_PackOut::operator >> (short &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (unsigned short &t)
+XC_PackOut& XC_PackOut::operator >> (unsigned short &t)
 {
     size_t len = sizeof(unsigned short);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read unsigned short error.");
+        throw XC_PackOut_Exception("XC_PackOut read unsigned short error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -235,12 +235,12 @@ TC_PackOut& TC_PackOut::operator >> (unsigned short &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (int &t)
+XC_PackOut& XC_PackOut::operator >> (int &t)
 {
     size_t len = sizeof(int);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read int error.");
+        throw XC_PackOut_Exception("XC_PackOut read int error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -252,12 +252,12 @@ TC_PackOut& TC_PackOut::operator >> (int &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (unsigned int &t)
+XC_PackOut& XC_PackOut::operator >> (unsigned int &t)
 {
     size_t len = sizeof(unsigned int);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read unsigned int error.");
+        throw XC_PackOut_Exception("XC_PackOut read unsigned int error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -269,12 +269,12 @@ TC_PackOut& TC_PackOut::operator >> (unsigned int &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (long &t)
+XC_PackOut& XC_PackOut::operator >> (long &t)
 {
     size_t len = sizeof(long);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read long error.");
+        throw XC_PackOut_Exception("XC_PackOut read long error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -295,12 +295,12 @@ TC_PackOut& TC_PackOut::operator >> (long &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (unsigned long &t)
+XC_PackOut& XC_PackOut::operator >> (unsigned long &t)
 {
     size_t len = sizeof(unsigned long);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read long error.");
+        throw XC_PackOut_Exception("XC_PackOut read long error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -321,12 +321,12 @@ TC_PackOut& TC_PackOut::operator >> (unsigned long &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (long long &t)
+XC_PackOut& XC_PackOut::operator >> (long long &t)
 {
     size_t len = sizeof(long long);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read long long error.");
+        throw XC_PackOut_Exception("XC_PackOut read long long error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -340,12 +340,12 @@ TC_PackOut& TC_PackOut::operator >> (long long &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (unsigned long long &t)
+XC_PackOut& XC_PackOut::operator >> (unsigned long long &t)
 {
     size_t len = sizeof(unsigned long long);
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read long long error.");
+        throw XC_PackOut_Exception("XC_PackOut read long long error.");
     }
 
     memcpy(&t, _pbuffer + _pos, len);
@@ -359,11 +359,11 @@ TC_PackOut& TC_PackOut::operator >> (unsigned long long &t)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (float &f)
+XC_PackOut& XC_PackOut::operator >> (float &f)
 {
     if(_pos + sizeof(float) > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read float error.");
+        throw XC_PackOut_Exception("XC_PackOut read float error.");
     }
 
     memcpy(&f, _pbuffer + _pos, sizeof(float));
@@ -372,11 +372,11 @@ TC_PackOut& TC_PackOut::operator >> (float &f)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (double &f)
+XC_PackOut& XC_PackOut::operator >> (double &f)
 {
     if(_pos + sizeof(double) > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read double error.");
+        throw XC_PackOut_Exception("XC_PackOut read double error.");
     }
 
     memcpy(&f, _pbuffer + _pos, sizeof(double));
@@ -385,19 +385,19 @@ TC_PackOut& TC_PackOut::operator >> (double &f)
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (char *sBuffer)
+XC_PackOut& XC_PackOut::operator >> (char *sBuffer)
 {
     strcpy(sBuffer, _pbuffer + _pos);
     _pos += strlen(sBuffer) + 1;
 
     if(_pos > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read zero string error.");
+        throw XC_PackOut_Exception("XC_PackOut read zero string error.");
     }
     return *this;
 }
 
-TC_PackOut& TC_PackOut::operator >> (string& sBuffer)
+XC_PackOut& XC_PackOut::operator >> (string& sBuffer)
 {
     uint32_t len = 0;
     unsigned char c;
@@ -413,7 +413,7 @@ TC_PackOut& TC_PackOut::operator >> (string& sBuffer)
 
     if(_pos + len > _length)
     {
-        throw TC_PackOut_Exception("TC_PackOut read string error.");
+        throw XC_PackOut_Exception("XC_PackOut read string error.");
     }
 
     sBuffer.assign((const char*)(_pbuffer + _pos), len);

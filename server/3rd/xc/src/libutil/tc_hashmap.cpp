@@ -2,10 +2,10 @@
 #include "util/tc_pack.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
 
-int TC_HashMap::Block::getBlockData(TC_HashMap::BlockData &data)
+int XC_HashMap::Block::getBlockData(XC_HashMap::BlockData &data)
 {
 	data._dirty = isDirty();
     data._synct = getSyncTime();
@@ -13,14 +13,14 @@ int TC_HashMap::Block::getBlockData(TC_HashMap::BlockData &data)
     string s;
 	int ret   = get(s);
 
-    if(ret != TC_HashMap::RT_OK)
+    if(ret != XC_HashMap::RT_OK)
     {
         return ret;
     }
 
     try
     {
-        TC_PackOut po(s.c_str(), s.length());
+        XC_PackOut po(s.c_str(), s.length());
         po >> data._key;
 
         //如果不是只有Key
@@ -30,18 +30,18 @@ int TC_HashMap::Block::getBlockData(TC_HashMap::BlockData &data)
         }
         else
         {
-            return TC_HashMap::RT_ONLY_KEY;
+            return XC_HashMap::RT_ONLY_KEY;
         }
     }
     catch(exception &ex)
     {
-        ret = TC_HashMap::RT_DECODE_ERR;
+        ret = XC_HashMap::RT_DECODE_ERR;
     }
 
     return ret;
 }
 
-size_t TC_HashMap::Block::getLastBlockHead()
+size_t XC_HashMap::Block::getLastBlockHead()
 {
 	size_t iHead = _iHead;
 
@@ -52,14 +52,14 @@ size_t TC_HashMap::Block::getLastBlockHead()
 	return iHead;
 }
 
-int TC_HashMap::Block::get(void *pData, size_t &iDataLen)
+int XC_HashMap::Block::get(void *pData, size_t &iDataLen)
 {
 	//没有下一个chunk, 一个chunk就可以装下数据了
 	if(!getBlockHead()->_bNextChunk)
 	{
 		memcpy(pData, getBlockHead()->_cData, min(getBlockHead()->_iDataLen, iDataLen));
 		iDataLen = getBlockHead()->_iDataLen;
-		return TC_HashMap::RT_OK;
+		return XC_HashMap::RT_OK;
 	}
 	else
 	{
@@ -70,7 +70,7 @@ int TC_HashMap::Block::get(void *pData, size_t &iDataLen)
 		memcpy(pData, getBlockHead()->_cData, iCopyLen);
 		if (iDataLen < iUseSize)
 		{
-			return TC_HashMap::RT_NOTALL_ERR;   //copy数据不完全
+			return XC_HashMap::RT_NOTALL_ERR;   //copy数据不完全
 		}
 
 		//已经copy长度
@@ -91,10 +91,10 @@ int TC_HashMap::Block::get(void *pData, size_t &iDataLen)
 
 				if(iLeftLen < pChunk->_iDataLen)
 				{
-					return TC_HashMap::RT_NOTALL_ERR;       //copy不完全
+					return XC_HashMap::RT_NOTALL_ERR;       //copy不完全
 				}
 
-				return TC_HashMap::RT_OK;
+				return XC_HashMap::RT_OK;
 			}
 			else
 			{
@@ -104,7 +104,7 @@ int TC_HashMap::Block::get(void *pData, size_t &iDataLen)
 				if (iLeftLen <= iUseSize)
 				{
 					iDataLen = iHasLen + iCopyLen;
-					return TC_HashMap::RT_NOTALL_ERR;   //copy不完全
+					return XC_HashMap::RT_NOTALL_ERR;   //copy不完全
 				}
 
 				//copy当前chunk完全
@@ -116,17 +116,17 @@ int TC_HashMap::Block::get(void *pData, size_t &iDataLen)
 		}
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::Block::get(string &s)
+int XC_HashMap::Block::get(string &s)
 {
 	size_t iLen = getDataLen();
 
 	char *cData = new char[iLen];
 	size_t iGetLen = iLen;
 	int ret = get(cData, iGetLen);
-	if(ret == TC_HashMap::RT_OK)
+	if(ret == XC_HashMap::RT_OK)
 	{
 		s.assign(cData, iGetLen);
 	}
@@ -136,11 +136,11 @@ int TC_HashMap::Block::get(string &s)
 	return ret;
 }
 
-int TC_HashMap::Block::set(const void *pData, size_t iDataLen, bool bOnlyKey, vector<TC_HashMap::BlockData> &vtData)
+int XC_HashMap::Block::set(const void *pData, size_t iDataLen, bool bOnlyKey, vector<XC_HashMap::BlockData> &vtData)
 {
 	//首先分配刚刚够的长度, 不能多一个chunk, 也不能少一个chunk
 	int ret = allocate(iDataLen, vtData);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
@@ -230,10 +230,10 @@ int TC_HashMap::Block::set(const void *pData, size_t iDataLen, bool bOnlyKey, ve
 	}
 
 	_pMap->doUpdate(true);
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-void TC_HashMap::Block::setDirty(bool b)
+void XC_HashMap::Block::setDirty(bool b)
 {
 	if(getBlockHead()->_bDirty != b)
 	{
@@ -250,21 +250,21 @@ void TC_HashMap::Block::setDirty(bool b)
 	}
 }
 
-bool TC_HashMap::Block::nextBlock()
+bool XC_HashMap::Block::nextBlock()
 {
 	_iHead = getBlockHead()->_iBlockNext;
 
 	return _iHead != 0;
 }
 
-bool TC_HashMap::Block::prevBlock()
+bool XC_HashMap::Block::prevBlock()
 {
 	_iHead = getBlockHead()->_iBlockPrev;
 
 	return _iHead != 0;
 }
 
-void TC_HashMap::Block::deallocate()
+void XC_HashMap::Block::deallocate()
 {
 	vector<size_t> v;
 	v.push_back(_iHead);
@@ -277,7 +277,7 @@ void TC_HashMap::Block::deallocate()
 	_pMap->_pDataAllocator->deallocateMemBlock(v);
 }
 
-void TC_HashMap::Block::makeNew(size_t index, size_t iAllocSize)
+void XC_HashMap::Block::makeNew(size_t index, size_t iAllocSize)
 {
     getBlockHead()->_iSize          = iAllocSize;
 	getBlockHead()->_iIndex         = index;
@@ -348,7 +348,7 @@ void TC_HashMap::Block::makeNew(size_t index, size_t iAllocSize)
 	_pMap->doUpdate(true);
 }
 
-void TC_HashMap::Block::erase()
+void XC_HashMap::Block::erase()
 {
 	//////////////////修改脏数据链表/////////////
 	if(_pMap->_pHead->_iDirtyTail == _iHead)
@@ -475,7 +475,7 @@ void TC_HashMap::Block::erase()
 	if(getBlockHead()->_iBlockPrev == 0)
 	{
 		//如果是hash桶的头部, 则还需要处理
-		TC_HashMap::tagHashItem *pItem  = _pMap->item(getBlockHead()->_iIndex);
+		XC_HashMap::tagHashItem *pItem  = _pMap->item(getBlockHead()->_iIndex);
 		assert(pItem->_iBlockAddr == _iHead);
 		if(pItem->_iBlockAddr == _iHead)
 		{
@@ -505,7 +505,7 @@ void TC_HashMap::Block::erase()
 	deallocate();
 }
 
-void TC_HashMap::Block::refreshSetList()
+void XC_HashMap::Block::refreshSetList()
 {
 	assert(_pMap->_pHead->_iSetHead != 0);
 	assert(_pMap->_pHead->_iSetTail != 0);
@@ -569,7 +569,7 @@ void TC_HashMap::Block::refreshSetList()
     refreshGetList();
 }
 
-void TC_HashMap::Block::refreshGetList()
+void XC_HashMap::Block::refreshGetList()
 {
 	assert(_pMap->_pHead->_iGetHead != 0);
 	assert(_pMap->_pHead->_iGetTail != 0);
@@ -615,7 +615,7 @@ void TC_HashMap::Block::refreshGetList()
 	_pMap->doUpdate(true);
 }
 
-void TC_HashMap::Block::deallocate(size_t iChunk)
+void XC_HashMap::Block::deallocate(size_t iChunk)
 {
 	tagChunkHead *pChunk        = getChunkHead(iChunk);
 	vector<size_t> v;
@@ -639,7 +639,7 @@ void TC_HashMap::Block::deallocate(size_t iChunk)
 	_pMap->_pDataAllocator->deallocateMemBlock(v);
 }
 
-int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &vtData)
+int XC_HashMap::Block::allocate(size_t iDataLen, vector<XC_HashMap::BlockData> &vtData)
 {
 	size_t fn   = 0;
 
@@ -658,7 +658,7 @@ int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &
 			//修改成功后再释放区块, 从而保证, 不会core的时候导致整个内存块不可用
 			deallocate(iNextChunk);
 		}
-		return TC_HashMap::RT_OK;
+		return XC_HashMap::RT_OK;
 	}
 
     //计算还需要多少长度
@@ -681,7 +681,7 @@ int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &
 					//一旦异常core, 最坏的情况就是少了可用的区块, 但是整个内存结构还是可用的
 					deallocate(iNextChunk);
 				}
-				return TC_HashMap::RT_OK ;
+				return XC_HashMap::RT_OK ;
             }
 
             //计算, 还需要多少长度
@@ -696,7 +696,7 @@ int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &
 				//没有后续chunk了, 需要新分配fn的空间
 				vector<size_t> chunks;
 				int ret = allocateChunk(fn, chunks, vtData);
-				if(ret != TC_HashMap::RT_OK)
+				if(ret != XC_HashMap::RT_OK)
 				{
 					//没有内存可以分配
 					return ret;
@@ -721,7 +721,7 @@ int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &
 		//没有后续chunk了, 需要新分配fn空间
 		vector<size_t> chunks;
 		int ret = allocateChunk(fn, chunks, vtData);
-		if(ret != TC_HashMap::RT_OK)
+		if(ret != XC_HashMap::RT_OK)
 		{
 			//没有内存可以分配
 			return ret;
@@ -740,10 +740,10 @@ int TC_HashMap::Block::allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &
 		return joinChunk(pChunk, chunks);
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::Block::joinChunk(tagChunkHead *pChunk, const vector<size_t> chunks)
+int XC_HashMap::Block::joinChunk(tagChunkHead *pChunk, const vector<size_t> chunks)
 {
 	for (size_t i = 0; i < chunks.size(); ++i)
 	{
@@ -751,7 +751,7 @@ int TC_HashMap::Block::joinChunk(tagChunkHead *pChunk, const vector<size_t> chun
 		{
 			_pMap->update(&pChunk->_bNextChunk, false);
 			_pMap->doUpdate(true);
-			return TC_HashMap::RT_OK;
+			return XC_HashMap::RT_OK;
 		}
 		else
 		{
@@ -764,10 +764,10 @@ int TC_HashMap::Block::joinChunk(tagChunkHead *pChunk, const vector<size_t> chun
 		}
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::Block::allocateChunk(size_t fn, vector<size_t> &chunks, vector<TC_HashMap::BlockData> &vtData)
+int XC_HashMap::Block::allocateChunk(size_t fn, vector<size_t> &chunks, vector<XC_HashMap::BlockData> &vtData)
 {
     assert(fn > 0);
 
@@ -781,7 +781,7 @@ int TC_HashMap::Block::allocateChunk(size_t fn, vector<size_t> &chunks, vector<T
 			//没有内存可以分配了, 先把分配的归还
 			_pMap->_pDataAllocator->deallocateMemBlock(chunks);
 			chunks.clear();
-			return TC_HashMap::RT_NO_MEMORY;
+			return XC_HashMap::RT_NO_MEMORY;
 		}
 
         //设置分配的数据块的大小
@@ -799,10 +799,10 @@ int TC_HashMap::Block::allocateChunk(size_t fn, vector<size_t> &chunks, vector<T
         fn -= iAllocSize - sizeof(tagChunkHead);
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-size_t TC_HashMap::Block::getDataLen()
+size_t XC_HashMap::Block::getDataLen()
 {
 	size_t n = 0;
 	if(!getBlockHead()->_bNextChunk)
@@ -835,7 +835,7 @@ size_t TC_HashMap::Block::getDataLen()
 
 ////////////////////////////////////////////////////////
 
-size_t TC_HashMap::BlockAllocator::allocateMemBlock(size_t index, size_t &iAllocSize, vector<TC_HashMap::BlockData> &vtData)
+size_t XC_HashMap::BlockAllocator::allocateMemBlock(size_t index, size_t &iAllocSize, vector<XC_HashMap::BlockData> &vtData)
 {
 begin:
 	void *pAddr = _pChunkAllocator->allocate(iAllocSize, iAllocSize);
@@ -857,7 +857,7 @@ begin:
 	return iAddr;
 }
 
-size_t TC_HashMap::BlockAllocator::allocateChunk(size_t iAddr, size_t &iAllocSize, vector<TC_HashMap::BlockData> &vtData)
+size_t XC_HashMap::BlockAllocator::allocateChunk(size_t iAddr, size_t &iAllocSize, vector<XC_HashMap::BlockData> &vtData)
 {
 begin:
 	void *pAddr = _pChunkAllocator->allocate(iAllocSize, iAllocSize);
@@ -875,7 +875,7 @@ begin:
 	return _pMap->getRelative(pAddr);
 }
 
-void TC_HashMap::BlockAllocator::deallocateMemBlock(const vector<size_t> &v)
+void XC_HashMap::BlockAllocator::deallocateMemBlock(const vector<size_t> &v)
 {
 	for(size_t i = 0; i < v.size(); i++)
 	{
@@ -884,7 +884,7 @@ void TC_HashMap::BlockAllocator::deallocateMemBlock(const vector<size_t> &v)
 	}
 }
 
-void TC_HashMap::BlockAllocator::deallocateMemBlock(size_t v)
+void XC_HashMap::BlockAllocator::deallocateMemBlock(size_t v)
 {
 	_pChunkAllocator->deallocate(_pMap->getAbsolute(v));
 	_pMap->delChunkCount();
@@ -892,19 +892,19 @@ void TC_HashMap::BlockAllocator::deallocateMemBlock(size_t v)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_HashMap::HashMapLockItem::HashMapLockItem(TC_HashMap *pMap, size_t iAddr)
+XC_HashMap::HashMapLockItem::HashMapLockItem(XC_HashMap *pMap, size_t iAddr)
 : _pMap(pMap)
 , _iAddr(iAddr)
 {
 }
 
-TC_HashMap::HashMapLockItem::HashMapLockItem(const HashMapLockItem &mcmdi)
+XC_HashMap::HashMapLockItem::HashMapLockItem(const HashMapLockItem &mcmdi)
 : _pMap(mcmdi._pMap)
 , _iAddr(mcmdi._iAddr)
 {
 }
 
-TC_HashMap::HashMapLockItem &TC_HashMap::HashMapLockItem::operator=(const TC_HashMap::HashMapLockItem &mcmdi)
+XC_HashMap::HashMapLockItem &XC_HashMap::HashMapLockItem::operator=(const XC_HashMap::HashMapLockItem &mcmdi)
 {
     if(this != &mcmdi)
     {
@@ -914,49 +914,49 @@ TC_HashMap::HashMapLockItem &TC_HashMap::HashMapLockItem::operator=(const TC_Has
     return (*this);
 }
 
-bool TC_HashMap::HashMapLockItem::operator==(const TC_HashMap::HashMapLockItem &mcmdi)
+bool XC_HashMap::HashMapLockItem::operator==(const XC_HashMap::HashMapLockItem &mcmdi)
 {
     return _pMap == mcmdi._pMap && _iAddr == mcmdi._iAddr;
 }
 
-bool TC_HashMap::HashMapLockItem::operator!=(const TC_HashMap::HashMapLockItem &mcmdi)
+bool XC_HashMap::HashMapLockItem::operator!=(const XC_HashMap::HashMapLockItem &mcmdi)
 {
     return _pMap != mcmdi._pMap || _iAddr != mcmdi._iAddr;
 }
 
-bool TC_HashMap::HashMapLockItem::isDirty()
+bool XC_HashMap::HashMapLockItem::isDirty()
 {
     Block block(_pMap, _iAddr);
     return block.isDirty();
 }
 
-bool TC_HashMap::HashMapLockItem::isOnlyKey()
+bool XC_HashMap::HashMapLockItem::isOnlyKey()
 {
     Block block(_pMap, _iAddr);
     return block.isOnlyKey();
 }
 
-time_t TC_HashMap::HashMapLockItem::getSyncTime()
+time_t XC_HashMap::HashMapLockItem::getSyncTime()
 {
     Block block(_pMap, _iAddr);
     return block.getSyncTime();
 }
 
-int TC_HashMap::HashMapLockItem::get(string& k, string& v)
+int XC_HashMap::HashMapLockItem::get(string& k, string& v)
 {
 	string s;
 
 	Block block(_pMap, _iAddr);
 
 	int ret = block.get(s);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
 
 	try
 	{
-		TC_PackOut po(s.c_str(), s.length());
+		XC_PackOut po(s.c_str(), s.length());
 		po >> k;
         if(!block.isOnlyKey())
         {
@@ -965,69 +965,69 @@ int TC_HashMap::HashMapLockItem::get(string& k, string& v)
         else
         {
             v = "";
-            return TC_HashMap::RT_ONLY_KEY;
+            return XC_HashMap::RT_ONLY_KEY;
         }
 	}
 	catch ( exception &ex )
 	{
-		return TC_HashMap::RT_EXCEPTION_ERR;
+		return XC_HashMap::RT_EXCEPTION_ERR;
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::HashMapLockItem::get(string& k)
+int XC_HashMap::HashMapLockItem::get(string& k)
 {
 	string s;
 
 	Block block(_pMap, _iAddr);
 
 	int ret = block.get(s);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
 
 	try
 	{
-		TC_PackOut po(s.c_str(), s.length());
+		XC_PackOut po(s.c_str(), s.length());
 		po >> k;
 	}
 	catch ( exception &ex )
 	{
-		return TC_HashMap::RT_EXCEPTION_ERR;
+		return XC_HashMap::RT_EXCEPTION_ERR;
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::HashMapLockItem::set(const string& k, const string& v, vector<TC_HashMap::BlockData> &vtData)
+int XC_HashMap::HashMapLockItem::set(const string& k, const string& v, vector<XC_HashMap::BlockData> &vtData)
 {
 	Block block(_pMap, _iAddr);
 
-	TC_PackIn pi;
+	XC_PackIn pi;
 	pi << k;
 	pi << v;
 
 	return block.set(pi.topacket().c_str(), pi.topacket().length(), false, vtData);
 }
 
-int TC_HashMap::HashMapLockItem::set(const string& k, vector<TC_HashMap::BlockData> &vtData)
+int XC_HashMap::HashMapLockItem::set(const string& k, vector<XC_HashMap::BlockData> &vtData)
 {
 	Block block(_pMap, _iAddr);
 
-	TC_PackIn pi;
+	XC_PackIn pi;
 	pi << k;
 
 	return block.set(pi.topacket().c_str(), pi.topacket().length(), true, vtData);
 }
 
-bool TC_HashMap::HashMapLockItem::equal(const string &k, string &v, int &ret)
+bool XC_HashMap::HashMapLockItem::equal(const string &k, string &v, int &ret)
 {
 	string k1;
 	ret = get(k1, v);
 
-	if ((ret == TC_HashMap::RT_OK || ret == TC_HashMap::RT_ONLY_KEY) && k == k1)
+	if ((ret == XC_HashMap::RT_OK || ret == XC_HashMap::RT_ONLY_KEY) && k == k1)
 	{
 		return true;
 	}
@@ -1035,12 +1035,12 @@ bool TC_HashMap::HashMapLockItem::equal(const string &k, string &v, int &ret)
 	return false;
 }
 
-bool TC_HashMap::HashMapLockItem::equal(const string& k, int &ret)
+bool XC_HashMap::HashMapLockItem::equal(const string& k, int &ret)
 {
 	string k1;
 	ret = get(k1);
 
-	if (ret == TC_HashMap::RT_OK && k == k1)
+	if (ret == XC_HashMap::RT_OK && k == k1)
 	{
 		return true;
 	}
@@ -1048,7 +1048,7 @@ bool TC_HashMap::HashMapLockItem::equal(const string& k, int &ret)
 	return false;
 }
 
-void TC_HashMap::HashMapLockItem::nextItem(int iType)
+void XC_HashMap::HashMapLockItem::nextItem(int iType)
 {
 	Block block(_pMap, _iAddr);
 
@@ -1090,7 +1090,7 @@ void TC_HashMap::HashMapLockItem::nextItem(int iType)
 	}
 }
 
-void TC_HashMap::HashMapLockItem::prevItem(int iType)
+void XC_HashMap::HashMapLockItem::prevItem(int iType)
 {
 	Block block(_pMap, _iAddr);
 
@@ -1133,22 +1133,22 @@ void TC_HashMap::HashMapLockItem::prevItem(int iType)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_HashMap::HashMapLockIterator::HashMapLockIterator()
+XC_HashMap::HashMapLockIterator::HashMapLockIterator()
 : _pMap(NULL), _iItem(NULL, 0)
 {
 }
 
-TC_HashMap::HashMapLockIterator::HashMapLockIterator(TC_HashMap *pMap, size_t iAddr, int iType, int iOrder)
+XC_HashMap::HashMapLockIterator::HashMapLockIterator(XC_HashMap *pMap, size_t iAddr, int iType, int iOrder)
 : _pMap(pMap), _iItem(_pMap, iAddr), _iType(iType), _iOrder(iOrder)
 {
 }
 
-TC_HashMap::HashMapLockIterator::HashMapLockIterator(const HashMapLockIterator &it)
+XC_HashMap::HashMapLockIterator::HashMapLockIterator(const HashMapLockIterator &it)
 : _pMap(it._pMap),_iItem(it._iItem), _iType(it._iType), _iOrder(it._iOrder)
 {
 }
 
-TC_HashMap::HashMapLockIterator& TC_HashMap::HashMapLockIterator::operator=(const HashMapLockIterator &it)
+XC_HashMap::HashMapLockIterator& XC_HashMap::HashMapLockIterator::operator=(const HashMapLockIterator &it)
 {
     if(this != &it)
     {
@@ -1161,7 +1161,7 @@ TC_HashMap::HashMapLockIterator& TC_HashMap::HashMapLockIterator::operator=(cons
     return (*this);
 }
 
-bool TC_HashMap::HashMapLockIterator::operator==(const HashMapLockIterator& mcmi)
+bool XC_HashMap::HashMapLockIterator::operator==(const HashMapLockIterator& mcmi)
 {
     if (_iItem.getAddr() != 0 || mcmi._iItem.getAddr() != 0)
     {
@@ -1174,7 +1174,7 @@ bool TC_HashMap::HashMapLockIterator::operator==(const HashMapLockIterator& mcmi
     return _pMap == mcmi._pMap;
 }
 
-bool TC_HashMap::HashMapLockIterator::operator!=(const HashMapLockIterator& mcmi)
+bool XC_HashMap::HashMapLockIterator::operator!=(const HashMapLockIterator& mcmi)
 {
     if (_iItem.getAddr() != 0 || mcmi._iItem.getAddr() != 0 )
     {
@@ -1187,7 +1187,7 @@ bool TC_HashMap::HashMapLockIterator::operator!=(const HashMapLockIterator& mcmi
     return _pMap != mcmi._pMap;
 }
 
-TC_HashMap::HashMapLockIterator& TC_HashMap::HashMapLockIterator::operator++()
+XC_HashMap::HashMapLockIterator& XC_HashMap::HashMapLockIterator::operator++()
 {
 	if(_iOrder == IT_NEXT)
 	{
@@ -1201,7 +1201,7 @@ TC_HashMap::HashMapLockIterator& TC_HashMap::HashMapLockIterator::operator++()
 
 }
 
-TC_HashMap::HashMapLockIterator TC_HashMap::HashMapLockIterator::operator++(int)
+XC_HashMap::HashMapLockIterator XC_HashMap::HashMapLockIterator::operator++(int)
 {
 	HashMapLockIterator it(*this);
 
@@ -1220,19 +1220,19 @@ TC_HashMap::HashMapLockIterator TC_HashMap::HashMapLockIterator::operator++(int)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_HashMap::HashMapItem::HashMapItem(TC_HashMap *pMap, size_t iIndex)
+XC_HashMap::HashMapItem::HashMapItem(XC_HashMap *pMap, size_t iIndex)
 : _pMap(pMap)
 , _iIndex(iIndex)
 {
 }
 
-TC_HashMap::HashMapItem::HashMapItem(const HashMapItem &mcmdi)
+XC_HashMap::HashMapItem::HashMapItem(const HashMapItem &mcmdi)
 : _pMap(mcmdi._pMap)
 , _iIndex(mcmdi._iIndex)
 {
 }
 
-TC_HashMap::HashMapItem &TC_HashMap::HashMapItem::operator=(const TC_HashMap::HashMapItem &mcmdi)
+XC_HashMap::HashMapItem &XC_HashMap::HashMapItem::operator=(const XC_HashMap::HashMapItem &mcmdi)
 {
     if(this != &mcmdi)
     {
@@ -1242,27 +1242,27 @@ TC_HashMap::HashMapItem &TC_HashMap::HashMapItem::operator=(const TC_HashMap::Ha
     return (*this);
 }
 
-bool TC_HashMap::HashMapItem::operator==(const TC_HashMap::HashMapItem &mcmdi)
+bool XC_HashMap::HashMapItem::operator==(const XC_HashMap::HashMapItem &mcmdi)
 {
     return _pMap == mcmdi._pMap && _iIndex == mcmdi._iIndex;
 }
 
-bool TC_HashMap::HashMapItem::operator!=(const TC_HashMap::HashMapItem &mcmdi)
+bool XC_HashMap::HashMapItem::operator!=(const XC_HashMap::HashMapItem &mcmdi)
 {
     return _pMap != mcmdi._pMap || _iIndex != mcmdi._iIndex;
 }
 
-void TC_HashMap::HashMapItem::get(vector<TC_HashMap::BlockData> &vtData)
+void XC_HashMap::HashMapItem::get(vector<XC_HashMap::BlockData> &vtData)
 {
     size_t iAddr = _pMap->item(_iIndex)->_iBlockAddr;
 
     while(iAddr != 0)
     {
         Block block(_pMap, iAddr);
-        TC_HashMap::BlockData data;
+        XC_HashMap::BlockData data;
 
         int ret = block.getBlockData(data);
-        if(ret == TC_HashMap::RT_OK)
+        if(ret == XC_HashMap::RT_OK)
         {
             vtData.push_back(data);
         }
@@ -1271,7 +1271,7 @@ void TC_HashMap::HashMapItem::get(vector<TC_HashMap::BlockData> &vtData)
     }
 }
 
-void TC_HashMap::HashMapItem::nextItem()
+void XC_HashMap::HashMapItem::nextItem()
 {
     if(_iIndex == (size_t)(-1))
     {
@@ -1286,7 +1286,7 @@ void TC_HashMap::HashMapItem::nextItem()
     _iIndex++;
 }
 
-int TC_HashMap::HashMapItem::setDirty()
+int XC_HashMap::HashMapItem::setDirty()
 {
 	if(_pMap->getMapHead()._bReadOnly) return RT_READONLY;
 
@@ -1312,22 +1312,22 @@ int TC_HashMap::HashMapItem::setDirty()
 
 ///////////////////////////////////////////////////////////////////
 
-TC_HashMap::HashMapIterator::HashMapIterator()
+XC_HashMap::HashMapIterator::HashMapIterator()
 : _pMap(NULL), _iItem(NULL, 0)
 {
 }
 
-TC_HashMap::HashMapIterator::HashMapIterator(TC_HashMap *pMap, size_t iIndex)
+XC_HashMap::HashMapIterator::HashMapIterator(XC_HashMap *pMap, size_t iIndex)
 : _pMap(pMap), _iItem(_pMap, iIndex)
 {
 }
 
-TC_HashMap::HashMapIterator::HashMapIterator(const HashMapIterator &it)
+XC_HashMap::HashMapIterator::HashMapIterator(const HashMapIterator &it)
 : _pMap(it._pMap),_iItem(it._iItem)
 {
 }
 
-TC_HashMap::HashMapIterator& TC_HashMap::HashMapIterator::operator=(const HashMapIterator &it)
+XC_HashMap::HashMapIterator& XC_HashMap::HashMapIterator::operator=(const HashMapIterator &it)
 {
     if(this != &it)
     {
@@ -1338,7 +1338,7 @@ TC_HashMap::HashMapIterator& TC_HashMap::HashMapIterator::operator=(const HashMa
     return (*this);
 }
 
-bool TC_HashMap::HashMapIterator::operator==(const HashMapIterator& mcmi)
+bool XC_HashMap::HashMapIterator::operator==(const HashMapIterator& mcmi)
 {
     if (_iItem.getIndex() != -1 || mcmi._iItem.getIndex() != -1)
     {
@@ -1348,7 +1348,7 @@ bool TC_HashMap::HashMapIterator::operator==(const HashMapIterator& mcmi)
     return _pMap == mcmi._pMap;
 }
 
-bool TC_HashMap::HashMapIterator::operator!=(const HashMapIterator& mcmi)
+bool XC_HashMap::HashMapIterator::operator!=(const HashMapIterator& mcmi)
 {
     if (_iItem.getIndex() != -1 || mcmi._iItem.getIndex() != -1 )
     {
@@ -1358,13 +1358,13 @@ bool TC_HashMap::HashMapIterator::operator!=(const HashMapIterator& mcmi)
     return _pMap != mcmi._pMap;
 }
 
-TC_HashMap::HashMapIterator& TC_HashMap::HashMapIterator::operator++()
+XC_HashMap::HashMapIterator& XC_HashMap::HashMapIterator::operator++()
 {
 	_iItem.nextItem();
 	return (*this);
 }
 
-TC_HashMap::HashMapIterator TC_HashMap::HashMapIterator::operator++(int)
+XC_HashMap::HashMapIterator XC_HashMap::HashMapIterator::operator++(int)
 {
 	HashMapIterator it(*this);
 	_iItem.nextItem();
@@ -1373,33 +1373,33 @@ TC_HashMap::HashMapIterator TC_HashMap::HashMapIterator::operator++(int)
 
 //////////////////////////////////////////////////////////////////////////////////
 
-void TC_HashMap::init(void *pAddr)
+void XC_HashMap::init(void *pAddr)
 {
 	_pHead          = static_cast<tagMapHead*>(pAddr);
 	_pstModifyHead  = static_cast<tagModifyHead*>((void*)((char*)pAddr + sizeof(tagMapHead)));
 }
 
-void TC_HashMap::initDataBlockSize(size_t iMinDataSize, size_t iMaxDataSize, float fFactor)
+void XC_HashMap::initDataBlockSize(size_t iMinDataSize, size_t iMaxDataSize, float fFactor)
 {
     _iMinDataSize   = iMinDataSize;
     _iMaxDataSize   = iMaxDataSize;
     _fFactor        = fFactor;
 }
 
-void TC_HashMap::create(void *pAddr, size_t iSize)
+void XC_HashMap::create(void *pAddr, size_t iSize)
 {
 	if(sizeof(tagHashItem) * 1
 	   + sizeof(tagMapHead)
 	   + sizeof(tagModifyHead)
-	   + sizeof(TC_MemMultiChunkAllocator::tagChunkAllocatorHead)
+	   + sizeof(XC_MemMultiChunkAllocator::tagChunkAllocatorHead)
 	   + 10 > iSize)
 	{
-        throw TC_HashMap_Exception("[TC_HashMap::create] mem size not enougth.");
+        throw XC_HashMap_Exception("[XC_HashMap::create] mem size not enougth.");
     }
 
     if(_iMinDataSize == 0 || _iMaxDataSize == 0 || _fFactor < 1.0)
     {
-        throw TC_HashMap_Exception("[TC_HashMap::create] init data size error:" + TC_Common::tostr(_iMinDataSize) + "|" + TC_Common::tostr(_iMaxDataSize) + "|" + TC_Common::tostr(_fFactor));
+        throw XC_HashMap_Exception("[XC_HashMap::create] init data size error:" + XC_Common::tostr(_iMinDataSize) + "|" + XC_Common::tostr(_iMaxDataSize) + "|" + XC_Common::tostr(_fFactor));
     }
 
 	init(pAddr);
@@ -1433,13 +1433,13 @@ void TC_HashMap::create(void *pAddr, size_t iSize)
 	size_t iBlockSize   = (_pHead->_iMinDataSize + _pHead->_iMaxDataSize)/2 + sizeof(Block::tagBlockHead);
 
 	//Hash个数
-	size_t iHashCount   = (iSize - sizeof(TC_MemChunkAllocator::tagChunkAllocatorHead)) / ((size_t)(iBlockSize*_fRadio) + sizeof(tagHashItem));
+	size_t iHashCount   = (iSize - sizeof(XC_MemChunkAllocator::tagChunkAllocatorHead)) / ((size_t)(iBlockSize*_fRadio) + sizeof(tagHashItem));
     //采用最近的素数作为hash值
     iHashCount          = getMinPrimeNumber(iHashCount);
 
 	void *pHashAddr     = (char*)_pHead + sizeof(tagMapHead) + sizeof(tagModifyHead);
 
-    size_t iHashMemSize = TC_MemVector<tagHashItem>::calcMemSize(iHashCount);
+    size_t iHashMemSize = XC_MemVector<tagHashItem>::calcMemSize(iHashCount);
     _hash.create(pHashAddr, iHashMemSize);
 
 	void *pDataAddr     = (char*)pHashAddr + _hash.getMemSize();
@@ -1447,7 +1447,7 @@ void TC_HashMap::create(void *pAddr, size_t iSize)
 	_pDataAllocator->create(pDataAddr, iSize - ((char*)pDataAddr - (char*)_pHead), sizeof(Block::tagBlockHead) + _pHead->_iMinDataSize, sizeof(Block::tagBlockHead) + _pHead->_iMaxDataSize, _pHead->_fFactor);
 }
 
-void TC_HashMap::connect(void *pAddr, size_t iSize)
+void XC_HashMap::connect(void *pAddr, size_t iSize)
 {
 	init(pAddr);
 
@@ -1455,12 +1455,12 @@ void TC_HashMap::connect(void *pAddr, size_t iSize)
 	{
         ostringstream os;
         os << (int)_pHead->_cMaxVersion << "." << (int)_pHead->_cMinVersion << " != " << ((int)MAX_VERSION) << "." << ((int)MIN_VERSION);
-        throw TC_HashMap_Exception("[TC_HashMap::connect] hash map version not equal:" + os.str() + " (data != code)");
+        throw XC_HashMap_Exception("[XC_HashMap::connect] hash map version not equal:" + os.str() + " (data != code)");
 	}
 
     if(_pHead->_iMemSize != iSize)
     {
-        throw TC_HashMap_Exception("[TC_HashMap::connect] hash map size not equal:" + TC_Common::tostr(_pHead->_iMemSize) + "!=" + TC_Common::tostr(iSize));
+        throw XC_HashMap_Exception("[XC_HashMap::connect] hash map size not equal:" + XC_Common::tostr(_pHead->_iMemSize) + "!=" + XC_Common::tostr(iSize));
     }
 
 	void *pHashAddr = (char*)_pHead + sizeof(tagMapHead) + sizeof(tagModifyHead);
@@ -1476,7 +1476,7 @@ void TC_HashMap::connect(void *pAddr, size_t iSize)
     _fRadio         = _pHead->_fRadio;
 }
 
-int TC_HashMap::append(void *pAddr, size_t iSize)
+int XC_HashMap::append(void *pAddr, size_t iSize)
 {
     if(iSize <= _pHead->_iMemSize)
     {
@@ -1489,7 +1489,7 @@ int TC_HashMap::append(void *pAddr, size_t iSize)
     {
         ostringstream os;
         os << (int)_pHead->_cMaxVersion << "." << (int)_pHead->_cMinVersion << " != " << ((int)MAX_VERSION) << "." << ((int)MIN_VERSION);
-        throw TC_HashMap_Exception("[TC_HashMap::append] hash map version not equal:" + os.str() + " (data != code)");
+        throw XC_HashMap_Exception("[XC_HashMap::append] hash map version not equal:" + os.str() + " (data != code)");
     }
     
     _pHead->_iMemSize = iSize;
@@ -1508,7 +1508,7 @@ int TC_HashMap::append(void *pAddr, size_t iSize)
     return 0;
 }
 
-void TC_HashMap::clear()
+void XC_HashMap::clear()
 {
     assert(_pHead);
 
@@ -1530,7 +1530,7 @@ void TC_HashMap::clear()
 	_pDataAllocator->rebuild();
 }
 
-int TC_HashMap::dump2file(const string &sFile)
+int XC_HashMap::dump2file(const string &sFile)
 {
 	FILE *fp = fopen(sFile.c_str(), "wb");
 	if(fp == NULL)
@@ -1548,7 +1548,7 @@ int TC_HashMap::dump2file(const string &sFile)
 	return RT_DUMP_FILE_ERR;
 }
 
-int TC_HashMap::load5file(const string &sFile)
+int XC_HashMap::load5file(const string &sFile)
 {
 	FILE *fp = fopen(sFile.c_str(), "rb");
 	if(fp == NULL)
@@ -1610,7 +1610,7 @@ int TC_HashMap::load5file(const string &sFile)
 	return RT_LOAL_FILE_ERR;
 }
 
-int TC_HashMap::recover(size_t i, bool bRepair)
+int XC_HashMap::recover(size_t i, bool bRepair)
 {
     doUpdate();
 
@@ -1630,7 +1630,7 @@ check:
     {
         BlockData data;
         int ret = block.getBlockData(data);
-        if(ret != TC_HashMap::RT_OK && ret != TC_HashMap::RT_ONLY_KEY)
+        if(ret != XC_HashMap::RT_OK && ret != XC_HashMap::RT_ONLY_KEY)
         {
             //增加删除block数
             ++e;
@@ -1651,15 +1651,15 @@ check:
     return e;
 }
 
-int TC_HashMap::checkDirty(const string &k)
+int XC_HashMap::checkDirty(const string &k)
 {
 	doUpdate();
 	incGetCount();
 
-	int ret         = TC_HashMap::RT_OK;
+	int ret         = XC_HashMap::RT_OK;
 	size_t index    = hashIndex(k);
 	lock_iterator it= find(k, index, ret);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
@@ -1667,25 +1667,25 @@ int TC_HashMap::checkDirty(const string &k)
     //没有数据
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_HashMap::RT_ONLY_KEY;
+        return XC_HashMap::RT_ONLY_KEY;
     }
 
 	Block block(this, it->getAddr());
 	if (block.isDirty())
 	{
-		return TC_HashMap::RT_DIRTY_DATA;
+		return XC_HashMap::RT_DIRTY_DATA;
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::setDirty(const string& k)
+int XC_HashMap::setDirty(const string& k)
 {
 	doUpdate();
 
@@ -1693,10 +1693,10 @@ int TC_HashMap::setDirty(const string& k)
 
 	incGetCount();
 
-	int ret         = TC_HashMap::RT_OK;
+	int ret         = XC_HashMap::RT_OK;
 	size_t index    = hashIndex(k);
 	lock_iterator it= find(k, index, ret);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
@@ -1704,23 +1704,23 @@ int TC_HashMap::setDirty(const string& k)
     //没有数据或只有Key
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_HashMap::RT_ONLY_KEY;
+        return XC_HashMap::RT_ONLY_KEY;
     }
 
 	Block block(this, it->getAddr());
 	block.setDirty(true);
 	block.refreshSetList();
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::setDirtyAfterSync(const string& k)
+int XC_HashMap::setDirtyAfterSync(const string& k)
 {
 	doUpdate();
 
@@ -1728,10 +1728,10 @@ int TC_HashMap::setDirtyAfterSync(const string& k)
 
 	incGetCount();
 
-	int ret         = TC_HashMap::RT_OK;
+	int ret         = XC_HashMap::RT_OK;
 	size_t index    = hashIndex(k);
 	lock_iterator it= find(k, index, ret);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
@@ -1739,13 +1739,13 @@ int TC_HashMap::setDirtyAfterSync(const string& k)
     //没有数据或只有Key
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_HashMap::RT_ONLY_KEY;
+        return XC_HashMap::RT_ONLY_KEY;
     }
 
 	Block block(this, it->getAddr());
@@ -1755,10 +1755,10 @@ int TC_HashMap::setDirtyAfterSync(const string& k)
 		_pHead->_iDirtyTail = block.getHead();
 	}
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::setClean(const string& k)
+int XC_HashMap::setClean(const string& k)
 {
 	doUpdate();
 
@@ -1766,10 +1766,10 @@ int TC_HashMap::setClean(const string& k)
 
 	incGetCount();
 
-	int ret         = TC_HashMap::RT_OK;
+	int ret         = XC_HashMap::RT_OK;
 	size_t index    = hashIndex(k);
 	lock_iterator it= find(k, index, ret);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
@@ -1777,13 +1777,13 @@ int TC_HashMap::setClean(const string& k)
     //没有数据或只有Key
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_HashMap::RT_ONLY_KEY;
+        return XC_HashMap::RT_ONLY_KEY;
     }
 
 	Block block(this, it->getAddr());
@@ -1792,20 +1792,20 @@ int TC_HashMap::setClean(const string& k)
 
 	doUpdate(true);
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::get(const string& k, string &v, time_t &iSyncTime)
+int XC_HashMap::get(const string& k, string &v, time_t &iSyncTime)
 {
 	doUpdate();
 	incGetCount();
 
-    int ret             = TC_HashMap::RT_OK;
+    int ret             = XC_HashMap::RT_OK;
 
 	size_t index        = hashIndex(k);
 	lock_iterator it    = find(k, index, v, ret);
 
-	if(ret != TC_HashMap::RT_OK && ret != TC_HashMap::RT_ONLY_KEY)
+	if(ret != XC_HashMap::RT_OK && ret != XC_HashMap::RT_ONLY_KEY)
 	{
 		return ret;
 	}
@@ -1813,13 +1813,13 @@ int TC_HashMap::get(const string& k, string &v, time_t &iSyncTime)
     //没有数据
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_HashMap::RT_ONLY_KEY;
+        return XC_HashMap::RT_ONLY_KEY;
     }
 
     Block block(this, it->getAddr());
@@ -1830,35 +1830,35 @@ int TC_HashMap::get(const string& k, string &v, time_t &iSyncTime)
     {
         block.refreshGetList();
     }
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::get(const string& k, string &v)
+int XC_HashMap::get(const string& k, string &v)
 {
     time_t iSyncTime;
     return get(k, v, iSyncTime);
 }
 
-int TC_HashMap::set(const string& k, const string& v, bool bDirty, vector<BlockData> &vtData)
+int XC_HashMap::set(const string& k, const string& v, bool bDirty, vector<BlockData> &vtData)
 {
 	doUpdate();
 	incGetCount();
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-	int ret             = TC_HashMap::RT_OK;
+	int ret             = XC_HashMap::RT_OK;
 	size_t index        = hashIndex(k);
 	lock_iterator it    = find(k, index, ret);
 	bool bNewBlock = false;
 
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
 
 	if(it == end())
 	{
-        TC_PackIn pi;
+        XC_PackIn pi;
         pi << k;
         pi << v;
         size_t iAllocSize = sizeof(Block::tagBlockHead) + pi.length();
@@ -1867,7 +1867,7 @@ int TC_HashMap::set(const string& k, const string& v, bool bDirty, vector<BlockD
 		size_t iAddr = _pDataAllocator->allocateMemBlock(index, iAllocSize, vtData);
         if(iAddr == 0)
         {
-            return TC_HashMap::RT_NO_MEMORY;
+            return XC_HashMap::RT_NO_MEMORY;
         }
 
 		it = HashMapLockIterator(this, iAddr, HashMapLockIterator::IT_BLOCK, HashMapLockIterator::IT_NEXT);
@@ -1876,7 +1876,7 @@ int TC_HashMap::set(const string& k, const string& v, bool bDirty, vector<BlockD
 	}
 
 	ret = it->set(k, v, vtData);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
         //新记录, 写失败了, 要删除该块
         if(bNewBlock)
@@ -1895,29 +1895,29 @@ int TC_HashMap::set(const string& k, const string& v, bool bDirty, vector<BlockD
 	block.setDirty(bDirty);
 	block.refreshSetList();
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::set(const string& k, vector<BlockData> &vtData)
+int XC_HashMap::set(const string& k, vector<BlockData> &vtData)
 {
 	doUpdate();
 	incGetCount();
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-	int ret             = TC_HashMap::RT_OK;
+	int ret             = XC_HashMap::RT_OK;
 	size_t index        = hashIndex(k);
 	lock_iterator it    = find(k, index, ret);
 	bool bNewBlock = false;
 
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
 		return ret;
 	}
 
 	if(it == end())
 	{
-        TC_PackIn pi;
+        XC_PackIn pi;
         pi << k;
         size_t iAllocSize = sizeof(Block::tagBlockHead) + pi.length();
 
@@ -1925,7 +1925,7 @@ int TC_HashMap::set(const string& k, vector<BlockData> &vtData)
 		size_t iAddr = _pDataAllocator->allocateMemBlock(index, iAllocSize, vtData);
         if(iAddr == 0)
         {
-            return TC_HashMap::RT_NO_MEMORY;
+            return XC_HashMap::RT_NO_MEMORY;
         }
 
 		it = HashMapLockIterator(this, iAddr, HashMapLockIterator::IT_BLOCK, HashMapLockIterator::IT_NEXT);
@@ -1933,7 +1933,7 @@ int TC_HashMap::set(const string& k, vector<BlockData> &vtData)
 	}
 
 	ret = it->set(k, vtData);
-	if(ret != TC_HashMap::RT_OK)
+	if(ret != XC_HashMap::RT_OK)
 	{
         //新记录, 写失败了, 要删除该块
         if(bNewBlock)
@@ -1951,30 +1951,30 @@ int TC_HashMap::set(const string& k, vector<BlockData> &vtData)
 	}
 	block.refreshSetList();
 
-	return TC_HashMap::RT_OK;
+	return XC_HashMap::RT_OK;
 }
 
-int TC_HashMap::del(const string& k, BlockData &data)
+int XC_HashMap::del(const string& k, BlockData &data)
 {
 	doUpdate();
 	incGetCount();
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-	int    ret      = TC_HashMap::RT_OK;
+	int    ret      = XC_HashMap::RT_OK;
 	size_t index    = hashIndex(k);
 
     data._key       = k;
 
 	lock_iterator it     = find(k, index, data._value, ret);
-	if(ret != TC_HashMap::RT_OK && ret != TC_HashMap::RT_ONLY_KEY)
+	if(ret != XC_HashMap::RT_OK && ret != XC_HashMap::RT_ONLY_KEY)
 	{
 		return ret;
 	}
 
 	if(it == end())
 	{
-		return TC_HashMap::RT_NO_DATA;
+		return XC_HashMap::RT_NO_DATA;
 	}
 
 	Block block(this, it->getAddr());
@@ -1984,7 +1984,7 @@ int TC_HashMap::del(const string& k, BlockData &data)
     return ret;
 }
 
-int TC_HashMap::erase(int radio, BlockData &data, bool bCheckDirty)
+int XC_HashMap::erase(int radio, BlockData &data, bool bCheckDirty)
 {
     doUpdate();
 
@@ -2043,21 +2043,21 @@ int TC_HashMap::erase(int radio, BlockData &data, bool bCheckDirty)
 	}
     int ret = block.getBlockData(data);
     block.erase();
-    if(ret == TC_HashMap::RT_OK)
+    if(ret == XC_HashMap::RT_OK)
     {
-        return TC_HashMap::RT_ERASE_OK;
+        return XC_HashMap::RT_ERASE_OK;
     }
     return ret;
 }
 
-void TC_HashMap::sync()
+void XC_HashMap::sync()
 {
     doUpdate();
     
     _pHead->_iSyncTail = _pHead->_iDirtyTail;
 }
 
-int TC_HashMap::sync(time_t iNowTime, BlockData &data)
+int XC_HashMap::sync(time_t iNowTime, BlockData &data)
 {
     doUpdate();
 
@@ -2084,7 +2084,7 @@ int TC_HashMap::sync(time_t iNowTime, BlockData &data)
     }
 
     int ret = block.getBlockData(data);
-    if(ret != TC_HashMap::RT_OK)
+    if(ret != XC_HashMap::RT_OK)
     {
         //没有获取完整的记录
 		if(_pHead->_iDirtyTail == iAddr)
@@ -2112,7 +2112,7 @@ int TC_HashMap::sync(time_t iNowTime, BlockData &data)
 	return RT_NONEED_SYNC;
 }
 
-void TC_HashMap::backup(bool bForceFromBegin)
+void XC_HashMap::backup(bool bForceFromBegin)
 {
     doUpdate();
     if(bForceFromBegin || _pHead->_iBackupTail == 0)
@@ -2122,7 +2122,7 @@ void TC_HashMap::backup(bool bForceFromBegin)
     }
 }
 
-int TC_HashMap::backup(BlockData &data)
+int XC_HashMap::backup(BlockData &data)
 {
     doUpdate();
 
@@ -2141,17 +2141,17 @@ int TC_HashMap::backup(BlockData &data)
     _pHead->_iBackupTail = block.getBlockHead()->_iGetPrev;
 	doUpdate(true);
 
-    if(ret == TC_HashMap::RT_OK)
+    if(ret == XC_HashMap::RT_OK)
     {
-        return TC_HashMap::RT_NEED_BACKUP;
+        return XC_HashMap::RT_NEED_BACKUP;
     }
     return ret;
 }
 
-TC_HashMap::lock_iterator TC_HashMap::find(const string& k)
+XC_HashMap::lock_iterator XC_HashMap::find(const string& k)
 {
 	size_t index = hashIndex(k);
-	int ret = TC_HashMap::RT_OK;
+	int ret = XC_HashMap::RT_OK;
 
 	doUpdate();
 
@@ -2179,7 +2179,7 @@ TC_HashMap::lock_iterator TC_HashMap::find(const string& k)
 	return end();
 }
 
-TC_HashMap::lock_iterator TC_HashMap::begin()
+XC_HashMap::lock_iterator XC_HashMap::begin()
 {
 	doUpdate();
 
@@ -2195,7 +2195,7 @@ TC_HashMap::lock_iterator TC_HashMap::begin()
 	return end();
 }
 
-TC_HashMap::lock_iterator TC_HashMap::rbegin()
+XC_HashMap::lock_iterator XC_HashMap::rbegin()
 {
 	doUpdate();
 
@@ -2212,43 +2212,43 @@ TC_HashMap::lock_iterator TC_HashMap::rbegin()
 	return end();
 }
 
-TC_HashMap::lock_iterator TC_HashMap::beginSetTime()
+XC_HashMap::lock_iterator XC_HashMap::beginSetTime()
 {
 	doUpdate();
 	return lock_iterator(this, _pHead->_iSetHead, lock_iterator::IT_SET, lock_iterator::IT_NEXT);
 }
 
-TC_HashMap::lock_iterator TC_HashMap::rbeginSetTime()
+XC_HashMap::lock_iterator XC_HashMap::rbeginSetTime()
 {
 	doUpdate();
 	return lock_iterator(this, _pHead->_iSetTail, lock_iterator::IT_SET, lock_iterator::IT_PREV);
 }
 
-TC_HashMap::lock_iterator TC_HashMap::beginGetTime()
+XC_HashMap::lock_iterator XC_HashMap::beginGetTime()
 {
 	doUpdate();
 	return lock_iterator(this, _pHead->_iGetHead, lock_iterator::IT_GET, lock_iterator::IT_NEXT);
 }
 
-TC_HashMap::lock_iterator TC_HashMap::rbeginGetTime()
+XC_HashMap::lock_iterator XC_HashMap::rbeginGetTime()
 {
 	doUpdate();
 	return lock_iterator(this, _pHead->_iGetTail, lock_iterator::IT_GET, lock_iterator::IT_PREV);
 }
 
-TC_HashMap::lock_iterator TC_HashMap::beginDirty()
+XC_HashMap::lock_iterator XC_HashMap::beginDirty()
 {
 	doUpdate();
 	return lock_iterator(this, _pHead->_iDirtyTail, lock_iterator::IT_SET, lock_iterator::IT_PREV);
 }
 
-TC_HashMap::hash_iterator TC_HashMap::hashBegin()
+XC_HashMap::hash_iterator XC_HashMap::hashBegin()
 {
     doUpdate();
     return hash_iterator(this, 0);
 }
 
-TC_HashMap::hash_iterator TC_HashMap::hashIndex(size_t iIndex)
+XC_HashMap::hash_iterator XC_HashMap::hashIndex(size_t iIndex)
 {
 	doUpdate();
 	return hash_iterator(this, iIndex);
@@ -2256,7 +2256,7 @@ TC_HashMap::hash_iterator TC_HashMap::hashIndex(size_t iIndex)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string TC_HashMap::desc()
+string XC_HashMap::desc()
 {
 	ostringstream s;
 	{
@@ -2265,7 +2265,7 @@ string TC_HashMap::desc()
 		s << "[AutoErase        = "   << _pHead->_bAutoErase   << "]" << endl;
 		s << "[MemSize          = "   << _pHead->_iMemSize          << "]" << endl;
 		s << "[Capacity         = "   << _pDataAllocator->getCapacity()  << "]" << endl;
-        s << "[SingleBlockCount = "   << TC_Common::tostr(singleBlockChunkCount())         << "]" << endl;
+        s << "[SingleBlockCount = "   << XC_Common::tostr(singleBlockChunkCount())         << "]" << endl;
 		s << "[AllBlockChunk    = "   << allBlockChunkCount()       << "]" << endl;
         s << "[UsedChunk        = "   << _pHead->_iUsedChunk        << "]" << endl;
         s << "[FreeChunk        = "   << allBlockChunkCount() - _pHead->_iUsedChunk        << "]" << endl;
@@ -2301,7 +2301,7 @@ string TC_HashMap::desc()
 		s << "[AvgHash          = "   << fAvgHash     << "]" << endl;
 	}
 
-    vector<TC_MemChunk::tagChunkHead> vChunkHead = _pDataAllocator->getBlockDetail();
+    vector<XC_MemChunk::tagChunkHead> vChunkHead = _pDataAllocator->getBlockDetail();
 
     s << "*************************************************************************" << endl;
     s << "[DiffBlockCount   = "   << vChunkHead.size()  << "]" << endl;
@@ -2315,7 +2315,7 @@ string TC_HashMap::desc()
 	return s.str();
 }
 
-size_t TC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
+size_t XC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
 {
     //不能被淘汰
     if(!_pHead->_bAutoErase) return 0;
@@ -2329,7 +2329,7 @@ size_t TC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
 		size_t iAddr;
 
         //判断按照哪种方式淘汰
-        if(_pHead->_cEraseMode == TC_HashMap::ERASEBYSET)
+        if(_pHead->_cEraseMode == XC_HashMap::ERASEBYSET)
         {
             iAddr = _pHead->_iSetTail;
         }
@@ -2348,7 +2348,7 @@ size_t TC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
         //当前block正在分配空间, 不能删除, 移到上一个数据
 		if (iNowAddr == iAddr)
 		{
-            if(_pHead->_cEraseMode == TC_HashMap::ERASEBYSET)
+            if(_pHead->_cEraseMode == XC_HashMap::ERASEBYSET)
             {
                 iAddr = block.getBlockHead()->_iSetPrev;
             }
@@ -2365,12 +2365,12 @@ size_t TC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
 		Block block1(this, iAddr);
         BlockData data;
         int ret = block1.getBlockData(data);
-        if(ret == TC_HashMap::RT_OK)
+        if(ret == XC_HashMap::RT_OK)
         {
             vtData.push_back(data);
             d--;
         }
-        else if(ret == TC_HashMap::RT_NO_DATA)
+        else if(ret == XC_HashMap::RT_NO_DATA)
         {
             d--;
         }
@@ -2382,14 +2382,14 @@ size_t TC_HashMap::eraseExcept(size_t iNowAddr, vector<BlockData> &vtData)
 	return n-d;
 }
 
-size_t TC_HashMap::hashIndex(const string& k)
+size_t XC_HashMap::hashIndex(const string& k)
 {
 	return _hashf(k) % _hash.size();
 }
 
-TC_HashMap::lock_iterator TC_HashMap::find(const string& k, size_t index, string &v, int &ret)
+XC_HashMap::lock_iterator XC_HashMap::find(const string& k, size_t index, string &v, int &ret)
 {
-	ret = TC_HashMap::RT_OK;
+	ret = XC_HashMap::RT_OK;
 
 	if(item(index)->_iBlockAddr == 0)
 	{
@@ -2415,9 +2415,9 @@ TC_HashMap::lock_iterator TC_HashMap::find(const string& k, size_t index, string
 	return end();
 }
 
-TC_HashMap::lock_iterator TC_HashMap::find(const string& k, size_t index, int &ret)
+XC_HashMap::lock_iterator XC_HashMap::find(const string& k, size_t index, int &ret)
 {
-	ret = TC_HashMap::RT_OK;
+	ret = XC_HashMap::RT_OK;
 
 	if(item(index)->_iBlockAddr == 0)
 	{
@@ -2443,7 +2443,7 @@ TC_HashMap::lock_iterator TC_HashMap::find(const string& k, size_t index, int &r
 	return end();
 }
 
-void TC_HashMap::analyseHash(uint32_t &iMaxHash, uint32_t &iMinHash, float &fAvgHash)
+void XC_HashMap::analyseHash(uint32_t &iMaxHash, uint32_t &iMinHash, float &fAvgHash)
 {
 	iMaxHash = 0;
 	iMinHash = (uint32_t)-1;
@@ -2469,7 +2469,7 @@ void TC_HashMap::analyseHash(uint32_t &iMaxHash, uint32_t &iMinHash, float &fAvg
 	}
 }
 
-void TC_HashMap::doUpdate(bool bUpdate)
+void XC_HashMap::doUpdate(bool bUpdate)
 {
 	if(bUpdate)
 	{
@@ -2522,7 +2522,7 @@ void TC_HashMap::doUpdate(bool bUpdate)
 	}
 }
 
-void TC_HashMap::update(void* iModifyAddr, size_t iModifyValue)
+void XC_HashMap::update(void* iModifyAddr, size_t iModifyValue)
 {
 	_pstModifyHead->_cModifyStatus = 1;
 	_pstModifyHead->_stModifyData[_pstModifyHead->_iNowIndex]._iModifyAddr  = getRelative(iModifyAddr);
@@ -2534,7 +2534,7 @@ void TC_HashMap::update(void* iModifyAddr, size_t iModifyValue)
 }
 
 #if __WORDSIZE == 64
-void TC_HashMap::update(void* iModifyAddr, uint32_t iModifyValue)
+void XC_HashMap::update(void* iModifyAddr, uint32_t iModifyValue)
 {
 	_pstModifyHead->_cModifyStatus = 1;
 	_pstModifyHead->_stModifyData[_pstModifyHead->_iNowIndex]._iModifyAddr  = getRelative(iModifyAddr);
@@ -2546,7 +2546,7 @@ void TC_HashMap::update(void* iModifyAddr, uint32_t iModifyValue)
 }
 #endif
 
-void TC_HashMap::update(void* iModifyAddr, bool bModifyValue)
+void XC_HashMap::update(void* iModifyAddr, bool bModifyValue)
 {
 	_pstModifyHead->_cModifyStatus = 1;
 	_pstModifyHead->_stModifyData[_pstModifyHead->_iNowIndex]._iModifyAddr  = getRelative(iModifyAddr);
@@ -2557,11 +2557,11 @@ void TC_HashMap::update(void* iModifyAddr, bool bModifyValue)
 	assert(_pstModifyHead->_iNowIndex < sizeof(_pstModifyHead->_stModifyData) / sizeof(tagModifyData));
 }
 
-size_t TC_HashMap::getMinPrimeNumber(size_t n)
+size_t XC_HashMap::getMinPrimeNumber(size_t n)
 {
     while(true)
     {
-        if(TC_Common::isPrimeNumber(n))
+        if(XC_Common::isPrimeNumber(n))
         {
             return n;
         }

@@ -1,34 +1,33 @@
-#ifndef	__TC_MEM_CHUNK_H__
-#define __TC_MEM_CHUNK_H__
+#ifndef	__XC_MEM_CHUNK_H__
+#define __XC_MEM_CHUNK_H__
 
 #include <string>
 #include <vector>
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**  
 * @file tc_mem_chunk.h
 * @brief 内存分配器 
 *  
-* @author jarodruan@tencent.com,hendysutencent.com          
 */ 
 /////////////////////////////////////////////////
 /**
-* @brief 原始内存块, 由TC_MemChunkAllocator来负责分配和维护
+* @brief 原始内存块, 由XC_MemChunkAllocator来负责分配和维护
 *
 * 将连续的内存分成大小相同的块,形成链表,并能够分配和释放这些大小相同的快
 */
-class TC_MemChunk
+class XC_MemChunk
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_MemChunk();
+    XC_MemChunk();
 
     /**
      * @brief 计算Chunk需要的内存块大小
@@ -201,16 +200,16 @@ private:
 *  
 * Chunk个数, 4个字节 ;
 *  
-* TC_MemChunk 暂时只支持同一个Block大小的MemChunk 
+* XC_MemChunk 暂时只支持同一个Block大小的MemChunk 
 */
-class TC_MemChunkAllocator
+class XC_MemChunkAllocator
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_MemChunkAllocator();
+    XC_MemChunkAllocator();
 
     /**
      * @brief 初始化
@@ -297,7 +296,7 @@ public:
 	 * @brief 获取头部信息 
      * @return 头部信息
      */
-    TC_MemChunk::tagChunkHead getBlockDetail() const;
+    XC_MemChunk::tagChunkHead getBlockDetail() const;
 
     /**
      * @brief 重建
@@ -339,13 +338,13 @@ protected:
 	/**
 	*@brief 不允许copy构造 
 	*/ 
-    TC_MemChunkAllocator(const TC_MemChunkAllocator &);
+    XC_MemChunkAllocator(const XC_MemChunkAllocator &);
 	/**
 	 *@brief 不允许赋值  
 	 */ 
-    TC_MemChunkAllocator& operator=(const TC_MemChunkAllocator &);
-    bool operator==(const TC_MemChunkAllocator &mca) const;
-    bool operator!=(const TC_MemChunkAllocator &mca) const;
+    XC_MemChunkAllocator& operator=(const XC_MemChunkAllocator &);
+    bool operator==(const XC_MemChunkAllocator &mca) const;
+    bool operator!=(const XC_MemChunkAllocator &mca) const;
 
 private:
 
@@ -362,13 +361,13 @@ private:
     /**
      * chunk链表
      */
-    TC_MemChunk             _chunk;
+    XC_MemChunk             _chunk;
 };
 
 /**
  * @brief 多块分配器,可以分配多个不同大小的块
  *  
- * 内部每种块用TC_MemChunkAllocator来分配, 
+ * 内部每种块用XC_MemChunkAllocator来分配, 
  *  
  * 每种大小不同块的个数是相同的, 内存块分配的策略如下: 
  *  
@@ -384,19 +383,19 @@ private:
  *  
  * 自动计算出块的个数(每种大小块的个数相同) 
  */
-class TC_MemMultiChunkAllocator
+class XC_MemMultiChunkAllocator
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_MemMultiChunkAllocator();
+    XC_MemMultiChunkAllocator();
 
     /**
      * @brief 析够函数
      */
-    ~TC_MemMultiChunkAllocator();
+    ~XC_MemMultiChunkAllocator();
 
 
     /**
@@ -440,9 +439,9 @@ public:
      * @brief 获取每个块头部信息, 包括后续增加的内存块的大小
      * @param i
      *
-     * @return vector<TC_MemChunk::tagChunkHead>
+     * @return vector<XC_MemChunk::tagChunkHead>
      */
-    vector<TC_MemChunk::tagChunkHead> getBlockDetail() const;
+    vector<XC_MemChunk::tagChunkHead> getBlockDetail() const;
 
     /**
      * @brief 总计内存大小, 包括后续增加的内存块的大小
@@ -555,20 +554,20 @@ protected:
     /**
      * @brief 最后一个分配器
      * 
-     * @return TC_MemMultiChunkAllocator*
+     * @return XC_MemMultiChunkAllocator*
      */
-    TC_MemMultiChunkAllocator *lastAlloc();
+    XC_MemMultiChunkAllocator *lastAlloc();
 
 	/**
 	 *@brief 不允许copy构造
 	 */
-    TC_MemMultiChunkAllocator(const TC_MemMultiChunkAllocator &);
+    XC_MemMultiChunkAllocator(const XC_MemMultiChunkAllocator &);
 	/** 
 	  * @brief 不允许赋值
 	  */
-    TC_MemMultiChunkAllocator& operator=(const TC_MemMultiChunkAllocator &);
-    bool operator==(const TC_MemMultiChunkAllocator &mca) const;
-    bool operator!=(const TC_MemMultiChunkAllocator &mca) const;
+    XC_MemMultiChunkAllocator& operator=(const XC_MemMultiChunkAllocator &);
+    bool operator==(const XC_MemMultiChunkAllocator &mca) const;
+    bool operator!=(const XC_MemMultiChunkAllocator &mca) const;
 
 private:
 
@@ -595,7 +594,7 @@ private:
     /**
      * chunk链表
      */
-    vector<TC_MemChunkAllocator*>       _allocator;
+    vector<XC_MemChunkAllocator*>       _allocator;
 
     /**
      * 所有的索引个数
@@ -605,7 +604,7 @@ private:
     /**
      * 后续的多块分配器
      */
-    TC_MemMultiChunkAllocator           *_nallocator;
+    XC_MemMultiChunkAllocator           *_nallocator;
 };
 
 }

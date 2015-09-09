@@ -1,20 +1,20 @@
 #include "util/tc_timeprovider.h"
 
-namespace taf
+namespace xutil
 {
 
-TC_ThreadLock TC_TimeProvider::g_tl;
-TC_TimeProviderPtr TC_TimeProvider::g_tp = NULL;
+XC_ThreadLock XC_TimeProvider::g_tl;
+XC_TimeProviderPtr XC_TimeProvider::g_tp = NULL;
 
-TC_TimeProvider* TC_TimeProvider::getInstance()
+XC_TimeProvider* XC_TimeProvider::getInstance()
 {
     if(!g_tp)
     {
-        TC_ThreadLock::Lock lock(g_tl);
+        XC_ThreadLock::Lock lock(g_tl);
 
         if(!g_tp)
         {
-            g_tp = new TC_TimeProvider();
+            g_tp = new XC_TimeProvider();
 
             g_tp->start();
         }
@@ -22,10 +22,10 @@ TC_TimeProvider* TC_TimeProvider::getInstance()
     return g_tp.get();
 }
 
-TC_TimeProvider::~TC_TimeProvider() 
+XC_TimeProvider::~XC_TimeProvider() 
 { 
     {
-        TC_ThreadLock::Lock lock(g_tl);
+        XC_ThreadLock::Lock lock(g_tl);
         _terminate = true; 
         g_tl.notify(); 
     }
@@ -33,7 +33,7 @@ TC_TimeProvider::~TC_TimeProvider()
     getThreadControl().join();
 }
 
-void TC_TimeProvider::getNow(timeval *tv)  
+void XC_TimeProvider::getNow(timeval *tv)  
 { 
     int idx = _buf_idx;
     *tv = _t[idx];
@@ -48,14 +48,14 @@ void TC_TimeProvider::getNow(timeval *tv)
     }
 }
 
-int64_t TC_TimeProvider::getNowMs()
+int64_t XC_TimeProvider::getNowMs()
 {
     struct timeval tv;
     getNow(&tv);
     return tv.tv_sec * (int64_t)1000 + tv.tv_usec/1000;
 }
 
-void TC_TimeProvider::run()
+void XC_TimeProvider::run()
 {
     while(!_terminate)
     {
@@ -67,14 +67,14 @@ void TC_TimeProvider::run()
 
         _buf_idx = !_buf_idx;
 
-        TC_ThreadLock::Lock lock(g_tl);
+        XC_ThreadLock::Lock lock(g_tl);
 
         g_tl.timedWait(800); //修改800时 需对应修改addTimeOffset中offset判读值
 
     }
 }
 
-float TC_TimeProvider::cpuMHz()
+float XC_TimeProvider::cpuMHz()
 {
     if(_cpu_cycle != 0)
         return 1.0/_cpu_cycle;
@@ -82,7 +82,7 @@ float TC_TimeProvider::cpuMHz()
     return 0;
 }
 
-void TC_TimeProvider::setTsc(timeval& tt)
+void XC_TimeProvider::setTsc(timeval& tt)
 {
     uint32_t low    = 0;
     uint32_t high   = 0;
@@ -105,7 +105,7 @@ void TC_TimeProvider::setTsc(timeval& tt)
     } 
 }
 
-void TC_TimeProvider::addTimeOffset(timeval& tt,const int &idx)
+void XC_TimeProvider::addTimeOffset(timeval& tt,const int &idx)
 {
     uint32_t low    = 0;
     uint32_t high   = 0;
@@ -115,7 +115,7 @@ void TC_TimeProvider::addTimeOffset(timeval& tt,const int &idx)
     time_t offset =  (time_t)(t*_cpu_cycle);
     if(t < -1000 || offset > 1000000)//毫秒级别
     {
-        //cerr<< "TC_TimeProvider add_time_offset error,correct it by use gettimeofday. current_tsc|"<<current_tsc<<"|last_tsc|"<<_tsc[idx]<<endl;
+        //cerr<< "XC_TimeProvider add_time_offset error,correct it by use gettimeofday. current_tsc|"<<current_tsc<<"|last_tsc|"<<_tsc[idx]<<endl;
         _use_tsc = false;
         ::gettimeofday(&tt, NULL);
         return;

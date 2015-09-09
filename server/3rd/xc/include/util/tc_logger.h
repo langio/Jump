@@ -1,5 +1,5 @@
-#ifndef __TC_LOGGER_H
-#define __TC_LOGGER_H
+#ifndef __XC_LOGGER_H
+#define __XC_LOGGER_H
 
 #include <streambuf>
 #include <fstream>
@@ -23,7 +23,7 @@
 using namespace std;
 using namespace __gnu_cxx;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
@@ -42,46 +42,45 @@ namespace taf
  *
  *  自定义滚动方式的步骤如下:
  * 
- *  1 实现自定义模板类,继承于TC_LoggerRoll,实现roll函数,该函数实现写逻辑,
+ *  1 实现自定义模板类,继承于XC_LoggerRoll,实现roll函数,该函数实现写逻辑,
  * 
  *  例如:template<typename WriteT>
  * 
- *  class MyRoll : public TC_LoggerRoll, public TC_ThreadMutex
+ *  class MyRoll : public XC_LoggerRoll, public XC_ThreadMutex
  * 
- *  2 模板中的WriteT是具体的写入逻辑,提供缺省的:TC_DefaultWriteT
+ *  2 模板中的WriteT是具体的写入逻辑,提供缺省的:XC_DefaultWriteT
  * 
  *  3 可以自定义实现WriteT, 例如:实现发送到网络的逻辑.
  * 
  *  4 在MyRoll中实现内部类RollWrapperI, 并继承RollWrapperBase<MyRoll<WriteT> >
  * 
- *  5 RollWrapperI主要就是提供MyRoll的初始化接口, 这些接口最后会直接反应到TC_Logger中.
+ *  5 RollWrapperI主要就是提供MyRoll的初始化接口, 这些接口最后会直接反应到XC_Logger中.
  * 
  *  6 RollWrapperI构造时, 构造MyRoll对象(采用智能指针),并且接口的操作直接转发到MyRoll对象中.
  * 
  *  实现这些逻辑后, 采用模板方式定义出类型:
  * 
- *  typedef TC_Logger<MyWriteT, MyRoll> MyLogger;
+ *  typedef XC_Logger<MyWriteT, MyRoll> MyLogger;
  * 
  *  TAF的远程log实现例子,可以参见src/libtaf/taf_logger.h
  * 
- * @author : jarodruan@tencent.com,devinchen@tencent.com,skingfan@tencent.com              
  */              
 
 
 /**
 * @brief 日志异常类
 */
-	struct TC_Logger_Exception : public TC_Exception
+	struct XC_Logger_Exception : public XC_Exception
 	{
-		TC_Logger_Exception(const string &buffer) : TC_Exception(buffer){};
-		TC_Logger_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-		~TC_Logger_Exception() throw(){};
+		XC_Logger_Exception(const string &buffer) : XC_Exception(buffer){};
+		XC_Logger_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+		~XC_Logger_Exception() throw(){};
 	};
 
 /**
  * @brief 写操作
  */
-	class TC_DefaultWriteT
+	class XC_DefaultWriteT
 	{
 	public:
 		void operator()(ostream &of, const deque<pair<int, string> > &ds)
@@ -96,19 +95,19 @@ namespace taf
 		}
 	};
 
-	class TC_LoggerThreadGroup;
+	class XC_LoggerThreadGroup;
 
 //////////////////////////////////////////////////////////////////////////////
 /**
  * @brief 具体写日志基类
  */
-	class TC_LoggerRoll : public TC_HandleBase
+	class XC_LoggerRoll : public XC_HandleBase
 	{
 	public:
 		/**
 		 * @brief 构造函数
 		 */
-		TC_LoggerRoll() : _pThreadGroup(NULL)
+		XC_LoggerRoll() : _pThreadGroup(NULL)
 		{
 		}
 
@@ -125,7 +124,7 @@ namespace taf
 		 *  
 		 * @param ltg
 		 */
-		void setupThread(TC_LoggerThreadGroup *pThreadGroup);
+		void setupThread(XC_LoggerThreadGroup *pThreadGroup);
 
 		/**
 		 * @brief 取消线程. 
@@ -152,7 +151,7 @@ namespace taf
 		 */
 		void enableDyeing(bool bEnable, const string& sKey) 
 		{
-			TC_LockT<TC_ThreadMutex> lock(_mutexDyeing);
+			XC_LockT<XC_ThreadMutex> lock(_mutexDyeing);
 
 			if (bEnable)
 			{
@@ -174,17 +173,17 @@ namespace taf
 		/**
 		 * buffer
 		 */
-		TC_ThreadQueue<pair<int, string> >  _buffer;
+		XC_ThreadQueue<pair<int, string> >  _buffer;
 
 		/**
 		 * 锁
 		 */
-		TC_ThreadMutex          _mutex;
+		XC_ThreadMutex          _mutex;
 
 		/**
 		 * 线程组
 		 */
-		TC_LoggerThreadGroup    *_pThreadGroup;
+		XC_LoggerThreadGroup    *_pThreadGroup;
 
 		/**
 		 * 是否已经染色的标志
@@ -196,7 +195,7 @@ namespace taf
 		 * 
 		 * @author kevintian (2010-10-9)
 		 */
-		static TC_ThreadMutex	_mutexDyeing;
+		static XC_ThreadMutex	_mutexDyeing;
 
 		/**
 		 * 染色的线程ID集合
@@ -206,7 +205,7 @@ namespace taf
 		static hash_map<pthread_t, string> _mapThreadID;
 	};
 
-	typedef TC_AutoPtr<TC_LoggerRoll> TC_LoggerRollPtr;
+	typedef XC_AutoPtr<XC_LoggerRoll> XC_LoggerRollPtr;
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -215,18 +214,18 @@ namespace taf
  *  
  * 关键点:注册日志后,会保存职能指针,保证日志对象一直存在
  */
-	class TC_LoggerThreadGroup : public TC_ThreadLock
+	class XC_LoggerThreadGroup : public XC_ThreadLock
 	{
 	public:
 		/**
 		 * @brief 构造函数
 		 */
-		TC_LoggerThreadGroup();
+		XC_LoggerThreadGroup();
 
 		/**
 		 * @brief 析够函数
 		 */
-		~TC_LoggerThreadGroup();
+		~XC_LoggerThreadGroup();
 
 		/**
 		 * @brief 启动线程. 
@@ -238,16 +237,16 @@ namespace taf
 		/**
 		 * @brief 注册logger对象. 
 		 *  
-		 * @param l TC_LoggerRollPtr对象
+		 * @param l XC_LoggerRollPtr对象
 		 */
-		void registerLogger(TC_LoggerRollPtr &l);
+		void registerLogger(XC_LoggerRollPtr &l);
 
 		/**
 		 * @brief 卸载logger对象. 
 		 *  
-		 * @param l TC_LoggerRollPtr对象
+		 * @param l XC_LoggerRollPtr对象
 		 */
-		void unRegisterLogger(TC_LoggerRollPtr &l);
+		void unRegisterLogger(XC_LoggerRollPtr &l);
 
 		/**
 		 * @brief 刷新所有的数据
@@ -266,13 +265,13 @@ namespace taf
 		 */
 		struct KeyComp
 		{
-			bool operator()(const TC_LoggerRollPtr& p1, const TC_LoggerRollPtr& p2) const
+			bool operator()(const XC_LoggerRollPtr& p1, const XC_LoggerRollPtr& p2) const
 			{
 				return p1.get() <  p2.get();
 			}
 		};
 
-		typedef set<TC_LoggerRollPtr, KeyComp>  logger_set;
+		typedef set<XC_LoggerRollPtr, KeyComp>  logger_set;
 
 	protected:
 
@@ -284,7 +283,7 @@ namespace taf
 		/**
 		 * 写线程
 		 */
-		TC_ThreadPool   _tpool;
+		XC_ThreadPool   _tpool;
 
 		/**
 		 * logger对象
@@ -315,10 +314,10 @@ namespace taf
 		/**
 		 * @brief 构造函数. 
 		 *  
-		 * @param roll        TC_LoggerRollPtr对象 
+		 * @param roll        XC_LoggerRollPtr对象 
 		 * @param buffer_len  buffer大小
 		 */
-		LoggerBuffer(TC_LoggerRollPtr roll, size_t buffer_len);
+		LoggerBuffer(XC_LoggerRollPtr roll, size_t buffer_len);
 
 		/**
 		 * @brief 析构函数
@@ -374,7 +373,7 @@ namespace taf
 		/**
 		 * @brief 写日志
 		 */ 
-		TC_LoggerRollPtr    _roll;
+		XC_LoggerRollPtr    _roll;
 
 		/**
 		 * 缓冲区
@@ -399,7 +398,7 @@ namespace taf
 		 * @param stream
 		 * @param mutex
 		 */
-		LoggerStream(ostream *stream, ostream *estream, TC_ThreadMutex &mutex) : _stream(stream), _estream(estream), _mutex(mutex)
+		LoggerStream(ostream *stream, ostream *estream, XC_ThreadMutex &mutex) : _stream(stream), _estream(estream), _mutex(mutex)
 		{
 		}
 
@@ -467,14 +466,14 @@ namespace taf
 		/**
 		 * 锁
 		 */
-		TC_ThreadMutex  &_mutex;
+		XC_ThreadMutex  &_mutex;
 	};
 
 /**
  * @brief 日志基类
  */
 	template<typename WriteT, template<class> class RollPolicy>
-	class TC_Logger : public RollPolicy<WriteT>::RollWrapperI
+	class XC_Logger : public RollPolicy<WriteT>::RollWrapperI
 	{
 	public:
 
@@ -509,10 +508,10 @@ namespace taf
 		/**
 		 * @brief 构造函数
 		 */
-		TC_Logger()
+		XC_Logger()
 		: _flag(HAS_TIME)
 		, _level(DEBUG_LOG)
-		, _buffer(TC_LoggerRollPtr::dynamicCast(this->_roll), 1024)
+		, _buffer(XC_LoggerRollPtr::dynamicCast(this->_roll), 1024)
 		, _stream(&_buffer)
 		, _ebuffer(NULL, 0)
 		, _estream(&_ebuffer)
@@ -524,7 +523,7 @@ namespace taf
 		/**
 		 * @brief 析够函数
 		 */
-		~TC_Logger()
+		~XC_Logger()
 		{
 		}
 
@@ -664,10 +663,10 @@ namespace taf
 		{
 			size_t n = 0;
 
-			if (hasFlag(TC_Logger::HAS_MTIME))
+			if (hasFlag(XC_Logger::HAS_MTIME))
 			{
 				struct timeval t;
-				TC_TimeProvider::getInstance()->getNow(&t);
+				XC_TimeProvider::getInstance()->getNow(&t);
 				//gettimeofday(&t, NULL);
 
 				tm tt;
@@ -676,9 +675,9 @@ namespace taf
 				n += snprintf(c + n, len-n, szFormat,
 							  tt.tm_year + 1900, tt.tm_mon+1, tt.tm_mday, tt.tm_hour, tt.tm_min, tt.tm_sec, t.tv_usec/1000,_sSepar.c_str());
 			}
-			else if (hasFlag(TC_Logger::HAS_TIME))
+			else if (hasFlag(XC_Logger::HAS_TIME))
 			{
-				time_t t = TC_TimeProvider::getInstance()->getNow();
+				time_t t = XC_TimeProvider::getInstance()->getNow();
 				tm tt;
 				localtime_r(&t, &tt);
 				const char *szFormat = (_bHasSquareBracket)?("[%04d-%02d-%02d %02d:%02d:%02d]%s"):("%04d-%02d-%02d %02d:%02d:%02d%s");
@@ -686,14 +685,14 @@ namespace taf
 							  tt.tm_year + 1900, tt.tm_mon+1, tt.tm_mday, tt.tm_hour, tt.tm_min, tt.tm_sec,_sSepar.c_str());
 			}
 
-			if (hasFlag(TC_Logger::HAS_PID))
+			if (hasFlag(XC_Logger::HAS_PID))
 			{
 				n += snprintf(c + n, len - n, "%ld%s", syscall(SYS_gettid), _sSepar.c_str());
 			}
 
-			if (hasFlag(TC_Logger::HAS_LEVEL))
+			if (hasFlag(XC_Logger::HAS_LEVEL))
 			{
-				n += snprintf(c + n, len - n, "%s%s", TC_Logger::LN[level].c_str(), _sSepar.c_str());
+				n += snprintf(c + n, len - n, "%s%s", XC_Logger::LN[level].c_str(), _sSepar.c_str());
 			}
 		}
 
@@ -777,7 +776,7 @@ namespace taf
 		/**
 		 * 锁
 		 */
-		TC_ThreadMutex  _mutex;
+		XC_ThreadMutex  _mutex;
 		/**
 		 * 分隔符
 		 */
@@ -790,7 +789,7 @@ namespace taf
 	};
 
 	template<typename WriteT, template<class> class RollPolicy>
-	const string TC_Logger<WriteT, RollPolicy>::LN[6] = {"", "", "ERROR", "WARN", "DEBUG", "INFO"};
+	const string XC_Logger<WriteT, RollPolicy>::LN[6] = {"", "", "ERROR", "WARN", "DEBUG", "INFO"};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -837,7 +836,7 @@ namespace taf
 	{
 	public:
 
-		typedef TC_AutoPtr<RollPolicyWriteT>     RollPolicyWriteTPtr;
+		typedef XC_AutoPtr<RollPolicyWriteT>     RollPolicyWriteTPtr;
 
 		/**
 		 * @brief 构造
@@ -852,7 +851,7 @@ namespace taf
 		 *  
 		 * @param ltg
 		 */
-		void setupThread(TC_LoggerThreadGroup *ltg) { _roll->setupThread(ltg);}
+		void setupThread(XC_LoggerThreadGroup *ltg) { _roll->setupThread(ltg);}
 
 		/**
 		 * @brief 取消线程
@@ -899,7 +898,7 @@ namespace taf
  * @brief 日志滚动方法, 根据日志大小滚动
  */
 	template<typename WriteT>
-	class TC_RollBySize : public TC_LoggerRoll, public TC_ThreadMutex
+	class XC_RollBySize : public XC_LoggerRoll, public XC_ThreadMutex
 	{
 	public:
 		typedef WriteT T;
@@ -907,7 +906,7 @@ namespace taf
 		/**
 		 * @brief 封装类(提供接口)
 		 */
-		class RollWrapperI : public RollWrapperBase<TC_RollBySize<WriteT> >
+		class RollWrapperI : public RollWrapperBase<XC_RollBySize<WriteT> >
 		{
 		public:
 			/**
@@ -966,14 +965,14 @@ namespace taf
 		/**
 		 * @brief 构造函数
 		 */
-		TC_RollBySize() : _iUpdateCount(0), _lt(time(NULL))
+		XC_RollBySize() : _iUpdateCount(0), _lt(time(NULL))
 		{
 		}
 
 		/**
 		 * @brief 析够
 		 */
-		~TC_RollBySize()
+		~XC_RollBySize()
 		{
 			if (_of.is_open())
 			{
@@ -990,7 +989,7 @@ namespace taf
 		 */
 		void init(const string &path, int iMaxSize = 5000000, int iMaxNum = 10)
 		{
-			TC_LockT<TC_ThreadMutex> lock(*this);
+			XC_LockT<XC_ThreadMutex> lock(*this);
 
 			_path   = path;
 			_maxSize= iMaxSize;
@@ -1002,19 +1001,19 @@ namespace taf
 		 *
 		 * @return string
 		 */
-		string getPath()                    { TC_LockT<TC_ThreadMutex> lock(*this); return _path;}
+		string getPath()                    { XC_LockT<XC_ThreadMutex> lock(*this); return _path;}
 
 		/**
 		 * @brief 设置路径.
 		 */
-		void setPath(const string &path)    { TC_LockT<TC_ThreadMutex> lock(*this); _path = path;}
+		void setPath(const string &path)    { XC_LockT<XC_ThreadMutex> lock(*this); _path = path;}
 
 		/**
 		 * @brief 获取最大大小.
 		 *
 		 * @return int
 		 */
-		int getMaxSize()                    { TC_LockT<TC_ThreadMutex> lock(*this); return _maxSize;}
+		int getMaxSize()                    { XC_LockT<XC_ThreadMutex> lock(*this); return _maxSize;}
 
 		/**
 		 * @brief 设置最大大小. 
@@ -1022,21 +1021,21 @@ namespace taf
 		 * @param maxSize 
 		 * @return void
 		 */
-		void setMaxSize(int maxSize)        { TC_LockT<TC_ThreadMutex> lock(*this); return _maxSize = maxSize;}
+		void setMaxSize(int maxSize)        { XC_LockT<XC_ThreadMutex> lock(*this); return _maxSize = maxSize;}
 
 		/**
 		 * @brief 获取最大个数.
 		 *
 		 * @return int
 		 */
-		int getMaxNum()                     { TC_LockT<TC_ThreadMutex> lock(*this); return _maxNum;}
+		int getMaxNum()                     { XC_LockT<XC_ThreadMutex> lock(*this); return _maxNum;}
 
 		/**
 		 * @brief 设置最大个数. 
 		 *  
 		 * @param maxNum
 		 */
-		void setMaxNum(int maxNum)          { TC_LockT<TC_ThreadMutex> lock(*this); return _maxNum = maxNum;}
+		void setMaxNum(int maxNum)          { XC_LockT<XC_ThreadMutex> lock(*this); return _maxNum = maxNum;}
 
 		/**
 		 * @brief 获取写示例.
@@ -1052,7 +1051,7 @@ namespace taf
 		 */
 		void roll(const deque<pair<int, string> > &buffer)
 		{
-			TC_LockT<TC_ThreadMutex> lock(*this);
+			XC_LockT<XC_ThreadMutex> lock(*this);
 
 			if (_path.empty())
 			{
@@ -1060,7 +1059,7 @@ namespace taf
 				return;
 			}
 
-			time_t t = TC_TimeProvider::getInstance()->getNow();
+			time_t t = XC_TimeProvider::getInstance()->getNow();
 			time_t tt= t - _lt;
 			//每隔5, 重新打开一次文件, 避免文件被删除后句柄不释放
 			if (tt > 5 || tt < 0)
@@ -1075,11 +1074,11 @@ namespace taf
 				string sLogFileName = _path + ".log";
 				_of.open(sLogFileName.c_str(), ios::app);
 
-				string sLogFilePath = TC_File::extractFilePath(_path);
+				string sLogFilePath = XC_File::extractFilePath(_path);
 
-				if (!TC_File::isFileExist(sLogFilePath,S_IFDIR))
+				if (!XC_File::isFileExist(sLogFilePath,S_IFDIR))
 				{
-					TC_File::makeDirRecursive(sLogFilePath);
+					XC_File::makeDirRecursive(sLogFilePath);
 				}
 
 				if (!_of)
@@ -1087,7 +1086,7 @@ namespace taf
 					//抛异常前继续进入_t 以便打远程日志
 					_t(_of, buffer);
 
-					throw TC_Logger_Exception("[TC_RollBySize::roll]:fopen fail: " + sLogFileName, errno);
+					throw XC_Logger_Exception("[XC_RollBySize::roll]:fopen fail: " + sLogFileName, errno);
 				}
 
 			}
@@ -1106,7 +1105,7 @@ namespace taf
 			}
 
 			//文件大小超出限制,删除最后一个文件
-			string sLogFileName = _path + TC_Common::tostr(_maxNum - 1) + ".log";
+			string sLogFileName = _path + XC_Common::tostr(_maxNum - 1) + ".log";
 			if (access(sLogFileName.c_str(), F_OK) == 0)
 			{
 				if (remove(sLogFileName.c_str()) < 0 )
@@ -1124,12 +1123,12 @@ namespace taf
 				}
 				else
 				{
-					sLogFileName = _path + TC_Common::tostr(i) + ".log";
+					sLogFileName = _path + XC_Common::tostr(i) + ".log";
 				}
 
 				if (access(sLogFileName.c_str(), F_OK) == 0)
 				{
-					string sNewLogFileName = _path + TC_Common::tostr(i + 1) + ".log";
+					string sNewLogFileName = _path + XC_Common::tostr(i + 1) + ".log";
 					rename(sLogFileName.c_str(), sNewLogFileName.c_str());
 				}
 			}
@@ -1138,7 +1137,7 @@ namespace taf
 			_of.open(sLogFileName.c_str(), ios::app);
 			if (!_of)
 			{
-				throw TC_Logger_Exception("[TC_RollBySize::roll]:fopen fail: " + sLogFileName, errno);
+				throw XC_Logger_Exception("[XC_RollBySize::roll]:fopen fail: " + sLogFileName, errno);
 			}
 		}
 
@@ -1181,13 +1180,13 @@ namespace taf
 		time_t      _lt;
 	};
 
-	typedef TC_Logger<TC_DefaultWriteT, TC_RollBySize> TC_RollLogger;
+	typedef XC_Logger<XC_DefaultWriteT, XC_RollBySize> XC_RollLogger;
 
 /**
  * @brief 根据时间滚动日志
  */
 	template<typename WriteT>
-	class TC_RollByTime : public TC_LoggerRoll, public TC_ThreadMutex
+	class XC_RollByTime : public XC_LoggerRoll, public XC_ThreadMutex
 	{
 	public:
 
@@ -1196,7 +1195,7 @@ namespace taf
 		/**
 		 * @brief 封装类(接口类)
 		 */
-		class RollWrapperI : public RollWrapperBase<TC_RollByTime<WriteT> >
+		class RollWrapperI : public RollWrapperBase<XC_RollByTime<WriteT> >
 		{
 		public:
 
@@ -1242,14 +1241,14 @@ namespace taf
 		/**
 		 * @brief 构造
 		 */
-		TC_RollByTime() : _lt(TC_TimeProvider::getInstance()->getNow())
+		XC_RollByTime() : _lt(XC_TimeProvider::getInstance()->getNow())
 		{
 		}
 
 		/**
 		 * @brief 析够
 		 */
-		~TC_RollByTime()
+		~XC_RollByTime()
 		{
 			if (_of.is_open())
 			{
@@ -1266,13 +1265,13 @@ namespace taf
 
 		void init(const string &path, const string &format = "%Y%m%d",bool bHasSufix=true,const string &sConcatstr="_")
 		{
-			TC_LockT<TC_ThreadMutex> lock(*this);
+			XC_LockT<XC_ThreadMutex> lock(*this);
 
 			_path       = path;
 			_format     = format;
 			_bHasSufix = bHasSufix;
 			_sConcatStr = sConcatstr;
-			_currentTime= TC_Common::tm2str(TC_TimeProvider::getInstance()->getNow(), _format);
+			_currentTime= XC_Common::tm2str(XC_TimeProvider::getInstance()->getNow(), _format);
 		}
 
 		/**
@@ -1280,26 +1279,26 @@ namespace taf
 		 *
 		 * @return string
 		 */
-		string getPath()                    { TC_LockT<TC_ThreadMutex> lock(*this); return _path;}
+		string getPath()                    { XC_LockT<XC_ThreadMutex> lock(*this); return _path;}
 
 		/**
 		 * @brief 设置文件路径
 		 */
-		void setPath(const string &path)    { TC_LockT<TC_ThreadMutex> lock(*this); _path = path;}
+		void setPath(const string &path)    { XC_LockT<XC_ThreadMutex> lock(*this); _path = path;}
 
 		/**
 		 * @brief 获取格式.
 		 *
 		 * @return string
 		 */
-		string getFormat()                  { TC_LockT<TC_ThreadMutex> lock(*this); return _format;}
+		string getFormat()                  { XC_LockT<XC_ThreadMutex> lock(*this); return _format;}
 
 		/**
 		 * @brief 设置格式. 
 		 *  
 		 * @param format
 		 */
-		void setFormat(const string &format){ TC_LockT<TC_ThreadMutex> lock(*this); _format = format;}
+		void setFormat(const string &format){ XC_LockT<XC_ThreadMutex> lock(*this); _format = format;}
 
 		/**
 		 * @brief 获取写示例.
@@ -1317,7 +1316,7 @@ namespace taf
 		 */
 		void roll(const deque<pair<int, string> > &buffer)
 		{
-			TC_LockT<TC_ThreadMutex> lock(*this);
+			XC_LockT<XC_ThreadMutex> lock(*this);
 
 			if (_path.empty())
 			{
@@ -1325,9 +1324,9 @@ namespace taf
 				return;
 			}
 
-			time_t t = TC_TimeProvider::getInstance()->getNow();
+			time_t t = XC_TimeProvider::getInstance()->getNow();
 
-			string nowTime = TC_Common::tm2str(t, _format);
+			string nowTime = XC_Common::tm2str(t, _format);
 
 			//检查时间是否跨时间了, 跨时间后关闭文件
 			if (_currentTime != nowTime)
@@ -1347,10 +1346,10 @@ namespace taf
 			{
 				string sLogFileName = _path + _sConcatStr + nowTime + (_bHasSufix?".log":"");
 
-				string sLogFilePath = TC_File::extractFilePath(_path);
-				if (!TC_File::isFileExist(sLogFilePath,S_IFDIR))
+				string sLogFilePath = XC_File::extractFilePath(_path);
+				if (!XC_File::isFileExist(sLogFilePath,S_IFDIR))
 				{
-					TC_File::makeDirRecursive(sLogFilePath);
+					XC_File::makeDirRecursive(sLogFilePath);
 				}
 
 				_of.open(sLogFileName.c_str(), ios::app);
@@ -1359,7 +1358,7 @@ namespace taf
 				{
 					//抛异常前继续进入_t 以便打远程日志
 					_t(_of, buffer);
-					throw TC_Logger_Exception("[TC_RollByTime::roll]:fopen fail: " + sLogFileName, errno);
+					throw XC_Logger_Exception("[XC_RollByTime::roll]:fopen fail: " + sLogFileName, errno);
 				}
 			}
 
@@ -1407,7 +1406,7 @@ namespace taf
 		string					_sConcatStr;
 	};
 
-	typedef TC_Logger<TC_DefaultWriteT, TC_RollByTime> TC_DayLogger;
+	typedef XC_Logger<XC_DefaultWriteT, XC_RollByTime> XC_DayLogger;
 
 }
 

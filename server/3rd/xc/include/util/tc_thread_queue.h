@@ -1,19 +1,18 @@
-#ifndef __TC_THREAD_QUEUE_H_
-#define __TC_THREAD_QUEUE_H_
+#ifndef __XC_THREAD_QUEUE_H_
+#define __XC_THREAD_QUEUE_H_
 
 #include <deque>
 #include <vector>
 #include <cassert>
 #include "util/tc_monitor.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_thread_queue.h
  * @brief 线程队列类.
  *  
- * @author jarodruan@tencent.com
  */
        
 /////////////////////////////////////////////////
@@ -21,10 +20,10 @@ namespace taf
  * @brief 线程安全队列
  */
 template<typename T, typename D = deque<T> >
-class TC_ThreadQueue : protected TC_ThreadLock
+class XC_ThreadQueue : protected XC_ThreadLock
 {
 public:
-    TC_ThreadQueue():_size(0){};
+    XC_ThreadQueue():_size(0){};
 
 public:
 
@@ -117,7 +116,7 @@ protected:
 
 };
 
-template<typename T, typename D> bool TC_ThreadQueue<T, D>::pop_front(T& t, size_t millsecond)
+template<typename T, typename D> bool XC_ThreadQueue<T, D>::pop_front(T& t, size_t millsecond)
 {
     Lock lock(*this);
 
@@ -155,13 +154,13 @@ template<typename T, typename D> bool TC_ThreadQueue<T, D>::pop_front(T& t, size
     return true;
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::notifyT()
+template<typename T, typename D> void XC_ThreadQueue<T, D>::notifyT()
 {
     Lock lock(*this);
     notifyAll();
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::push_back(const T& t)
+template<typename T, typename D> void XC_ThreadQueue<T, D>::push_back(const T& t)
 {
     Lock lock(*this);
 
@@ -171,7 +170,7 @@ template<typename T, typename D> void TC_ThreadQueue<T, D>::push_back(const T& t
     ++_size;
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::push_back(const queue_type &qt)
+template<typename T, typename D> void XC_ThreadQueue<T, D>::push_back(const queue_type &qt)
 {
     Lock lock(*this);
 
@@ -186,7 +185,7 @@ template<typename T, typename D> void TC_ThreadQueue<T, D>::push_back(const queu
     }
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::push_front(const T& t)
+template<typename T, typename D> void XC_ThreadQueue<T, D>::push_front(const T& t)
 {
     Lock lock(*this);
 
@@ -197,7 +196,7 @@ template<typename T, typename D> void TC_ThreadQueue<T, D>::push_front(const T& 
     ++_size;
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::push_front(const queue_type &qt)
+template<typename T, typename D> void XC_ThreadQueue<T, D>::push_front(const queue_type &qt)
 {
     Lock lock(*this);
 
@@ -213,7 +212,7 @@ template<typename T, typename D> void TC_ThreadQueue<T, D>::push_front(const que
     }
 }
 
-template<typename T, typename D> bool TC_ThreadQueue<T, D>::swap(queue_type &q, size_t millsecond)
+template<typename T, typename D> bool XC_ThreadQueue<T, D>::swap(queue_type &q, size_t millsecond)
 {
     Lock lock(*this);
 
@@ -248,21 +247,21 @@ template<typename T, typename D> bool TC_ThreadQueue<T, D>::swap(queue_type &q, 
     return true;
 }
 
-template<typename T, typename D> size_t TC_ThreadQueue<T, D>::size() const
+template<typename T, typename D> size_t XC_ThreadQueue<T, D>::size() const
 {
     Lock lock(*this);
     //return _queue.size();
     return _size;
 }
 
-template<typename T, typename D> void TC_ThreadQueue<T, D>::clear()
+template<typename T, typename D> void XC_ThreadQueue<T, D>::clear()
 {
     Lock lock(*this);
     _queue.clear();
     _size = 0;
 }
 
-template<typename T, typename D> bool TC_ThreadQueue<T, D>::empty() const
+template<typename T, typename D> bool XC_ThreadQueue<T, D>::empty() const
 {
     Lock lock(*this);
     return _queue.empty();

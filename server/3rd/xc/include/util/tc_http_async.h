@@ -1,5 +1,5 @@
-#ifndef __TC_HTTP_ASYNC_H_
-#define __TC_HTTP_ASYNC_H_
+#ifndef __XC_HTTP_ASYNC_H_
+#define __XC_HTTP_ASYNC_H_
 
 #include "util/tc_thread_pool.h"
 #include "util/tc_http.h"
@@ -7,7 +7,7 @@
 #include "util/tc_socket.h"
 //#include "util/tc_timeoutQueue.h"
 
-namespace taf
+namespace xutil
 {
 
 /////////////////////////////////////////////////
@@ -15,8 +15,7 @@ namespace taf
 * @file tc_http_async.h 
 * @brief http异步调用类. 
 *  
-* http同步调用使用TC_HttpRequest::doRequest就可以了  
-* @author jarodruan@tencent.com 
+* http同步调用使用XC_HttpRequest::doRequest就可以了  
 */            
 /////////////////////////////////////////////////
 
@@ -24,11 +23,11 @@ namespace taf
 /**
 * @brief 线程异常
 */
-struct TC_HttpAsync_Exception : public TC_Exception
+struct XC_HttpAsync_Exception : public XC_Exception
 {
-    TC_HttpAsync_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_HttpAsync_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_HttpAsync_Exception() throw(){};
+    XC_HttpAsync_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_HttpAsync_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_HttpAsync_Exception() throw(){};
 };
 
 /**
@@ -38,13 +37,13 @@ struct TC_HttpAsync_Exception : public TC_Exception
  *  
  *    实现异步回调对象
  *  
-  *  异步对象回调执行的时候是在TC_HttpAsync中线程执行的
+  *  异步对象回调执行的时候是在XC_HttpAsync中线程执行的
  *  
  *   用智能指针new出来, 不用管生命周期
  *  
  *   class AsyncHttpCallback : public
  *  
- *    TC_HttpAsync::RequestCallback
+ *    XC_HttpAsync::RequestCallback
  *  
  *  {
  *  
@@ -68,7 +67,7 @@ struct TC_HttpAsync_Exception : public TC_Exception
  *  
   *   //bClose表示服务端关闭了连接 ,从而认为收到了一个完整的http响应
   * 	
- *   virtual void onResponse(bool bClose, TC_HttpResponse
+ *   virtual void onResponse(bool bClose, XC_HttpResponse
  *  
   * 	 &stHttpResponse)
  *  
@@ -76,7 +75,7 @@ struct TC_HttpAsync_Exception : public TC_Exception
  *  
   *  		cout << "onResponse:" << _sUrl << ":" <<
  *  
-  *  		TC_Common::tostr(stHttpResponse.getHeaders()) <<
+  *  		XC_Common::tostr(stHttpResponse.getHeaders()) <<
  *  
   *  		endl;
   *  	}
@@ -108,14 +107,14 @@ struct TC_HttpAsync_Exception : public TC_Exception
   *
  *   //封装一个函数, 根据实际情况处理
  *  
- *  int addAsyncRequest(TC_HttpAsync &ast, const string &sUrl) {
+ *  int addAsyncRequest(XC_HttpAsync &ast, const string &sUrl) {
  *  
- *  	TC_HttpRequest stHttpReq; stHttpReq.setGetRequest(sUrl);
+ *  	XC_HttpRequest stHttpReq; stHttpReq.setGetRequest(sUrl);
  *  
   *
   *      //new出来一个异步回调对象
  *  
-  * 	 TC_HttpAsync::RequestCallbackPtr p = new
+  * 	 XC_HttpAsync::RequestCallbackPtr p = new
  *  
   * 	 AsyncHttpCallback(sUrl);
   *
@@ -125,7 +124,7 @@ struct TC_HttpAsync_Exception : public TC_Exception
   *
   *  //具体使用的示例代码如下:
  *  
- *   TC_HttpAsync ast;
+ *   XC_HttpAsync ast;
  *  
  *   ast.setTimeout(1000);  //设置异步请求超时时间
  *  
@@ -153,13 +152,13 @@ struct TC_HttpAsync_Exception : public TC_Exception
  *  
  *   ast.terminate(); 
  */
-class TC_HttpAsync : public TC_Thread, public TC_ThreadLock
+class XC_HttpAsync : public XC_Thread, public XC_ThreadLock
 {
 public:
     /**
      * @brief 异步请求回调对象
      */
-    class RequestCallback : public TC_HandleBase
+    class RequestCallback : public XC_HandleBase
     {
     public:
         /**
@@ -168,7 +167,7 @@ public:
          * @param bClose          因为远程服务器关闭连接认为http完整了
          * @param stHttpResponse  http响应包
          */
-        virtual void onResponse(bool bClose, TC_HttpResponse &stHttpResponse) = 0;
+        virtual void onResponse(bool bClose, XC_HttpResponse &stHttpResponse) = 0;
 
         /**
 		 * @brief 每次收到数据且http头收全了都会调用， 
@@ -176,7 +175,7 @@ public:
          * @param stHttpResponse  收到的http数据
          * @return                true:继续收取数据, false:不收取数据了
          */
-        virtual bool onReceive(TC_HttpResponse &stHttpResponse) { return true;};
+        virtual bool onReceive(XC_HttpResponse &stHttpResponse) { return true;};
 
         /**
 		 * @brief 异常. 
@@ -196,13 +195,13 @@ public:
         virtual void onClose() = 0;
     };
 
-    typedef TC_AutoPtr<RequestCallback> RequestCallbackPtr;
+    typedef XC_AutoPtr<RequestCallback> RequestCallbackPtr;
 
 protected:
     /**
      * @brief 异步http请求(短连接)
      */
-    class AsyncRequest : public TC_HandleBase
+    class AsyncRequest : public XC_HandleBase
     {
     public:
         /**
@@ -211,7 +210,7 @@ protected:
          * @param stHttpRequest
          * @param callbackPtr
          */
-        AsyncRequest(TC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr);
+        AsyncRequest(XC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr);
 
         /**
          * @brief 析构
@@ -284,7 +283,7 @@ protected:
          * 
          * @param pHttpAsync ：异步线程处理对象
          */
-        void setHttpAsync(TC_HttpAsync *pHttpAsync) { _pHttpAsync = pHttpAsync; }
+        void setHttpAsync(XC_HttpAsync *pHttpAsync) { _pHttpAsync = pHttpAsync; }
 
         /**
 		 * @brief 设置发网络请求时绑定的ip地址. 
@@ -315,9 +314,9 @@ protected:
         int send(const void* buf, uint32_t len, uint32_t flag);
 
     protected:
-        TC_HttpAsync               *_pHttpAsync;
-        TC_HttpResponse             _stHttpResp;
-        TC_Socket                   _fd;
+        XC_HttpAsync               *_pHttpAsync;
+        XC_HttpResponse             _stHttpResp;
+        XC_Socket                   _fd;
         string                      _sHost;
         uint32_t                    _iPort;
         uint32_t                    _iUniqId;
@@ -328,21 +327,21 @@ protected:
 		struct sockaddr 			_bindAddr;
     };
 
-    typedef TC_AutoPtr<AsyncRequest> AsyncRequestPtr;
+    typedef XC_AutoPtr<AsyncRequest> AsyncRequestPtr;
 
 public:
 
-    typedef TC_TimeoutQueue<AsyncRequestPtr> http_queue_type;
+    typedef XC_TimeoutQueue<AsyncRequestPtr> http_queue_type;
 
     /**
      * @brief 构造函数
      */
-    TC_HttpAsync();
+    XC_HttpAsync();
 
     /**
      * @brief 析构函数
      */
-    ~TC_HttpAsync();
+    ~XC_HttpAsync();
 
     /**
 	 * @brief 异步发起请求. 
@@ -354,7 +353,7 @@ public:
      * @return int, <0:发起连接失败, 可以通过strerror(返回值)
      *             =0:成功
      */
-    int doAsyncRequest(TC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr, bool bUseProxy=false, struct sockaddr* addr=NULL);
+    int doAsyncRequest(XC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr, bool bUseProxy=false, struct sockaddr* addr=NULL);
 
     /**
      * @brief 设置proxy地址
@@ -413,7 +412,7 @@ public:
 
 protected:
 
-    typedef TC_Functor<void, TL::TLMaker<AsyncRequestPtr, int>::Result> async_process_type;
+    typedef XC_Functor<void, TL::TLMaker<AsyncRequestPtr, int>::Result> async_process_type;
 
     /**
 	 * @brief 超时处理. 
@@ -440,11 +439,11 @@ protected:
     friend class AsyncRequest;
 
 protected:
-    TC_ThreadPool               _tpool;
+    XC_ThreadPool               _tpool;
 
     http_queue_type             *_data;
     
-    TC_Epoller                  _epoller;
+    XC_Epoller                  _epoller;
 
     bool                        _terminate;
 

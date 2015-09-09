@@ -1,5 +1,5 @@
-#ifndef __TC_OPTION_H
-#define __TC_OPTION_H
+#ifndef __XC_OPTION_H
+#define __XC_OPTION_H
 
 #include <map>
 #include <vector>
@@ -7,14 +7,13 @@
 #include <sstream>
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_option.h 
  * @brief 命令行参数解析类.
  *  
- * @author jarodruan@tencent.com 
  */
             
 /////////////////////////////////////////////////
@@ -23,13 +22,13 @@ namespace taf
  *
  * 支持以下形式的参数:  ./main.exe --name=value --with abc def 
  */
-class TC_Option
+class XC_Option
 {
 public:
     /**
      * @brief 构造函数
      */
-    TC_Option(){};
+    XC_Option(){};
 
     /**
 	 * @brief 解码. 

@@ -15,7 +15,7 @@
 using namespace std;
 using namespace __gnu_cxx;
  
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
@@ -27,7 +27,7 @@ namespace taf
 /////////////////////////////////////////////////
 
 template<class T>
-class TC_TimeoutQueue: public TC_ThreadMutex, public TC_HandleBase
+class XC_TimeoutQueue: public XC_ThreadMutex, public XC_HandleBase
 {
 public:
 
@@ -40,7 +40,7 @@ public:
 
     typedef list<NodeInfo>         time_type;
 
-    typedef TC_Functor<void, TL::TYPELIST_1(T&)> data_functor;
+    typedef XC_Functor<void, TL::TYPELIST_1(T&)> data_functor;
 
     struct PtrInfo
     {
@@ -64,7 +64,7 @@ public:
      * @param timeout 超时设定时间
      * @param size
      */
-    TC_TimeoutQueue(int timeout = 5*1000,size_t size = 100 ) : _uniqId(0), _timeout(timeout) {_data.resize(size);}
+    XC_TimeoutQueue(int timeout = 5*1000,size_t size = 100 ) : _uniqId(0), _timeout(timeout) {_data.resize(size);}
 
     /**
      * @brief  产生该队列的下一个ID
@@ -139,7 +139,7 @@ public:
      * 
      * @return size_t
      */
-    size_t size() const { TC_LockT<TC_ThreadMutex> lock(*this); return _data.size(); }
+    size_t size() const { XC_LockT<XC_ThreadMutex> lock(*this); return _data.size(); }
 
 protected:
     uint32_t                        _uniqId;
@@ -149,9 +149,9 @@ protected:
     typename time_type::iterator    _firstNoPopIter;
 };
 
-template<typename T> T TC_TimeoutQueue<T>::get(uint32_t uniqId, bool bErase)
+template<typename T> T XC_TimeoutQueue<T>::get(uint32_t uniqId, bool bErase)
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     typename data_type::iterator it = _data.find(uniqId);
 
@@ -171,18 +171,18 @@ template<typename T> T TC_TimeoutQueue<T>::get(uint32_t uniqId, bool bErase)
     return ptr;    
 }
 
-template<typename T> uint32_t TC_TimeoutQueue<T>::generateId()
+template<typename T> uint32_t XC_TimeoutQueue<T>::generateId()
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     while (++_uniqId == 0);
 
     return _uniqId;
 }
 
-template<typename T> bool TC_TimeoutQueue<T>::push(T& ptr, uint32_t uniqId)
+template<typename T> bool XC_TimeoutQueue<T>::push(T& ptr, uint32_t uniqId)
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     PtrInfo pi;
 
@@ -199,7 +199,7 @@ template<typename T> bool TC_TimeoutQueue<T>::push(T& ptr, uint32_t uniqId)
     NodeInfo ni;
 
     struct timeval tv;
-    TC_TimeProvider::getInstance()->getNow(&tv);
+    XC_TimeProvider::getInstance()->getNow(&tv);
 
     ni.createTime = tv.tv_sec * (int64_t)1000 + tv.tv_usec/1000;
 
@@ -223,14 +223,14 @@ template<typename T> bool TC_TimeoutQueue<T>::push(T& ptr, uint32_t uniqId)
     return true;
 }
 
-template<typename T> void TC_TimeoutQueue<T>::timeout()
+template<typename T> void XC_TimeoutQueue<T>::timeout()
 {
     struct timeval tv;
-    TC_TimeProvider::getInstance()->getNow(&tv);
+    XC_TimeProvider::getInstance()->getNow(&tv);
 
     while(true)
     {
-        TC_LockT<TC_ThreadMutex> lock(*this);
+        XC_LockT<XC_ThreadMutex> lock(*this);
 
         typename time_type::iterator it = _time.begin();
 
@@ -247,16 +247,16 @@ template<typename T> void TC_TimeoutQueue<T>::timeout()
     }
 }
 
-template<typename T> void TC_TimeoutQueue<T>::timeout(data_functor &df)
+template<typename T> void XC_TimeoutQueue<T>::timeout(data_functor &df)
 {
     struct timeval tv;
-    TC_TimeProvider::getInstance()->getNow(&tv);
+    XC_TimeProvider::getInstance()->getNow(&tv);
     while(true)
     {
         T ptr;
 
         {
-            TC_LockT<TC_ThreadMutex> lock(*this);
+            XC_LockT<XC_ThreadMutex> lock(*this);
 
             typename time_type::iterator it = _time.begin();
 
@@ -278,9 +278,9 @@ template<typename T> void TC_TimeoutQueue<T>::timeout(data_functor &df)
     }
 }
 
-template<typename T> T TC_TimeoutQueue<T>::erase(uint32_t uniqId)
+template<typename T> T XC_TimeoutQueue<T>::erase(uint32_t uniqId)
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     typename data_type::iterator it = _data.find(uniqId);
 
@@ -298,16 +298,16 @@ template<typename T> T TC_TimeoutQueue<T>::erase(uint32_t uniqId)
     return ptr;    
 }
 
-template<typename T> T TC_TimeoutQueue<T>::pop()
+template<typename T> T XC_TimeoutQueue<T>::pop()
 {
     T ptr;
 
     return pop(ptr) ? ptr : NULL;
 }
 
-template<typename T> bool TC_TimeoutQueue<T>::pop(T &ptr)
+template<typename T> bool XC_TimeoutQueue<T>::pop(T &ptr)
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     if(_time.empty())
     {
@@ -339,9 +339,9 @@ template<typename T> bool TC_TimeoutQueue<T>::pop(T &ptr)
     return true;
 }
 
-template<typename T> bool TC_TimeoutQueue<T>::swap(deque<T> &q)
+template<typename T> bool XC_TimeoutQueue<T>::swap(deque<T> &q)
 {
-    TC_LockT<TC_ThreadMutex> lock(*this);
+    XC_LockT<XC_ThreadMutex> lock(*this);
 
     if(_time.empty())
     {

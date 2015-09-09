@@ -2,15 +2,15 @@
 #include <cassert>
 #include <errno.h>
 
-namespace taf
+namespace xutil
 {
 
-TC_Shm::TC_Shm(size_t iShmSize, key_t iKey, bool bOwner)
+XC_Shm::XC_Shm(size_t iShmSize, key_t iKey, bool bOwner)
 {
     init(iShmSize, iKey, bOwner);
 }
 
-TC_Shm::~TC_Shm()
+XC_Shm::~XC_Shm()
 {
     if(_bOwner)
     {
@@ -18,7 +18,7 @@ TC_Shm::~TC_Shm()
     }
 }
 
-void TC_Shm::init(size_t iShmSize, key_t iKey, bool bOwner)
+void XC_Shm::init(size_t iShmSize, key_t iKey, bool bOwner)
 {
     assert(_pshm == NULL);
 
@@ -32,7 +32,7 @@ void TC_Shm::init(size_t iShmSize, key_t iKey, bool bOwner)
         //有可能是已经存在同样的key_shm,则试图连接
         if ((_shemID = shmget(iKey, iShmSize, 0666)) < 0)
         {
-            throw TC_Shm_Exception("[TC_Shm::init()] shmget error", errno);
+            throw XC_Shm_Exception("[XC_Shm::init()] shmget error", errno);
         }
     }
     else
@@ -43,14 +43,14 @@ void TC_Shm::init(size_t iShmSize, key_t iKey, bool bOwner)
     //try to access shm
     if ((_pshm = shmat(_shemID, NULL, 0)) == (char *) -1)
     {
-        throw TC_Shm_Exception("[TC_Shm::init()] shmat error", errno);
+        throw XC_Shm_Exception("[XC_Shm::init()] shmat error", errno);
     }
 
     _shmSize = iShmSize;
     _shmKey = iKey;
 }
 
-int TC_Shm::detach()
+int XC_Shm::detach()
 {
     int iRetCode = 0;
     if(_pshm != NULL)
@@ -63,7 +63,7 @@ int TC_Shm::detach()
     return iRetCode;
 }
 
-int TC_Shm::del()
+int XC_Shm::del()
 {
     int iRetCode = 0;
     if(_pshm != NULL)

@@ -1,5 +1,5 @@
-#ifndef __TC_COMMON_H
-#define __TC_COMMON_H
+#ifndef __XC_COMMON_H
+#define __XC_COMMON_H
 
 #ifndef __USE_XOPEN
 #define __USE_XOPEN
@@ -27,7 +27,7 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
@@ -49,7 +49,7 @@ namespace taf
  *
  * 替换字符串函数,Ip匹配函数,判断一个数是否是素数等
  */
-class TC_Common
+class XC_Common
 {
 public:
 
@@ -465,7 +465,7 @@ namespace p
 }
 
 template<typename T>
-T TC_Common::strto(const string &sStr)
+T XC_Common::strto(const string &sStr)
 {
     typedef typename TL::TypeSelect<TL::TypeTraits<T>::isStdArith, p::strto1<T>, p::strto2<T> >::Result strto_type;
 
@@ -473,7 +473,7 @@ T TC_Common::strto(const string &sStr)
 }
 
 template<typename T>
-T TC_Common::strto(const string &sStr, const string &sDefault)
+T XC_Common::strto(const string &sStr, const string &sDefault)
 {
     string s;
 
@@ -496,7 +496,7 @@ T TC_Common::strto(const string &sStr, const string &sDefault)
 
 
 template<typename T>
-vector<T> TC_Common::sepstr(const string &sStr, const string &sSep, bool withEmpty)
+vector<T> XC_Common::sepstr(const string &sStr, const string &sSep, bool withEmpty)
 {
     vector<T> vt;
 
@@ -549,7 +549,7 @@ vector<T> TC_Common::sepstr(const string &sStr, const string &sSep, bool withEmp
 }
 
 template<typename T>
-string TC_Common::tostr(const T &t)
+string XC_Common::tostr(const T &t)
 {
     ostringstream sBuffer;
     sBuffer << t;
@@ -557,7 +557,7 @@ string TC_Common::tostr(const T &t)
 }
 
 template<typename T>
-string TC_Common::tostr(const vector<T> &t)
+string XC_Common::tostr(const vector<T> &t)
 {
     ostringstream sBuffer;
     for(size_t i = 0; i < t.size(); i++)
@@ -568,7 +568,7 @@ string TC_Common::tostr(const vector<T> &t)
 }
 
 template<typename K, typename V, typename D, typename A>
-string TC_Common::tostr(const map<K, V, D, A> &t)
+string XC_Common::tostr(const map<K, V, D, A> &t)
 {
     ostringstream sBuffer;
     typename map<K, V, D, A>::const_iterator it = t.begin();
@@ -581,7 +581,7 @@ string TC_Common::tostr(const map<K, V, D, A> &t)
 }
 
 template<typename K, typename V, typename D, typename A>
-string TC_Common::tostr(const multimap<K, V, D, A> &t)
+string XC_Common::tostr(const multimap<K, V, D, A> &t)
 {
     ostringstream sBuffer;
     typename multimap<K, V, D, A>::const_iterator it = t.begin();
@@ -594,7 +594,7 @@ string TC_Common::tostr(const multimap<K, V, D, A> &t)
 }
 
 template<typename F, typename S>
-string TC_Common::tostr(const pair<F, S> &itPair)
+string XC_Common::tostr(const pair<F, S> &itPair)
 {
     ostringstream sBuffer;
     sBuffer << "[" << (itPair.first) << "]=[" << (itPair.second) << "]";
@@ -602,7 +602,7 @@ string TC_Common::tostr(const pair<F, S> &itPair)
 }
 
 template <typename InputIter>
-string TC_Common::tostr(InputIter iFirst, InputIter iLast, const string &sSep)
+string XC_Common::tostr(InputIter iFirst, InputIter iLast, const string &sSep)
 {
     string sBuffer;
     InputIter it = iFirst;

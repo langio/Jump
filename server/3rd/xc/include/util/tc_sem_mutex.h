@@ -1,30 +1,29 @@
-#ifndef __TC_SEM_MUTEX_H
-#define __TC_SEM_MUTEX_H
+#ifndef __XC_SEM_MUTEX_H
+#define __XC_SEM_MUTEX_H
 
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include "util/tc_lock.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_sem_mutex.h 
 * @brief 信号量锁类. 
 *  
-* @author jarodruan@tencent.com 
 */              
 /////////////////////////////////////////////////
 
 /**
 * @brief 信号量锁异常类
 */
-struct TC_SemMutex_Exception : public TC_Lock_Exception
+struct XC_SemMutex_Exception : public XC_Lock_Exception
 {
-    TC_SemMutex_Exception(const string &buffer) : TC_Lock_Exception(buffer){};
-    TC_SemMutex_Exception(const string &buffer, int err) : TC_Lock_Exception(buffer, err){};
-    ~TC_SemMutex_Exception() throw() {};
+    XC_SemMutex_Exception(const string &buffer) : XC_Lock_Exception(buffer){};
+    XC_SemMutex_Exception(const string &buffer, int err) : XC_Lock_Exception(buffer, err){};
+    ~XC_SemMutex_Exception() throw() {};
 };
 
 /**
@@ -34,27 +33,27 @@ struct TC_SemMutex_Exception : public TC_Lock_Exception
 * 2 采用IPC的信号量实现
 * 3 信号量采用了SEM_UNDO参数, 当进程结束时会自动调整信号量
 */
-class TC_SemMutex
+class XC_SemMutex
 {
 public:
     /**
      * @brief 构造函数
      */
-    TC_SemMutex();
+    XC_SemMutex();
 
     /**
 	* @brief 构造函数. 
 	*  
     * @param iKey, key
-    * @throws TC_SemMutex_Exception
+    * @throws XC_SemMutex_Exception
     */
-    TC_SemMutex(key_t iKey);
+    XC_SemMutex(key_t iKey);
 
     /**
 	* @brief 初始化. 
 	*  
     * @param iKey, key
-    * @throws TC_SemMutex_Exception
+    * @throws XC_SemMutex_Exception
     * @return 无
      */
     void init(key_t iKey);
@@ -109,7 +108,7 @@ public:
     /**
 	* @brief 尝试写锁. 
 	*  
-    * @throws TC_SemMutex_Exception
+    * @throws XC_SemMutex_Exception
     * @return bool : 加锁成功则返回false, 否则返回false
     */
     bool trywlock() const;
@@ -129,7 +128,7 @@ public:
     /**
 	* @brief  尝试解锁. 
 	*  
-    * @throws TC_SemMutex_Exception
+    * @throws XC_SemMutex_Exception
     * @return int, 0 正确
     */
     bool trylock() const    {return trywlock();};

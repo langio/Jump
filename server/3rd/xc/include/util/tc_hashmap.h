@@ -1,5 +1,5 @@
-#ifndef	__TC_HASHMAP_H__
-#define __TC_HASHMAP_H__
+#ifndef	__XC_HASHMAP_H__
+#define __XC_HASHMAP_H__
 
 #include <vector>
 #include <memory>
@@ -12,23 +12,22 @@
 #include "util/tc_functor.h"
 #include "util/tc_hash_fun.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
 * @file tc_hashmap.h 
 * @brief  hashmap类 
-* @author  jarodruan@tencent.com,joeyzhong@tencent.com
 */            
 /////////////////////////////////////////////////
 /**
 * @brief Hash map异常类
 */
-struct TC_HashMap_Exception : public TC_Exception
+struct XC_HashMap_Exception : public XC_Exception
 {
-	TC_HashMap_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_HashMap_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_HashMap_Exception() throw(){};
+	XC_HashMap_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_HashMap_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_HashMap_Exception() throw(){};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -37,7 +36,7 @@ struct TC_HashMap_Exception : public TC_Exception
  *  
  *内存hashmap，不要直接使用该类，通过jmem组件来使用. 
  * 
- *该hashmap通过TC_MemMutilChunkAllocator来分配空间，支持不同大小的内存块的分配； 
+ *该hashmap通过XC_MemMutilChunkAllocator来分配空间，支持不同大小的内存块的分配； 
  * 
  *支持内存和共享内存,对接口的所有操作都需要加锁,*内部有脏数据链，支持数据缓写； 
  * 
@@ -47,7 +46,7 @@ struct TC_HashMap_Exception : public TC_Exception
  * 
  *支持dump到文件，或从文件load； 
  */
-class TC_HashMap
+class XC_HashMap
 {
 public:
     struct HashMapIterator;
@@ -122,7 +121,7 @@ public:
          * @param Map
          * @param iAddr 当前MemBlock的地址
          */
-        Block(TC_HashMap *pMap, size_t iAddr)
+        Block(XC_HashMap *pMap, size_t iAddr)
         : _pMap(pMap)
         , _iHead(iAddr)
         {
@@ -213,18 +212,18 @@ public:
          * @brief 获取Block中的数据
          *
          * @return int
-         *          TC_HashMap::RT_OK, 正常, 其他异常
-         *          TC_HashMap::RT_ONLY_KEY, 只有Key
+         *          XC_HashMap::RT_OK, 正常, 其他异常
+         *          XC_HashMap::RT_ONLY_KEY, 只有Key
          *          其他异常
          */
-        int getBlockData(TC_HashMap::BlockData &data);
+        int getBlockData(XC_HashMap::BlockData &data);
 
         /**
          * @brief 获取数据
          * @param pData
          * @param iDatalen
          * @return int,
-         *          TC_HashMap::RT_OK, 正常
+         *          XC_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(void *pData, size_t &iDataLen);
@@ -233,7 +232,7 @@ public:
          * @brief 获取数据
          * @param s
          * @return int
-         *          TC_HashMap::RT_OK, 正常
+         *          XC_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(string &s);
@@ -244,7 +243,7 @@ public:
          * @param iDatalen
          * @param vtData, 淘汰的数据
          */
-        int set(const void *pData, size_t iDataLen, bool bOnlyKey, vector<TC_HashMap::BlockData> &vtData);
+        int set(const void *pData, size_t iDataLen, bool bOnlyKey, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 是否是脏数据
@@ -339,7 +338,7 @@ public:
          *
          * @return int,
          */
-        int allocate(size_t iDataLen, vector<TC_HashMap::BlockData> &vtData);
+        int allocate(size_t iDataLen, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 挂接chunk, 如果core则挂接失败, 保证内存块还可以用
@@ -358,7 +357,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int allocateChunk(size_t fn, vector<size_t> &chunks, vector<TC_HashMap::BlockData> &vtData);
+        int allocateChunk(size_t fn, vector<size_t> &chunks, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 获取数据长度
@@ -372,7 +371,7 @@ public:
         /**
          * Map
          */
-        TC_HashMap         *_pMap;
+        XC_HashMap         *_pMap;
 
         /**
          * block区块首地址, 相对地址
@@ -393,9 +392,9 @@ public:
         /**
          * @brief 构造函数
          */
-        BlockAllocator(TC_HashMap *pMap)
+        BlockAllocator(XC_HashMap *pMap)
         : _pMap(pMap)
-        , _pChunkAllocator(new TC_MemMultiChunkAllocator())
+        , _pChunkAllocator(new XC_MemMultiChunkAllocator())
         {
         }
 
@@ -455,9 +454,9 @@ public:
         /**
          * @brief 获取每种数据块头部信息
          *
-         * @return TC_MemChunk::tagChunkHead
+         * @return XC_MemChunk::tagChunkHead
          */
-        vector<TC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
+        vector<XC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
 
         /**
          * @brief 获取内存大小
@@ -495,7 +494,7 @@ public:
          * @param vtData, 返回释放的内存块数据
          * @return size_t, 相对地址,0表示没有空间可以分配
          */
-        size_t allocateMemBlock(size_t index, size_t &iAllocSize, vector<TC_HashMap::BlockData> &vtData);
+        size_t allocateMemBlock(size_t index, size_t &iAllocSize, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 为地址为iAddr的Block分配一个chunk
@@ -505,7 +504,7 @@ public:
          * @param vtData 返回释放的内存块数据
          * @return size_t, 相对地址,0表示没有空间可以分配
          */
-        size_t allocateChunk(size_t iAddr, size_t &iAllocSize, vector<TC_HashMap::BlockData> &vtData);
+        size_t allocateChunk(size_t iAddr, size_t &iAllocSize, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 释放Block
@@ -530,12 +529,12 @@ public:
         /**
          * map
          */
-    	TC_HashMap                  *_pMap;
+    	XC_HashMap                  *_pMap;
 
         /**
          * chunk分配器
          */
-        TC_MemMultiChunkAllocator   *_pChunkAllocator;
+        XC_MemMultiChunkAllocator   *_pChunkAllocator;
     };
 
     ////////////////////////////////////////////////////////////////
@@ -551,7 +550,7 @@ public:
          * @param pMap
          * @param iAddr
     	 */
-    	HashMapLockItem(TC_HashMap *pMap, size_t iAddr);
+    	HashMapLockItem(XC_HashMap *pMap, size_t iAddr);
 
         /**
          *
@@ -638,7 +637,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int set(const string& k, const string& v, vector<TC_HashMap::BlockData> &vtData);
+        int set(const string& k, const string& v, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * @brief 设置Key, 无数据
@@ -647,7 +646,7 @@ public:
          *
          * @return int
          */
-        int set(const string& k, vector<TC_HashMap::BlockData> &vtData);
+        int set(const string& k, vector<XC_HashMap::BlockData> &vtData);
 
         /**
          *
@@ -680,14 +679,14 @@ public:
          */
     	void prevItem(int iType);
 
-        friend class TC_HashMap;
-        friend struct TC_HashMap::HashMapLockIterator;
+        friend class XC_HashMap;
+        friend struct XC_HashMap::HashMapLockIterator;
 
     private:
         /**
          * map
          */
-    	TC_HashMap *_pMap;
+    	XC_HashMap *_pMap;
 
         /**
          * block的地址
@@ -732,7 +731,7 @@ public:
          * @param iAddr, 地址
     	 * @param type
     	 */
-    	HashMapLockIterator(TC_HashMap *pMap, size_t iAddr, int iType, int iOrder);
+    	HashMapLockIterator(XC_HashMap *pMap, size_t iAddr, int iType, int iOrder);
 
         /**
          * @brief copy
@@ -796,7 +795,7 @@ public:
         /**
          *
          */
-        TC_HashMap  *_pMap;
+        XC_HashMap  *_pMap;
 
         /**
          *
@@ -828,7 +827,7 @@ public:
          * @param pMap
          * @param iIndex
          */
-        HashMapItem(TC_HashMap *pMap, size_t iIndex);
+        HashMapItem(XC_HashMap *pMap, size_t iIndex);
 
         /**
          *
@@ -866,7 +865,7 @@ public:
          * 
          * @return
          */
-        void get(vector<TC_HashMap::BlockData> &vtData);
+        void get(vector<XC_HashMap::BlockData> &vtData);
 
         /**
          * 
@@ -889,14 +888,14 @@ public:
          */
 		int setDirty();
 
-        friend class TC_HashMap;
-        friend struct TC_HashMap::HashMapIterator;
+        friend class XC_HashMap;
+        friend struct XC_HashMap::HashMapIterator;
 
     private:
         /**
          * map
          */
-        TC_HashMap *_pMap;
+        XC_HashMap *_pMap;
 
         /**
          * 数据块地址
@@ -922,7 +921,7 @@ public:
          * @param iIndex, 地址
     	 * @param type
     	 */
-    	HashMapIterator(TC_HashMap *pMap, size_t iIndex);
+    	HashMapIterator(XC_HashMap *pMap, size_t iIndex);
 
         /**
          * @brief copy
@@ -986,7 +985,7 @@ public:
         /**
          *
          */
-        TC_HashMap  *_pMap;
+        XC_HashMap  *_pMap;
 
         /**
          *
@@ -1122,14 +1121,14 @@ public:
 	/**
      * @brief 定义hash处理器
      */
-    typedef TC_Functor<size_t, TL::TLMaker<const string &>::Result> hash_functor;
+    typedef XC_Functor<size_t, TL::TLMaker<const string &>::Result> hash_functor;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
 	 * @brief 构造函数
      */
-    TC_HashMap()
+    XC_HashMap()
     : _iMinDataSize(0)
     , _iMaxDataSize(0)
     , _fFactor(1.0)
@@ -1188,9 +1187,9 @@ public:
     /**
      *  @brief 获取每种大小内存块的头部信息
      *
-     * @return vector<TC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
+     * @return vector<XC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
      */
-    vector<TC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
+    vector<XC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
 
     /**
      * @brief 所有block中chunk的个数
@@ -1275,8 +1274,8 @@ public:
 
     /**
      * @brief  设置淘汰方式
-     * TC_HashMap::ERASEBYGET
-     * TC_HashMap::ERASEBYSET
+     * XC_HashMap::ERASEBYGET
+     * XC_HashMap::ERASEBYSET
      * @param cEraseMode
      */
     void setEraseMode(char cEraseMode)              { _pHead->_cEraseMode = cEraseMode; }
@@ -1659,9 +1658,9 @@ protected:
     friend class HashMapLockItem;
 
     //禁止copy构造
-    TC_HashMap(const TC_HashMap &mcm);
+    XC_HashMap(const XC_HashMap &mcm);
     //禁止复制
-    TC_HashMap &operator=(const TC_HashMap &mcm);
+    XC_HashMap &operator=(const XC_HashMap &mcm);
 
     /**
      * @brief  初始化
@@ -1845,7 +1844,7 @@ protected:
     /**
      * hash对象
      */
-    TC_MemVector<tagHashItem>   _hash;
+    XC_MemVector<tagHashItem>   _hash;
 
     /**
      * 修改数据块

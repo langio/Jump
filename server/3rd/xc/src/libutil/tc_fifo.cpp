@@ -6,29 +6,29 @@
 
 #include "util/tc_fifo.h"
 
-namespace taf
+namespace xutil
 {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-TC_Fifo::TC_Fifo(bool bOwner) : _bOwner(bOwner), _enRW(EM_READ), _fd(-1)
+XC_Fifo::XC_Fifo(bool bOwner) : _bOwner(bOwner), _enRW(EM_READ), _fd(-1)
 {
 
 }
 
-TC_Fifo::~TC_Fifo()
+XC_Fifo::~XC_Fifo()
 {
 	if (_bOwner) close();
 }
 
-void TC_Fifo::close()
+void XC_Fifo::close()
 {
 	if (_fd >= 0) ::close(_fd); 
 		
 	_fd = -1;
 }
 
-int TC_Fifo::open(const std::string & sPathName, ENUM_RW_SET enRW, mode_t mode)
+int XC_Fifo::open(const std::string & sPathName, ENUM_RW_SET enRW, mode_t mode)
 {
 	_enRW       = enRW;
 	_sPathName	= sPathName;
@@ -56,12 +56,12 @@ int TC_Fifo::open(const std::string & sPathName, ENUM_RW_SET enRW, mode_t mode)
 	return 0;
 }
 
-int TC_Fifo::read(char * szBuff, const size_t sizeMax)
+int XC_Fifo::read(char * szBuff, const size_t sizeMax)
 {
 	return ::read(_fd, szBuff, sizeMax);
 }
 
-int TC_Fifo::write(const char * szBuff, const size_t sizeBuffLen)
+int XC_Fifo::write(const char * szBuff, const size_t sizeBuffLen)
 {
 	if (sizeBuffLen == 0) return 0;
 

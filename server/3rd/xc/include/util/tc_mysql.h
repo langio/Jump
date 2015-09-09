@@ -1,5 +1,5 @@
-#ifndef __TC_MYSQL_H
-#define __TC_MYSQL_H
+#ifndef __XC_MYSQL_H
+#define __XC_MYSQL_H
 
 #include "mysql.h"
 #include "util/tc_ex.h"
@@ -7,7 +7,7 @@
 #include <vector>
 #include <stdlib.h>
 
-namespace taf
+namespace xutil
 {
 
 /////////////////////////////////////////////////
@@ -15,7 +15,6 @@ namespace taf
 * @file  tc_mysql.h 
 * @brief mysql操作类. 
 *  
-* @author  jarodruan@tencent.com  
 */           
 /////////////////////////////////////////////////
 
@@ -23,16 +22,16 @@ namespace taf
 /**
 * @brief 数据库异常类
 */
-struct TC_Mysql_Exception : public TC_Exception
+struct XC_Mysql_Exception : public XC_Exception
 {
-	TC_Mysql_Exception(const string &sBuffer) : TC_Exception(sBuffer){};
-	~TC_Mysql_Exception() throw(){};    
+	XC_Mysql_Exception(const string &sBuffer) : XC_Exception(sBuffer){};
+	~XC_Mysql_Exception() throw(){};    
 };
 
 /**
 * @brief 数据库配置接口
 */
-struct TC_DBConf
+struct XC_DBConf
 {
     /**
     * 主机地址
@@ -72,7 +71,7 @@ struct TC_DBConf
     /**
     * @brief 构造函数
     */
-    TC_DBConf()
+    XC_DBConf()
         : _port(0)
         , _flag(0)
     {
@@ -111,21 +110,21 @@ struct TC_DBConf
 /**
 * @brief Mysql数据库操作类 
 * 
-* 非线程安全，通常一个线程一个TC_Mysql对象；
+* 非线程安全，通常一个线程一个XC_Mysql对象；
 * 
 * 对于insert/update可以有更好的函数封装，保证SQL注入；
 * 
-* TC_Mysql::DB_INT表示组装sql语句时，不加””和转义；
+* XC_Mysql::DB_INT表示组装sql语句时，不加””和转义；
 * 
-* TC_Mysql::DB_STR表示组装sql语句时，加””并转义；
+* XC_Mysql::DB_STR表示组装sql语句时，加””并转义；
 */
-class TC_Mysql 
+class XC_Mysql 
 {
 public:
     /**
     * @brief 构造函数
     */
-    TC_Mysql();
+    XC_Mysql();
 
     /**
 	* @brief 构造函数. 
@@ -138,18 +137,18 @@ public:
     * @param iUnixSocket  socket
     * @param iFlag        客户端标识
     */
-    TC_Mysql(const string& sHost, const string& sUser = "", const string& sPasswd = "", const string& sDatabase = "", const string &sCharSet = "", int port = 0, int iFlag = 0);
+    XC_Mysql(const string& sHost, const string& sUser = "", const string& sPasswd = "", const string& sDatabase = "", const string &sCharSet = "", int port = 0, int iFlag = 0);
 
     /**
     * @brief 构造函数. 
     * @param tcDBConf 数据库配置
     */
-    TC_Mysql(const TC_DBConf& tcDBConf);
+    XC_Mysql(const XC_DBConf& tcDBConf);
 
     /**
     * @brief 析构函数.
     */
-    ~TC_Mysql();
+    ~XC_Mysql();
 
     /**
 	* @brief 初始化. 
@@ -170,12 +169,12 @@ public:
 	*  
     * @param tcDBConf 数据库配置
     */
-    void init(const TC_DBConf& tcDBConf);
+    void init(const XC_DBConf& tcDBConf);
 
     /**
 	* @brief 连接数据库. 
 	*  
-    * @throws TC_Mysql_Exception
+    * @throws XC_Mysql_Exception
     * @return 无
     */
     void connect();
@@ -213,7 +212,7 @@ public:
 	* @brief 更新或者插入数据. 
 	*  
     * @param sSql  sql语句
-    * @throws      TC_Mysql_Exception
+    * @throws      XC_Mysql_Exception
     * @return
     */
     void execute(const string& sSql);
@@ -277,7 +276,7 @@ public:
 	* @brief Query Record. 
 	*  
     * @param sSql sql语句
-    * @throws     TC_Mysql_Exception
+    * @throws     XC_Mysql_Exception
     * @return     MysqlData类型的数据，可以根据字段获取相关信息
     */
     MysqlData queryRecord(const string& sSql);
@@ -304,7 +303,7 @@ public:
     * @param sTableName 表名
     * @param mpColumns  列名/值对
     * @param sCondition where子语句,例如:where A = B
-    * @throws           TC_Mysql_Exception
+    * @throws           XC_Mysql_Exception
     * @return           size_t 影响的行数
     */
     size_t updateRecord(const string &sTableName, const map<string, pair<FT, string> > &mpColumns, const string &sCondition);
@@ -314,7 +313,7 @@ public:
 	*  
     * @param sTableName  表名
     * @param mpColumns  列名/值对
-    * @throws           TC_Mysql_Exception
+    * @throws           XC_Mysql_Exception
     * @return           size_t 影响的行数
     */
     size_t insertRecord(const string &sTableName, const map<string, pair<FT, string> > &mpColumns);
@@ -324,7 +323,7 @@ public:
 	*  
     * @param sTableName  表名
     * @param mpColumns   列名/值对
-    * @throws            TC_Mysql_Exception
+    * @throws            XC_Mysql_Exception
     * @return            size_t 影响的行数
     */
     size_t replaceRecord(const string &sTableName, const map<string, pair<FT, string> > &mpColumns);
@@ -334,7 +333,7 @@ public:
 	*  
     * @param sTableName   表名
     * @param sCondition   where子语句,例如:where A = B
-    * @throws             TC_Mysql_Exception
+    * @throws             XC_Mysql_Exception
     * @return             size_t 影响的行数
     */
     size_t deleteRecord(const string &sTableName, const string &sCondition = "");
@@ -344,7 +343,7 @@ public:
 	*  
     * @param sTableName 用于查询的表名
     * @param sCondition where子语句,例如:where A = B
-    * @throws           TC_Mysql_Exception
+    * @throws           XC_Mysql_Exception
     * @return           size_t 查询的记录数目
 	*/
     size_t getRecordCount(const string& sTableName, const string &sCondition = "");
@@ -353,7 +352,7 @@ public:
 	* @brief 获取Sql返回结果集的个数. 
 	*  
     * @param sCondition where子语句,例如:where A = B
-    * @throws           TC_Mysql_Exception
+    * @throws           XC_Mysql_Exception
     * @return           查询的记录数目
 	*/
     size_t getSqlCount(const string &sCondition = "");
@@ -362,7 +361,7 @@ public:
 	 * @brief 存在记录. 
 	 *  
      * @param sql  sql语句
-     * @throws     TC_Mysql_Exception
+     * @throws     XC_Mysql_Exception
      * @return     操作是否成功
      */
     bool existRecord(const string& sql);
@@ -373,7 +372,7 @@ public:
     * @param sTableName 用于查询的表名
     * @param sFieldName 用于查询的字段
     * @param sCondition where子语句,例如:where A = B
-    * @throws           TC_Mysql_Exception
+    * @throws           XC_Mysql_Exception
     * @return           查询的记录数目
 	*/
     int getMaxValue(const string& sTableName, const string& sFieldName, const string &sCondition = "");
@@ -424,13 +423,13 @@ protected:
     /**
 	* @brief copy contructor，只申明,不定义,保证不被使用 
     */
-    TC_Mysql(const TC_Mysql &tcMysql);
+    XC_Mysql(const XC_Mysql &tcMysql);
 
     /**
     * 
     * @brief 只申明,不定义,保证不被使用
     */
-    TC_Mysql &operator=(const TC_Mysql &tcMysql);
+    XC_Mysql &operator=(const XC_Mysql &tcMysql);
 
 
 private:
@@ -443,7 +442,7 @@ private:
     /**
     * 数据库配置
     */
-    TC_DBConf   _dbConf;
+    XC_DBConf   _dbConf;
     
     /**
     * 是否已经连接
@@ -458,4 +457,4 @@ private:
 };
 
 }
-#endif //_TC_MYSQL_H
+#endif //_XC_MYSQL_H

@@ -3,16 +3,16 @@
 #include "util/tc_http.h"
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-ostream &operator<<(ostream &os, const TC_Cgi_Upload &tcCgiUpload)
+ostream &operator<<(ostream &os, const XC_Cgi_Upload &tcCgiUpload)
 {
     os << tcCgiUpload.tostr();
     return os;
 }
 
-TC_Cgi_Upload::TC_Cgi_Upload(const TC_Cgi_Upload &tcCgiUpload)
+XC_Cgi_Upload::XC_Cgi_Upload(const XC_Cgi_Upload &tcCgiUpload)
 {
     _sFileName      = tcCgiUpload._sFileName;
     _sRealFileName  = tcCgiUpload._sRealFileName;
@@ -21,7 +21,7 @@ TC_Cgi_Upload::TC_Cgi_Upload(const TC_Cgi_Upload &tcCgiUpload)
     _bOverSize      = tcCgiUpload._bOverSize;
 }
 
-TC_Cgi_Upload & TC_Cgi_Upload::operator=(const TC_Cgi_Upload &tcCgiUpload)
+XC_Cgi_Upload & XC_Cgi_Upload::operator=(const XC_Cgi_Upload &tcCgiUpload)
 {
     if(this != &tcCgiUpload)
     {
@@ -35,20 +35,20 @@ TC_Cgi_Upload & TC_Cgi_Upload::operator=(const TC_Cgi_Upload &tcCgiUpload)
     return *this;
 }
 
-string TC_Cgi_Upload::tostr() const
+string XC_Cgi_Upload::tostr() const
 {
     string sBuffer;
 
     sBuffer = "[file控件名称:" + _sFileName + "] ";
     sBuffer += " [真实文件名称:" + _sRealFileName + "] ";
     sBuffer += " [服务器端文件名称:" + _sServerFileName + "] ";
-    sBuffer += " [大小(字节):" + TC_Common::tostr(_iSize) + "] ";
-    sBuffer += " [超过大小限制:" + TC_Common::tostr(_bOverSize) + "] ";
+    sBuffer += " [大小(字节):" + XC_Common::tostr(_iSize) + "] ";
+    sBuffer += " [超过大小限制:" + XC_Common::tostr(_bOverSize) + "] ";
 
     return sBuffer;
 }
 
-TC_Cgi::TC_Cgi()
+XC_Cgi::XC_Cgi()
 : _is(NULL)
 , _iMaxUploadFiles(1)
 , _iUploadMaxSize(20971520)
@@ -58,11 +58,11 @@ TC_Cgi::TC_Cgi()
 {
 }
 
-TC_Cgi::~TC_Cgi()
+XC_Cgi::~XC_Cgi()
 {
 }
 
-void TC_Cgi::setUpload(const string &sUploadFilePrefix, int iMaxUploadFiles, size_t iUploadMaxSize, size_t iMaxContentLength)
+void XC_Cgi::setUpload(const string &sUploadFilePrefix, int iMaxUploadFiles, size_t iUploadMaxSize, size_t iMaxContentLength)
 {
     _sUploadFilePrefix  = sUploadFilePrefix;
     _iMaxUploadFiles    = iMaxUploadFiles;
@@ -70,7 +70,7 @@ void TC_Cgi::setUpload(const string &sUploadFilePrefix, int iMaxUploadFiles, siz
     _iMaxContentLength  = iMaxContentLength;
 }
 
-void TC_Cgi::parseCgi()
+void XC_Cgi::parseCgi()
 {
     char **env = environ;
     while(*env != NULL)
@@ -89,10 +89,10 @@ void TC_Cgi::parseCgi()
     readCgiInput(_mmpParams, _mpCookies);
 }
 
-void TC_Cgi::parseCgi(const TC_HttpRequest &request)
+void XC_Cgi::parseCgi(const XC_HttpRequest &request)
 {
     setCgiEnv("QUERY_STRING", request.getRequestParam());
-    setCgiEnv("CONTENT_LENGTH", TC_Common::tostr(request.getContentLength()));
+    setCgiEnv("CONTENT_LENGTH", XC_Common::tostr(request.getContentLength()));
     setCgiEnv("HTTP_COOKIE", request.getHeader("SetCookies"));
     setCgiEnv("CONTENT_TYPE", request.getHeader("Content-Type"));
     setCgiEnv("REQUEST_METHOD", request.isGET() ? "GET" : "POST");
@@ -104,13 +104,13 @@ void TC_Cgi::parseCgi(const TC_HttpRequest &request)
     readCgiInput(_mmpParams, _mpCookies);
 }
 
-void TC_Cgi::getPOST(string &sBuffer)
+void XC_Cgi::getPOST(string &sBuffer)
 {
-    string::size_type iSize = atoi(getCgiEnv(TC_Cgi::ENM_CONTENT_LENGTH).c_str());
+    string::size_type iSize = atoi(getCgiEnv(XC_Cgi::ENM_CONTENT_LENGTH).c_str());
 
     if( iSize > _iMaxContentLength)
     {
-        throw TC_Cgi_Exception("[TC_Cgi::getPOST] : CONTENT_LENGTH is too large!");
+        throw XC_Cgi_Exception("[XC_Cgi::getPOST] : CONTENT_LENGTH is too large!");
     }
 
     if(iSize <= 0)
@@ -121,18 +121,18 @@ void TC_Cgi::getPOST(string &sBuffer)
     sBuffer = _buffer;
     if(sBuffer.length() < iSize)
     {
-        throw TC_Cgi_Exception("[TC_Cgi::getPOST] : Read CONTENT error: content size " + TC_Common::tostr(sBuffer.length()) + "<" + TC_Common::tostr(iSize));
+        throw XC_Cgi_Exception("[XC_Cgi::getPOST] : Read CONTENT error: content size " + XC_Common::tostr(sBuffer.length()) + "<" + XC_Common::tostr(iSize));
     }
 }
 
-void TC_Cgi::getGET(string &sBuffer)
+void XC_Cgi::getGET(string &sBuffer)
 {
-    sBuffer = getCgiEnv(TC_Cgi::ENM_QUERY_STRING);
+    sBuffer = getCgiEnv(XC_Cgi::ENM_QUERY_STRING);
 }
 
-void TC_Cgi::readCgiInput(multimap<string, string> &mmpParams, map<string, string> &mpCooies)
+void XC_Cgi::readCgiInput(multimap<string, string> &mmpParams, map<string, string> &mpCooies)
 {
-    string sBuffer = TC_Cgi::getCgiEnv(TC_Cgi::ENM_HTTP_COOKIE);
+    string sBuffer = XC_Cgi::getCgiEnv(XC_Cgi::ENM_HTTP_COOKIE);
 
     parseCookies(mpCooies, sBuffer);
 
@@ -168,7 +168,7 @@ void TC_Cgi::readCgiInput(multimap<string, string> &mmpParams, map<string, strin
     parseNormal(mmpParams, sBuffer);
 }
 
-void TC_Cgi::parseNormal(multimap<string, string> &mmpParams, const string& sBuffer)
+void XC_Cgi::parseNormal(multimap<string, string> &mmpParams, const string& sBuffer)
 {
     int iFlag = 0;
     string sName;
@@ -202,7 +202,7 @@ void TC_Cgi::parseNormal(multimap<string, string> &mmpParams, const string& sBuf
 
         if (iFlag == 0)                         //param name
         {
-            sName = TC_Cgi::decodeURL(sTmp);
+            sName = XC_Cgi::decodeURL(sTmp);
 
             if ( (sBuffer[pos] != '=') || (pos == len - 1) )
             {
@@ -217,7 +217,7 @@ void TC_Cgi::parseNormal(multimap<string, string> &mmpParams, const string& sBuf
         }
         else
         {
-            sValue = TC_Cgi::decodeURL(sTmp);
+            sValue = XC_Cgi::decodeURL(sTmp);
 
             mmpParams.insert(multimap<string, string>::value_type(sName, sValue));
 
@@ -228,7 +228,7 @@ void TC_Cgi::parseNormal(multimap<string, string> &mmpParams, const string& sBuf
     }
 }
 
-void TC_Cgi::parseCookies(map<string, string> &mpCookies, const string& sBuffer)
+void XC_Cgi::parseCookies(map<string, string> &mpCookies, const string& sBuffer)
 {
     string::size_type len = sBuffer.length();
     string::size_type pos = 0;
@@ -248,7 +248,7 @@ void TC_Cgi::parseCookies(map<string, string> &mpCookies, const string& sBuffer)
         {
             if( pos == len - 1)                     //最后一个参数
             {
-                sName  = decodeURL(TC_Common::trimleft(sName, " "));
+                sName  = decodeURL(XC_Common::trimleft(sName, " "));
                 sValue = decodeURL(sValue);
 
                 mpCookies[sName] = sValue;
@@ -267,7 +267,7 @@ void TC_Cgi::parseCookies(map<string, string> &mpCookies, const string& sBuffer)
                     sValue += sBuffer[pos];
                 }
 
-                sName  = decodeURL(TC_Common::trimleft(sName, " "));
+                sName  = decodeURL(XC_Common::trimleft(sName, " "));
                 sValue = decodeURL(sValue);
 
                 mpCookies[sName] = sValue;
@@ -289,7 +289,7 @@ void TC_Cgi::parseCookies(map<string, string> &mpCookies, const string& sBuffer)
     }
 }
 
-void TC_Cgi::ignoreLine()
+void XC_Cgi::ignoreLine()
 {
     string sBuffer;
 
@@ -298,9 +298,9 @@ void TC_Cgi::ignoreLine()
     {
         if(!getline(*_is, sBuffer))
         {
-            throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+            throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
         }
-        sBuffer = TC_Common::trim(sBuffer, "\r\n");
+        sBuffer = XC_Common::trim(sBuffer, "\r\n");
 
         if(sBuffer.empty())
         {
@@ -309,7 +309,7 @@ void TC_Cgi::ignoreLine()
     }
 }
 
-bool TC_Cgi::writeFile(FILE*fp, const string &sFileName, const string &sBuffer, size_t &iTotalWrite)
+bool XC_Cgi::writeFile(FILE*fp, const string &sFileName, const string &sBuffer, size_t &iTotalWrite)
 {
     if(!fp)
     {
@@ -330,7 +330,7 @@ bool TC_Cgi::writeFile(FILE*fp, const string &sFileName, const string &sBuffer, 
     if(ret != (int)sBuffer.length())
     {
         fclose(fp);
-        throw TC_Cgi_Exception("[TC_Cgi::parseFormData] upload file '" + _mpUpload[sFileName]._sServerFileName + "' error:" + string(strerror(errno)));
+        throw XC_Cgi_Exception("[XC_Cgi::parseFormData] upload file '" + _mpUpload[sFileName]._sServerFileName + "' error:" + string(strerror(errno)));
     }
     iTotalWrite += sBuffer.length();
     _mpUpload[sFileName]._iSize = iTotalWrite;
@@ -338,12 +338,12 @@ bool TC_Cgi::writeFile(FILE*fp, const string &sFileName, const string &sBuffer, 
     return true;
 }
 
-void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sBoundary)
+void XC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sBoundary)
 {
     string sBuffer;
     if(!getline(*_is, sBuffer))
     {
-        throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+        throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
     }
 
     string sName;
@@ -353,7 +353,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
     string::size_type pos2 = sBuffer.find('"', pos1);
     if(pos2 == string::npos)
     {
-        throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+        throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
     }
 
     //控件名称
@@ -371,7 +371,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
         pos2 = sBuffer.find('"', pos1);
         if(pos2 == string::npos)
         {
-            throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+            throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
         }
 
         //获取文件名
@@ -384,7 +384,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
                 mmpParams.insert(multimap<string, string>::value_type(sName, sValue));
 
                 //组成文件名称
-                string sUploadFileName = _sUploadFilePrefix + "_" + TC_Common::tostr(_mpUpload.size());
+                string sUploadFileName = _sUploadFilePrefix + "_" + XC_Common::tostr(_mpUpload.size());
 
                 //记录上传文件路径
                 _mpUpload[sName]._sFileName         = sName;
@@ -397,7 +397,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
                 if ( (fp = fopen(sUploadFileName.c_str(),"w")) == NULL)
                 {
                     mmpParams.clear();          //clear , exception safe
-                    throw TC_Cgi_Exception("[TC_Cgi::parseFormData] Upload File '" + sValue + "' to '" + sUploadFileName +"' error! " + string(strerror(errno)));
+                    throw XC_Cgi_Exception("[XC_Cgi::parseFormData] Upload File '" + sValue + "' to '" + sUploadFileName +"' error! " + string(strerror(errno)));
                 }
             }
             else
@@ -414,14 +414,14 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
         //读取内容到文件
         while(getline(*_is, sBuffer))
         {
-            string sTmp = TC_Common::trimright(sBuffer);
+            string sTmp = XC_Common::trimright(sBuffer);
 
             if(sTmp.find(sBoundary) != string::npos)
             {
                 if(sLastBuffer.length() < 2)
                 {
                     fclose(fp);
-                    throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+                    throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
                 }
 
                 sLastBuffer = sLastBuffer.substr(0, sLastBuffer.length() - 2);
@@ -443,7 +443,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
                 {
                     return;
                 }
-                throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+                throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
             }
 
             if(!sLastBuffer.empty())
@@ -462,12 +462,12 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
 
         while(getline(*_is, sBuffer))
         {
-            string sTmp = TC_Common::trimright(sBuffer);
+            string sTmp = XC_Common::trimright(sBuffer);
             if(sTmp.find(sBoundary) != string::npos)
             {
                 if(sLastBuffer.length() < 2)
                 {
-                    throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+                    throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
                 }
                 sLastBuffer = sLastBuffer.substr(0, sLastBuffer.length() - 2);
                 mmpParams.insert(multimap<string, string>::value_type(sName, sLastBuffer));
@@ -482,7 +482,7 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
                 {
                     return;
                 }
-                throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+                throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
             }
 
             sLastBuffer += sBuffer + "\n";
@@ -490,17 +490,17 @@ void TC_Cgi::parseFormData(multimap<string, string> &mmpParams, const string &sB
     }
 }
 
-void TC_Cgi::parseUpload(multimap<string, string> &mmpParams)
+void XC_Cgi::parseUpload(multimap<string, string> &mmpParams)
 {
-    string::size_type iSize = atoi(getCgiEnv(TC_Cgi::ENM_CONTENT_LENGTH).c_str());
+    string::size_type iSize = atoi(getCgiEnv(XC_Cgi::ENM_CONTENT_LENGTH).c_str());
 
     if( iSize > _iMaxContentLength)
     {
-        throw TC_Cgi_Exception("[TC_Cgi::parseUpload] : CONTENT_LENGTH is too large!");
+        throw XC_Cgi_Exception("[XC_Cgi::parseUpload] : CONTENT_LENGTH is too large!");
     }
 
     //get content type
-    string sContentType = getCgiEnv(TC_Cgi::ENM_CONTENT_TYPE);
+    string sContentType = getCgiEnv(XC_Cgi::ENM_CONTENT_TYPE);
 
     string::size_type bPos = sContentType.find("boundary=");
     if(bPos == string::npos)
@@ -516,9 +516,9 @@ void TC_Cgi::parseUpload(multimap<string, string> &mmpParams)
 
     if(!getline(*_is, sBuffer))
     {
-        throw TC_Cgi_Exception("[TC_Cgi::parseFormData] 'multipart/form-data' Format is error");
+        throw XC_Cgi_Exception("[XC_Cgi::parseFormData] 'multipart/form-data' Format is error");
     }
-    sBuffer = TC_Common::trim(sBuffer);
+    sBuffer = XC_Common::trim(sBuffer);
     if(sBuffer == sBoundary)
     {
         parseFormData(mmpParams, sBoundary);
@@ -526,11 +526,11 @@ void TC_Cgi::parseUpload(multimap<string, string> &mmpParams)
     }
     else
     {
-        throw TC_Cgi_Exception("[TC_Cgi::parseUpload] 'multipart/form-data' Format is error");
+        throw XC_Cgi_Exception("[XC_Cgi::parseUpload] 'multipart/form-data' Format is error");
     }
 }
 
-string &TC_Cgi::operator[](const string &sName)
+string &XC_Cgi::operator[](const string &sName)
 {
     multimap<string, string>::iterator it;
 
@@ -542,7 +542,7 @@ string &TC_Cgi::operator[](const string &sName)
     return _mmpParams.insert(multimap<string, string>::value_type(sName, ""))->second;
 }
 
-string TC_Cgi::getValue(const string& sName) const
+string XC_Cgi::getValue(const string& sName) const
 {
     multimap<string, string>::const_iterator it;
 
@@ -554,7 +554,7 @@ string TC_Cgi::getValue(const string& sName) const
     return "";
 }
 
-const vector<string>& TC_Cgi::getMultiValue(const string& sName, vector<string> &vtValue) const
+const vector<string>& XC_Cgi::getMultiValue(const string& sName, vector<string> &vtValue) const
 {
     vtValue.clear();
 
@@ -571,12 +571,12 @@ const vector<string>& TC_Cgi::getMultiValue(const string& sName, vector<string> 
     return vtValue;
 }
 
-const multimap<string, string> &TC_Cgi::getParamMap() const
+const multimap<string, string> &XC_Cgi::getParamMap() const
 {
     return _mmpParams;
 }
 
-map<string, string> TC_Cgi::getParamMapEx() const
+map<string, string> XC_Cgi::getParamMapEx() const
 {
     map<string, string> mpCgiParam;
     multimap<string, string>::const_iterator it     = _mmpParams.begin();
@@ -591,23 +591,23 @@ map<string, string> TC_Cgi::getParamMapEx() const
     return mpCgiParam;
 }
 
-const map<string, string> &TC_Cgi::getCookiesMap() const
+const map<string, string> &XC_Cgi::getCookiesMap() const
 {
     return _mpCookies;
 }
 
-bool  TC_Cgi::isUploadOverSize() const
+bool  XC_Cgi::isUploadOverSize() const
 {
 	return _bUploadFileOverSize;
 }
 
-bool  TC_Cgi::isUploadOverSize(vector<TC_Cgi_Upload> &vtUploads) const
+bool  XC_Cgi::isUploadOverSize(vector<XC_Cgi_Upload> &vtUploads) const
 {
     vtUploads.clear();
 
-    map<string, TC_Cgi_Upload>::const_iterator itEnd = _mpUpload.end();
+    map<string, XC_Cgi_Upload>::const_iterator itEnd = _mpUpload.end();
 
-    for( map<string, TC_Cgi_Upload>::const_iterator it = _mpUpload.begin(); it != itEnd; ++it)
+    for( map<string, XC_Cgi_Upload>::const_iterator it = _mpUpload.begin(); it != itEnd; ++it)
     {
         if(it->second._bOverSize)
         {
@@ -618,17 +618,17 @@ bool  TC_Cgi::isUploadOverSize(vector<TC_Cgi_Upload> &vtUploads) const
     return vtUploads.size() > 0;
 }
 
-const map<string, TC_Cgi_Upload> &TC_Cgi::getUploadFilesMap() const
+const map<string, XC_Cgi_Upload> &XC_Cgi::getUploadFilesMap() const
 {
     return _mpUpload;
 }
 
-size_t TC_Cgi::getUploadFilesCount() const
+size_t XC_Cgi::getUploadFilesCount() const
 {
     return _mpUpload.size();
 }
 
-string TC_Cgi::getCookie(const string &sName) const
+string XC_Cgi::getCookie(const string &sName) const
 {
     map<string, string>::const_iterator it = _mpCookies.find(sName);
 
@@ -640,7 +640,7 @@ string TC_Cgi::getCookie(const string &sName) const
     return "";
 }
 
-string TC_Cgi::setCookie(const string &sName, const string &sValue, const string &sExpires, const string &sPath, const string &sDomain, bool bSecure)
+string XC_Cgi::setCookie(const string &sName, const string &sValue, const string &sExpires, const string &sPath, const string &sDomain, bool bSecure)
 {
     if(sName.length() == 0)
     {
@@ -676,17 +676,17 @@ string TC_Cgi::setCookie(const string &sName, const string &sValue, const string
     return os.str();
 }
 
-bool TC_Cgi::isParamEmpty() const
+bool XC_Cgi::isParamEmpty() const
 {
     return _mmpParams.empty();
 }
 
-bool TC_Cgi::isParamExist(const string& sName) const
+bool XC_Cgi::isParamExist(const string& sName) const
 {
     return _mmpParams.find(sName) != _mmpParams.end();
 }
 
-string TC_Cgi::getCgiEnv(int iEnv)
+string XC_Cgi::getCgiEnv(int iEnv)
 {
     switch(iEnv)
     {
@@ -734,7 +734,7 @@ string TC_Cgi::getCgiEnv(int iEnv)
     return "";
 }
 
-string TC_Cgi::getCgiEnv(const string &sEnv)
+string XC_Cgi::getCgiEnv(const string &sEnv)
 {
     if(_env.find(sEnv) != _env.end())
     {
@@ -743,17 +743,17 @@ string TC_Cgi::getCgiEnv(const string &sEnv)
     return "";
 }
 
-void TC_Cgi::setCgiEnv(const string &sName, const string &sValue)
+void XC_Cgi::setCgiEnv(const string &sName, const string &sValue)
 {
     _env[sName] = sValue;
 }
 
-string TC_Cgi::htmlHeader(const string &sHeader)
+string XC_Cgi::htmlHeader(const string &sHeader)
 {
 	return "Content-type: " + sHeader + "\n\n";
 }
 
-string TC_Cgi::decodeURL(const string &sUrl)
+string XC_Cgi::decodeURL(const string &sUrl)
 {
     string sDecodeUrl;
     register string::size_type pos = 0;
@@ -765,7 +765,7 @@ string TC_Cgi::decodeURL(const string &sUrl)
     {
         if(sUrl[pos] == '%')
         {
-            sDecodeUrl += TC_Common::x2c(sUrl.substr(pos + 1));
+            sDecodeUrl += XC_Common::x2c(sUrl.substr(pos + 1));
             pos += 3;
         }
         else
@@ -779,7 +779,7 @@ string TC_Cgi::decodeURL(const string &sUrl)
     return sDecodeUrl;
 }
 
-string TC_Cgi::encodeURL(const string &sUrl)
+string XC_Cgi::encodeURL(const string &sUrl)
 {
     static char HEX_TABLE[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
@@ -800,38 +800,38 @@ string TC_Cgi::encodeURL(const string &sUrl)
     return result;
 }
 
-string TC_Cgi::encodeHTML(const string &src, bool blankEncode)
+string XC_Cgi::encodeHTML(const string &src, bool blankEncode)
 {
     if (src == "")
         return "";
 
     string result = src;
-    result = TC_Common::replace(result, "&", "&amp;");
-    result = TC_Common::replace(result, "<", "&lt;");
-    result = TC_Common::replace(result, ">", "&gt;");
-    result = TC_Common::replace(result, "\"", "&quot;");
+    result = XC_Common::replace(result, "&", "&amp;");
+    result = XC_Common::replace(result, "<", "&lt;");
+    result = XC_Common::replace(result, ">", "&gt;");
+    result = XC_Common::replace(result, "\"", "&quot;");
 
     if (blankEncode)
     {
-        result = TC_Common::replace(result, "\t", "    ");
-        result = TC_Common::replace(result, "  ", "&nbsp; ");
-        result = TC_Common::replace(result, "\r\n", "<br>");
-        result = TC_Common::replace(result, "\n", "<br>");
+        result = XC_Common::replace(result, "\t", "    ");
+        result = XC_Common::replace(result, "  ", "&nbsp; ");
+        result = XC_Common::replace(result, "\r\n", "<br>");
+        result = XC_Common::replace(result, "\n", "<br>");
     }
     return result;
 }
 
-string TC_Cgi::encodeXML(const string &src)
+string XC_Cgi::encodeXML(const string &src)
 {
     if (src == "")
         return "";
 
     string result = src;
-    result = TC_Common::replace(result, "&", "&amp;");
-    result = TC_Common::replace(result, "<", "&lt;");
-    result = TC_Common::replace(result, ">", "&gt;");
-    result = TC_Common::replace(result, "\"", "&quot;");
-    result = TC_Common::replace(result, "'", "&apos;");
+    result = XC_Common::replace(result, "&", "&amp;");
+    result = XC_Common::replace(result, "<", "&lt;");
+    result = XC_Common::replace(result, ">", "&gt;");
+    result = XC_Common::replace(result, "\"", "&quot;");
+    result = XC_Common::replace(result, "'", "&apos;");
     return result;
 }
 

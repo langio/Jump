@@ -1,5 +1,5 @@
-#ifndef	__TC_BIT_MAP_H__
-#define __TC_BIT_MAP_H__
+#ifndef	__XC_BIT_MAP_H__
+#define __XC_BIT_MAP_H__
 
 #include <iostream>
 #include <string>
@@ -8,23 +8,22 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file  tc_bitmap.h 
  * @brief  多位bitmap类. 
  *  
- * @author  jarodruan@tencent.com,kevintian
  */             
 /////////////////////////////////////////////////
 /**
  * @brief 异常
  */
-struct TC_BitMap_Exception : public TC_Exception
+struct XC_BitMap_Exception : public XC_Exception
 {
-	TC_BitMap_Exception(const string &buffer) : TC_Exception(buffer){};
-	~TC_BitMap_Exception() throw(){};
+	XC_BitMap_Exception(const string &buffer) : XC_Exception(buffer){};
+	~XC_BitMap_Exception() throw(){};
 };
 
 
@@ -35,7 +34,7 @@ struct TC_BitMap_Exception : public TC_Exception
  * 
  *  注意群锁策略应该/8，然后按照尾号分群锁
  */
-class TC_BitMap
+class XC_BitMap
 {
 public:
     /**

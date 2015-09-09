@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
 static const unsigned short bytebit[8]    = {
@@ -175,7 +175,7 @@ static const uint32_t SP8[64] = {
     0x10041040L, 0x00041000L, 0x00041000L, 0x00001040L,
     0x00001040L, 0x00040040L, 0x10000000L, 0x10041000L };
 
-void TC_Des::scrunch(register const char *outof, register uint32_t *into)
+void XC_Des::scrunch(register const char *outof, register uint32_t *into)
 {
     *into    = (*outof++ & 0xffL) << 24;
     *into   |= (*outof++ & 0xffL) << 16;
@@ -188,7 +188,7 @@ void TC_Des::scrunch(register const char *outof, register uint32_t *into)
     return;
 }
 
-void TC_Des::unscrun(register uint32_t *outof, register char *into)
+void XC_Des::unscrun(register uint32_t *outof, register char *into)
 {
     *into++ = (*outof >> 24) & 0xffL;
     *into++ = (*outof >> 16) & 0xffL;
@@ -201,7 +201,7 @@ void TC_Des::unscrun(register uint32_t *outof, register char *into)
     return;
 }
 
-void TC_Des::desfunc(register uint32_t *block, register uint32_t *keys)
+void XC_Des::desfunc(register uint32_t *block, register uint32_t *keys)
 {
     register uint32_t fval, work, right, leftt;
     register int round;
@@ -276,7 +276,7 @@ void TC_Des::desfunc(register uint32_t *block, register uint32_t *keys)
     return;
 }
 
-void TC_Des::cookey(register uint32_t *raw1, uint32_t *k)
+void XC_Des::cookey(register uint32_t *raw1, uint32_t *k)
 {
     register uint32_t *cook, *raw0;
     uint32_t dough[32];
@@ -302,7 +302,7 @@ void TC_Des::cookey(register uint32_t *raw1, uint32_t *k)
         *to++ = *p++;
 }
 
-void TC_Des::deskey(const char *key, short edf, uint32_t *k)
+void XC_Des::deskey(const char *key, short edf, uint32_t *k)
 {
     register int i, j, l, m, n;
     unsigned char pc1m[56], pcr[56];
@@ -341,7 +341,7 @@ void TC_Des::deskey(const char *key, short edf, uint32_t *k)
     cookey(kn, k);
 }
 
-void TC_Des::des(const char *inblock, char *outblock, uint32_t *KnL)
+void XC_Des::des(const char *inblock, char *outblock, uint32_t *KnL)
 {
     uint32_t work[2];
 
@@ -350,7 +350,7 @@ void TC_Des::des(const char *inblock, char *outblock, uint32_t *KnL)
     unscrun(work, outblock);
 }
 
-void TC_Des::des3key(const char *hexkey, short mode, uint32_t *KnL, uint32_t *KnR, uint32_t *Kn3)
+void XC_Des::des3key(const char *hexkey, short mode, uint32_t *KnL, uint32_t *KnR, uint32_t *Kn3)
 {
     const char *first, *third;
     short revmod;
@@ -372,7 +372,7 @@ void TC_Des::des3key(const char *hexkey, short mode, uint32_t *KnL, uint32_t *Kn
     deskey(first, mode, KnL);
 }
 
-void TC_Des::des3(const char *from, char *into, uint32_t *KnL, uint32_t *KnR, uint32_t *Kn3)
+void XC_Des::des3(const char *from, char *into, uint32_t *KnL, uint32_t *KnR, uint32_t *Kn3)
 {
 	uint32_t work[2];
 
@@ -383,7 +383,7 @@ void TC_Des::des3(const char *from, char *into, uint32_t *KnL, uint32_t *KnR, ui
 	unscrun(work, into);
 }
 
-string TC_Des::encrypt(const char *key, const char * sIn, size_t iInlen)
+string XC_Des::encrypt(const char *key, const char * sIn, size_t iInlen)
 {
     char des_key[8]  = {0};
     char des_input[8]  = {0};
@@ -422,7 +422,7 @@ string TC_Des::encrypt(const char *key, const char * sIn, size_t iInlen)
     return ret;
 }
 
-string TC_Des::decrypt(const char *key, const char * sIn, size_t iInlen)
+string XC_Des::decrypt(const char *key, const char * sIn, size_t iInlen)
 {
     char des_key[8]  = {0};
     char des_input[8]  = {0};
@@ -457,7 +457,7 @@ string TC_Des::decrypt(const char *key, const char * sIn, size_t iInlen)
     return ret;
 }
 
-string TC_Des::encrypt3(const char *key, const char * sIn, size_t iInlen)
+string XC_Des::encrypt3(const char *key, const char * sIn, size_t iInlen)
 {
     char des_key[24] = {0};
     memcpy(des_key, key, min(sizeof(des_key), strlen(key)));
@@ -510,7 +510,7 @@ string TC_Des::encrypt3(const char *key, const char * sIn, size_t iInlen)
     return ret;
 }
 
-string TC_Des::decrypt3(const char *key, const char * sIn, size_t iInlen)
+string XC_Des::decrypt3(const char *key, const char * sIn, size_t iInlen)
 {
     try
     {
@@ -550,10 +550,10 @@ string TC_Des::decrypt3(const char *key, const char * sIn, size_t iInlen)
 
         return ret;
     }
-    catch(TC_DES_Exception &e)
+    catch(XC_DES_Exception &e)
     {
-        string res = "TC_Des::decrypt3 error" + string(e.what());
-        throw TC_DES_Exception(res);
+        string res = "XC_Des::decrypt3 error" + string(e.what());
+        throw XC_DES_Exception(res);
     }
 }
 

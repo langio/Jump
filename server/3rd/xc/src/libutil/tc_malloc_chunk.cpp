@@ -1,6 +1,6 @@
 #include "util/tc_malloc_chunk.h"
 
-namespace taf
+namespace xutil
 {
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	SizeMap Static::_sizemap;
@@ -127,13 +127,13 @@ namespace taf
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void TC_SpanAllocator::init(void *pAddr)
+	void XC_SpanAllocator::init(void *pAddr)
 	{
 		_pHead = static_cast<tagSpanAlloc*>(pAddr);
 		_pData = (unsigned char*)((char*)_pHead + sizeof(tagSpanAlloc));
 	}
 
-	void TC_SpanAllocator::create(void* pAddr, size_t iSpanSize, size_t iSpanCount)
+	void XC_SpanAllocator::create(void* pAddr, size_t iSpanSize, size_t iSpanCount)
 	{
 		assert(iSpanSize > sizeof(size_t));
 
@@ -154,12 +154,12 @@ namespace taf
 		}
 	}
 
-	void TC_SpanAllocator::connect(void *pAddr)
+	void XC_SpanAllocator::connect(void *pAddr)
 	{
 		init(pAddr);
 	}
 
-	void* TC_SpanAllocator::allocate()
+	void* XC_SpanAllocator::allocate()
 	{
 		if(!isSpanAvailable()) return NULL;
 
@@ -174,7 +174,7 @@ namespace taf
 		return result;
 	}
 
-	void TC_SpanAllocator::deallocate(void *pAddr)
+	void XC_SpanAllocator::deallocate(void *pAddr)
 	{
 		assert(pAddr >= _pData);
 
@@ -193,7 +193,7 @@ namespace taf
 		++_pHead->_spanAvailable;
 	}
 
-	void TC_SpanAllocator::rebuild()
+	void XC_SpanAllocator::rebuild()
 	{
 		assert(_pHead);
 
@@ -211,17 +211,17 @@ namespace taf
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void TC_Page::DLL_Init(TC_Span* list, size_t iIndex)
+	void XC_Page::DLL_Init(XC_Span* list, size_t iIndex)
 	{
 		list->next = iIndex;
 		list->prev = iIndex;
 	}
 
 
-	void TC_Page::DLL_Remove(TC_Span *span)
+	void XC_Page::DLL_Remove(XC_Span *span)
 	{
-		TC_Span *_prev = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
-		TC_Span *_next = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
+		XC_Span *_prev = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
+		XC_Span *_next = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
 
 		_prev->next = span->next;
 		_next->prev = span->prev;
@@ -229,10 +229,10 @@ namespace taf
 		span->next = 0;	
 	}
 
-	void TC_Page::DLL_Prepend(TC_Span *list, TC_Span *span)
+	void XC_Page::DLL_Prepend(XC_Span *list, XC_Span *span)
 	{
 		size_t iBeginAddr = reinterpret_cast<size_t>(_pShmFlagHead);
-		TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+		XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 		
 		span->next = list->next;
 		span->prev = reinterpret_cast<size_t>(list) - iBeginAddr;
@@ -241,23 +241,23 @@ namespace taf
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	TC_Page::TC_Span* TC_Page::SearchFreeAndLargeLists(size_t n)
+	XC_Page::XC_Span* XC_Page::SearchFreeAndLargeLists(size_t n)
 	{
 		for (size_t s = n; s < kMaxPages; ++s)
 		{
-			TC_Span* ll = &_pFree[s];
+			XC_Span* ll = &_pFree[s];
 			if (!DLL_IsEmpty(ll, reinterpret_cast<size_t>(ll) - reinterpret_cast<size_t>(_pShmFlagHead)))
 			{
-				return Carve(reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + ll->next), n);
+				return Carve(reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + ll->next), n);
 			}
 		}
 		return AllocLarge(n);
 	}
 
 
-	TC_Page::TC_Span* TC_Page::New(size_t n)
+	XC_Page::XC_Span* XC_Page::New(size_t n)
 	{
-		TC_Span* result = SearchFreeAndLargeLists(n);
+		XC_Span* result = SearchFreeAndLargeLists(n);
 		if (result != NULL)
 			return result;
 
@@ -272,14 +272,14 @@ namespace taf
 		return SearchFreeAndLargeLists(n);
 	}
 
-	TC_Page::TC_Span* TC_Page::AllocLarge(size_t n)
+	XC_Page::XC_Span* XC_Page::AllocLarge(size_t n)
 	{
-		TC_Span *best = NULL;
+		XC_Span *best = NULL;
 		size_t iBeginAddr = reinterpret_cast<size_t>(_pShmFlagHead);
 
-		TC_Span* span = reinterpret_cast<TC_Span*>(iBeginAddr + _pLarge->next);
+		XC_Span* span = reinterpret_cast<XC_Span*>(iBeginAddr + _pLarge->next);
 		
-		for (; span != _pLarge; span = reinterpret_cast<TC_Span*>(iBeginAddr + span->next))
+		for (; span != _pLarge; span = reinterpret_cast<XC_Span*>(iBeginAddr + span->next))
 		{
 			if (span->length >= n)
 			{
@@ -292,7 +292,7 @@ namespace taf
 		return best == NULL ? NULL : Carve(best, n);
 	}
 
-	TC_Page::TC_Span* TC_Page::Carve(TC_Span *span, size_t n)
+	XC_Page::XC_Span* XC_Page::Carve(XC_Span *span, size_t n)
 	{
 		unsigned int old_location = span->location;
 		bool   flag			= _pShmFlagHead->_bShmProtectedArea;
@@ -300,12 +300,12 @@ namespace taf
 
 		if (extra >= kMaxPages)
 		{
-			TC_Span* leftover = static_cast<TC_Span*>(_spanAlloc.allocate());
+			XC_Span* leftover = static_cast<XC_Span*>(_spanAlloc.allocate());
 			if (flag)
 			{
 				update((void*)(&(leftover->start)), span->start);
 				update((void*)(&(leftover->length)), n);
-				update((void*)(&(leftover->location)), static_cast<unsigned int>(TC_Span::ON_FREELIST));//update((void*)(&(leftover->location)), TC_Span::IN_USE);
+				update((void*)(&(leftover->location)), static_cast<unsigned int>(XC_Span::ON_FREELIST));//update((void*)(&(leftover->location)), XC_Span::IN_USE);
 				
 				update((void*)(&(_pPageMap[span->start])), reinterpret_cast<size_t>(leftover) - reinterpret_cast<size_t>(_spanAlloc.getHead()));
 				if (n > 1)
@@ -327,7 +327,7 @@ namespace taf
 			{
 				leftover->start  = span->start;
 				leftover->length = n;
-				leftover->location = TC_Span::IN_USE;
+				leftover->location = XC_Span::IN_USE;
 				RecordSpan(leftover);
 
 				span->start = span->start + n;
@@ -338,8 +338,8 @@ namespace taf
 		}
 		else
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
 
 			if (flag)
 			{
@@ -347,7 +347,7 @@ namespace taf
 				update((void*)(&(_next->prev)), span->prev);
 				update((void*)(&(span->prev)), static_cast<size_t>(0));
 				update((void*)(&(span->next)), static_cast<size_t>(0));
-				update((void*)(&(span->location)), static_cast<unsigned int>(TC_Span::ON_FREELIST));
+				update((void*)(&(span->location)), static_cast<unsigned int>(XC_Span::ON_FREELIST));
 			}
 			else
 			{
@@ -355,12 +355,12 @@ namespace taf
 				_next->prev = span->prev;
 				span->prev = 0;
 				span->next = 0;
-				span->location = TC_Span::IN_USE;
+				span->location = XC_Span::IN_USE;
 			}
 
 			if (extra > 0)
 			{
-				TC_Span* leftover = static_cast<TC_Span*>(_spanAlloc.allocate());
+				XC_Span* leftover = static_cast<XC_Span*>(_spanAlloc.allocate());
 				if (flag)
 				{
 					update((void*)(&(leftover->start)), span->start + n);
@@ -381,10 +381,10 @@ namespace taf
 					RecordSpan(leftover);
 				}
 				
-				TC_Span* list = &_pFree[extra];
+				XC_Span* list = &_pFree[extra];
 
 				size_t iBeginAddr = reinterpret_cast<size_t>(_pShmFlagHead);
-				TC_Span *_pnext = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+				XC_Span *_pnext = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 
 				if (flag)
 				{
@@ -415,13 +415,13 @@ namespace taf
 		return span;
 	}
 
-	void TC_Page::PrependToFreeList(TC_Span* span)
+	void XC_Page::PrependToFreeList(XC_Span* span)
 	{
-		TC_Span* list = (span->length < kMaxPages) ? &_pFree[span->length] : _pLarge;
+		XC_Span* list = (span->length < kMaxPages) ? &_pFree[span->length] : _pLarge;
 		DLL_Prepend(list, span);
 	}
 
-	void TC_Page::Delete(TC_Span *span)
+	void XC_Page::Delete(XC_Span *span)
 	{
 		bool flag = _pShmFlagHead->_bShmProtectedArea;
 
@@ -429,11 +429,11 @@ namespace taf
 		{
 			size_t p = span->start;
 			size_t n = span->length;
-			size_t location = TC_Span::ON_FREELIST;
+			size_t location = XC_Span::ON_FREELIST;
 			size_t iBeginAddr = reinterpret_cast<size_t>(_pShmFlagHead);
 			size_t spanBeginAddr = 0;
-			TC_Span* pPrev = NULL;
-			TC_Span* pNext = NULL;
+			XC_Span* pPrev = NULL;
+			XC_Span* pNext = NULL;
 			bool     prevMaxFlag = false;
 			bool	 prevMinFlag = true;
 
@@ -463,8 +463,8 @@ namespace taf
 					{
 						if (pPrev->prev != 0 && pPrev->next != 0)
 						{
-							TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + pPrev->prev);
-							TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + pPrev->next);
+							XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + pPrev->prev);
+							XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + pPrev->next);
 
 							update((void*)(&(_prev->next)), pPrev->next);
 							update((void*)(&(_next->prev)), pPrev->prev);
@@ -497,8 +497,8 @@ namespace taf
 					{
 						if (prevMaxFlag)
 						{
-							TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + span->prev);
-							TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + span->next);
+							XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + span->prev);
+							XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + span->next);
 
 							update((void*)(&(_prev->next)), span->next);
 							update((void*)(&(_next->prev)), span->prev);
@@ -542,8 +542,8 @@ namespace taf
 						{
 							if (pNext->prev != 0 && pNext->next != 0)
 							{
-								TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->prev);
-								TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->next);
+								XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->prev);
+								XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->next);
 
 								update((void*)(&(_prev->next)), pNext->next);
 								update((void*)(&(_next->prev)), pNext->prev);
@@ -564,8 +564,8 @@ namespace taf
 						{
 							if (pNext->prev != 0 && pNext->next != 0)
 							{
-								TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->prev);
-								TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->next);
+								XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->prev);
+								XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->next);
 
 								update((void*)(&(_prev->next)), pNext->next);
 								update((void*)(&(_next->prev)), pNext->prev);
@@ -578,9 +578,9 @@ namespace taf
 
 							update((void*)(&(_pPageMap[p+n-1])), reinterpret_cast<size_t>(span) - spanBeginAddr);
 
-							TC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
+							XC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
 				
-							TC_Span *_pnext = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+							XC_Span *_pnext = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 							
 							update((void*)(&(span->next)), list->next);
 							update((void*)(&(span->prev)), reinterpret_cast<size_t>(list) - iBeginAddr);
@@ -597,8 +597,8 @@ namespace taf
 					{
 						if (pNext->prev != 0 && pNext->next != 0)
 						{
-							TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->prev);
-							TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + pNext->next);
+							XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->prev);
+							XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + pNext->next);
 
 							update((void*)(&(_prev->next)), pNext->next);
 							update((void*)(&(_next->prev)), pNext->prev);
@@ -611,9 +611,9 @@ namespace taf
 
 						update((void*)(&(_pPageMap[p+n-1])), reinterpret_cast<size_t>(span) - spanBeginAddr);
 
-						TC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
+						XC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
 				
-						TC_Span *_pnext = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+						XC_Span *_pnext = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 						
 						update((void*)(&(span->next)), list->next);
 						update((void*)(&(span->prev)), reinterpret_cast<size_t>(list) - iBeginAddr);
@@ -630,9 +630,9 @@ namespace taf
 
 			if (prevMinFlag)
 			{
-				TC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
+				XC_Span* list = (n < kMaxPages) ? &_pFree[n] : _pLarge;		
 				
-				TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+				XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 				
 				update((void*)(&(span->next)), list->next);
 				update((void*)(&(span->prev)), reinterpret_cast<size_t>(list) - iBeginAddr);
@@ -646,19 +646,19 @@ namespace taf
 		else
 		{
 			span->sizeclass = 0;
-			span->location  = TC_Span::ON_FREELIST;
+			span->location  = XC_Span::ON_FREELIST;
 			MergeIntoFreeList(span);
 		}
 	}
 
-	void TC_Page::MergeIntoFreeList(TC_Span* span)
+	void XC_Page::MergeIntoFreeList(XC_Span* span)
 	{
 		const size_t p = span->start;
 		const size_t n = span->length;
 
 		if ( p > 0)
 		{
-			TC_Span* pPrev = GetDescriptor(p-1);
+			XC_Span* pPrev = GetDescriptor(p-1);
 			if (pPrev != NULL && pPrev->location == span->location)
 			{
 				const size_t len = pPrev->length;
@@ -672,7 +672,7 @@ namespace taf
 		}
 		if ( p+n < _pShmFlagHead->_iShmPageMapNum)
 		{
-			TC_Span* pNext = GetDescriptor(p+n);
+			XC_Span* pNext = GetDescriptor(p+n);
 			if (pNext != NULL && pNext->location == span->location)
 			{
 				const size_t len = pNext->length;
@@ -687,7 +687,7 @@ namespace taf
 		PrependToFreeList(span);
 	}
 
-	void TC_Page::RegisterSizeClass(TC_Span *span, size_t sc)
+	void XC_Page::RegisterSizeClass(XC_Span *span, size_t sc)
 	{
 		span->sizeclass = sc;
 		for (size_t i = 1; i < span->length - 1; ++i)
@@ -696,13 +696,13 @@ namespace taf
 		}
 	}
 
-	TC_Page::TC_Span* TC_Page::GetDescriptor(size_t pPageId)
+	XC_Page::XC_Span* XC_Page::GetDescriptor(size_t pPageId)
 	{
 		size_t end    = _pShmFlagHead->_iShmPageMapNum;
 
 		if (pPageId >= 0 && pPageId < end)
 		{
-			return reinterpret_cast<TC_Span*>(reinterpret_cast<char*>(_spanAlloc.getHead()) + Get(pPageId));
+			return reinterpret_cast<XC_Span*>(reinterpret_cast<char*>(_spanAlloc.getHead()) + Get(pPageId));
 		}
 		else
 		{
@@ -710,7 +710,7 @@ namespace taf
 		}
 	}
 
-	bool TC_Page::UseShmMem()
+	bool XC_Page::UseShmMem()
 	{
 		size_t iBeginAddr	= reinterpret_cast<size_t>(_pShmFlagHead);
 		size_t    ptr		= reinterpret_cast<size_t>(_pData);
@@ -719,18 +719,18 @@ namespace taf
 
 		if (Ensure(p, size))
 		{
-			TC_Span* span = static_cast<TC_Span*>(_spanAlloc.allocate());
+			XC_Span* span = static_cast<XC_Span*>(_spanAlloc.allocate());
 			
 			span->start = p;
 			span->length = size;
 			RecordSpan(span);
 
 			span->sizeclass = 0;
-			span->location  = TC_Span::ON_FREELIST;
+			span->location  = XC_Span::ON_FREELIST;
 
-			TC_Span* list = (size < kMaxPages) ? &_pFree[size] : _pLarge;
+			XC_Span* list = (size < kMaxPages) ? &_pFree[size] : _pLarge;
 
-			TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 			
 			span->next = list->next;
 			span->prev = reinterpret_cast<size_t>(list) - iBeginAddr;
@@ -746,7 +746,7 @@ namespace taf
 		}
 	}
 
-	void TC_Page::RecordSpan(TC_Span *span)
+	void XC_Page::RecordSpan(XC_Span *span)
 	{
 		Set(span->start, reinterpret_cast<size_t>(span) - reinterpret_cast<size_t>(_spanAlloc.getHead()));
 		if (span->length > 1)
@@ -755,7 +755,7 @@ namespace taf
 		}
 	}
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void* TC_Page::fetchFromSpansSafe(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
+	void* XC_Page::fetchFromSpansSafe(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
 	{
 		void *t = FetchFromSpans(iClassSize, iAllocSize, iPageId, iIndex);
 
@@ -773,13 +773,13 @@ namespace taf
 		return t;
 	}
 
-	void* TC_Page::FetchFromSpans(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
+	void* XC_Page::FetchFromSpans(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
 	{
 		size_t iBeginAddr = reinterpret_cast<size_t>(_pShmFlagHead);
 		if (DLL_IsEmpty(&_pCenterCache[iClassSize].nonempty, reinterpret_cast<size_t>(&_pCenterCache[iClassSize].nonempty) - iBeginAddr))
 			return NULL;
 
-		TC_Span* span = reinterpret_cast<TC_Span*>(iBeginAddr + _pCenterCache[iClassSize].nonempty.next);
+		XC_Span* span = reinterpret_cast<XC_Span*>(iBeginAddr + _pCenterCache[iClassSize].nonempty.next);
 
 		void* result = reinterpret_cast<void*>(iBeginAddr + span->objects);
 		size_t _size = Static::sizemap()->ByteSizeForClass(iClassSize);
@@ -810,8 +810,8 @@ namespace taf
 
 		if (p == 0)
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(reinterpret_cast<size_t>(_pShmFlagHead) + span->next);
 
 			if (flag)
 			{
@@ -828,8 +828,8 @@ namespace taf
 				span->next = 0;
 			}
 
-			TC_Span *list  = &(_pCenterCache[iClassSize].empty);
-			_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+			XC_Span *list  = &(_pCenterCache[iClassSize].empty);
+			_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 			if (flag)
 			{
 				update((void*)(&(span->next)), list->next);
@@ -859,18 +859,18 @@ namespace taf
 		return result;
 	}
 
-	int TC_Page::Populate(size_t iClassSize)
+	int XC_Page::Populate(size_t iClassSize)
 	{
 		const size_t npages = Static::sizemap()->class_to_pages(iClassSize);
 		bool      flag		= _pShmFlagHead->_bShmProtectedArea;
 
-		TC_Span* span = New(npages);
+		XC_Span* span = New(npages);
 
 		if (span)
 		{
 			if (flag)
 			{
-				update((void*)(&(span->location)), static_cast<unsigned int>(TC_Span::IN_USE));
+				update((void*)(&(span->location)), static_cast<unsigned int>(XC_Span::IN_USE));
 				update((void*)(&(span->sizeclass)), static_cast<unsigned int>(iClassSize));
 				for (size_t i = 1; i < span->length - 1; ++i)
 				{
@@ -911,8 +911,8 @@ namespace taf
 			--num;
 		}
 
-		TC_Span *list = &(_pCenterCache[iClassSize].nonempty);
-		TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+		XC_Span *list = &(_pCenterCache[iClassSize].nonempty);
+		XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 		if (flag)
 		{
 			update((void*)(&(span->next)), list->next);
@@ -933,9 +933,9 @@ namespace taf
 		return 0;
 	}
 
-	void TC_Page::releaseToSpans(size_t iPageId, size_t iIndex)
+	void XC_Page::releaseToSpans(size_t iPageId, size_t iIndex)
 	{
-		TC_Span* span = GetDescriptor(iPageId);
+		XC_Span* span = GetDescriptor(iPageId);
 		assert(span != NULL);
 		const size_t _size_class = span->sizeclass;
 
@@ -947,8 +947,8 @@ namespace taf
 
 		if (ref == 0)
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + span->next);
 
 			if (flag)
 			{
@@ -958,7 +958,7 @@ namespace taf
 				update((void*)(&(span->prev)), static_cast<size_t>(0));
 				update((void*)(&(span->next)), static_cast<size_t>(0));
 				update((void*)(&(span->sizeclass)), static_cast<unsigned int>(0));
-				update((void*)(&(span->location)), static_cast<unsigned int>(TC_Span::ON_FREELIST));
+				update((void*)(&(span->location)), static_cast<unsigned int>(XC_Span::ON_FREELIST));
 				doUpdate(true);
 			}
 			else
@@ -992,8 +992,8 @@ namespace taf
 
 		if (spanObject == 0)
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + span->next);
 
 			if (flag)
 			{
@@ -1010,8 +1010,8 @@ namespace taf
 				span->next = 0;
 			}
 
-			TC_Span *list  = &(_pCenterCache[_size_class].nonempty);
-			_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+			XC_Span *list  = &(_pCenterCache[_size_class].nonempty);
+			_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 			if (flag)
 			{
 				update((void*)(&(span->next)), list->next);
@@ -1035,12 +1035,12 @@ namespace taf
 
 	}
 
-	void  TC_Page::releaseToSpans(void* pObject)
+	void  XC_Page::releaseToSpans(void* pObject)
 	{
 		size_t iBeginAddr       = reinterpret_cast<size_t>(_pShmFlagHead);
 		const size_t _page_id	= (reinterpret_cast<size_t>(pObject) - (iBeginAddr + _pShmFlagHead->_iShmPageAddr)) >> kPageShift;
 
-		TC_Span* span			= GetDescriptor(_page_id);
+		XC_Span* span			= GetDescriptor(_page_id);
 		assert(span != NULL);
 
 		const size_t _size_class = span->sizeclass;
@@ -1052,8 +1052,8 @@ namespace taf
 
 		if (ref == 0)
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + span->next);
 
 			if (flag)
 			{
@@ -1063,7 +1063,7 @@ namespace taf
 				update((void*)(&(span->prev)), static_cast<size_t>(0));
 				update((void*)(&(span->next)), static_cast<size_t>(0));
 				update((void*)(&(span->sizeclass)), static_cast<unsigned int>(0));
-				update((void*)(&(span->location)), static_cast<unsigned int>(TC_Span::ON_FREELIST));
+				update((void*)(&(span->location)), static_cast<unsigned int>(XC_Span::ON_FREELIST));
 				doUpdate(true);
 			}
 			else
@@ -1097,8 +1097,8 @@ namespace taf
 
 		if (spanObject == 0)
 		{
-			TC_Span *_prev = reinterpret_cast<TC_Span*>(iBeginAddr + span->prev);
-			TC_Span *_next = reinterpret_cast<TC_Span*>(iBeginAddr + span->next);
+			XC_Span *_prev = reinterpret_cast<XC_Span*>(iBeginAddr + span->prev);
+			XC_Span *_next = reinterpret_cast<XC_Span*>(iBeginAddr + span->next);
 
 			if (flag)
 			{
@@ -1115,8 +1115,8 @@ namespace taf
 				span->next = 0;
 			}
 
-			TC_Span *list  = &(_pCenterCache[_size_class].nonempty);
-			_next = reinterpret_cast<TC_Span*>(iBeginAddr + list->next);
+			XC_Span *list  = &(_pCenterCache[_size_class].nonempty);
+			_next = reinterpret_cast<XC_Span*>(iBeginAddr + list->next);
 			if (flag)
 			{
 				update((void*)(&(span->next)), list->next);
@@ -1140,9 +1140,9 @@ namespace taf
 		
 	}
 
-	void* TC_Page::getAbsolute(size_t iPageId, size_t iIndex)
+	void* XC_Page::getAbsolute(size_t iPageId, size_t iIndex)
 	{
-		TC_Span* span = GetDescriptor(iPageId);
+		XC_Span* span = GetDescriptor(iPageId);
 		assert(span != NULL);
 		const size_t _size_class = span->sizeclass;
 		assert(_size_class > 0);
@@ -1150,7 +1150,7 @@ namespace taf
 		return reinterpret_cast<void*>(reinterpret_cast<size_t>(_pShmFlagHead) + _pShmFlagHead->_iShmPageAddr + (iPageId << kPageShift) + iIndex *  Static::sizemap()->ByteSizeForClass(_size_class));
 	}
 
-	void TC_Page::doUpdate(bool bUpdate)
+	void XC_Page::doUpdate(bool bUpdate)
 	{
 		if(bUpdate)
 		{
@@ -1196,32 +1196,32 @@ namespace taf
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void TC_Page::init(void *pAddr)
+	void XC_Page::init(void *pAddr)
 	{
 		_pShmFlagHead	= static_cast<tagShmFlag*>(pAddr);
 
 		_pModifyHead    = static_cast<tagModifyHead*>((void*)((char*)_pShmFlagHead + sizeof(tagShmFlag)));
 
-		_pCenterCache   = static_cast<TC_CenterList*>((void*)((char*)_pModifyHead + sizeof(tagModifyHead)));
+		_pCenterCache   = static_cast<XC_CenterList*>((void*)((char*)_pModifyHead + sizeof(tagModifyHead)));
 
-		_pLarge         = static_cast<TC_Span*>((void*)((char*)_pCenterCache + sizeof(TC_CenterList) * kNumClasses));
+		_pLarge         = static_cast<XC_Span*>((void*)((char*)_pCenterCache + sizeof(XC_CenterList) * kNumClasses));
 
-		_pFree          = static_cast<TC_Span*>((void*)((char*)_pLarge + sizeof(TC_Span)));
+		_pFree          = static_cast<XC_Span*>((void*)((char*)_pLarge + sizeof(XC_Span)));
 	}
 
-	void TC_Page::initPage(void *pAddr)
+	void XC_Page::initPage(void *pAddr)
 	{
-		void * span_begin_ptr				= static_cast<void*>((char*)_pFree + sizeof(TC_Span) * kMaxPages);
+		void * span_begin_ptr				= static_cast<void*>((char*)_pFree + sizeof(XC_Span) * kMaxPages);
 		size_t begin						= reinterpret_cast<size_t>(pAddr);
 		size_t end							= reinterpret_cast<size_t>(span_begin_ptr);
 
-		_pSpanMemHead						= static_cast<TC_SpanAllocator*>((void*)((char*)span_begin_ptr));
+		_pSpanMemHead						= static_cast<XC_SpanAllocator*>((void*)((char*)span_begin_ptr));
 		_pShmFlagHead->_iShmSpanAddr		= end - begin;
 
 		size_t _iCapacitySize				= _pShmFlagHead->_iShmMemSize - (end - begin);
-		size_t _iPagesNum					= (_iCapacitySize - TC_SpanAllocator::getHeadSize() - sizeof(TC_Span) * 20) / (sizeof(TC_Span) + sizeof(size_t) + kPageSize);
+		size_t _iPagesNum					= (_iCapacitySize - XC_SpanAllocator::getHeadSize() - sizeof(XC_Span) * 20) / (sizeof(XC_Span) + sizeof(size_t) + kPageSize);
 
-		size_t*    pagemap_ptr				= reinterpret_cast<size_t*>((char*)_pSpanMemHead + TC_SpanAllocator::getHeadSize() + sizeof(TC_Span) * (_iPagesNum + 20));
+		size_t*    pagemap_ptr				= reinterpret_cast<size_t*>((char*)_pSpanMemHead + XC_SpanAllocator::getHeadSize() + sizeof(XC_Span) * (_iPagesNum + 20));
 		end									= reinterpret_cast<size_t>(pagemap_ptr);
 		_pPageMap							= pagemap_ptr;
 		_pShmFlagHead->_iShmPageMapAddr		= end - begin;
@@ -1232,14 +1232,14 @@ namespace taf
 		_pShmFlagHead->_iShmPageAddr		= end - begin;
 
 		memset(_pPageMap, 0, sizeof(size_t)*_iPagesNum);
-		_spanAlloc.create((void*)((char*)_pSpanMemHead), sizeof(TC_Span), (_iPagesNum + 20));
+		_spanAlloc.create((void*)((char*)_pSpanMemHead), sizeof(XC_Span), (_iPagesNum + 20));
 		_pShmFlagHead->_iShmSpanNum		= _iPagesNum + 20;
 		_pShmFlagHead->_iShmPageMapNum		= _iPagesNum;
 		_pShmFlagHead->_iShmPageNum		= _iPagesNum;
 		
 	}
 
-	void TC_Page::create(void *pAddr, size_t iShmMemSize, bool bProtectedArea)
+	void XC_Page::create(void *pAddr, size_t iShmMemSize, bool bProtectedArea)
 	{
 		init(pAddr);
 		_pShmFlagHead->_iShmFlag			= 0;
@@ -1267,18 +1267,18 @@ namespace taf
 		initPage(pAddr);
 	}
 
-	void TC_Page::connect(void *pAddr)
+	void XC_Page::connect(void *pAddr)
 	{
 		init(pAddr);
 		size_t iBeginAddr = reinterpret_cast<size_t>(pAddr);
 
-		_pSpanMemHead	= reinterpret_cast<TC_SpanAllocator*>(iBeginAddr + _pShmFlagHead->_iShmSpanAddr);
+		_pSpanMemHead	= reinterpret_cast<XC_SpanAllocator*>(iBeginAddr + _pShmFlagHead->_iShmSpanAddr);
 		_spanAlloc.connect((void*)((char*)_pSpanMemHead));
 		_pPageMap       = reinterpret_cast<size_t*>(iBeginAddr + _pShmFlagHead->_iShmPageMapAddr);
 		_pData          = reinterpret_cast<void*>(iBeginAddr + _pShmFlagHead->_iShmPageAddr);
 	}
 
-	void TC_Page::rebuild()
+	void XC_Page::rebuild()
 	{
 		size_t iBeginAddr        = reinterpret_cast<size_t>(_pShmFlagHead);
 
@@ -1300,38 +1300,38 @@ namespace taf
 			DLL_Init(&_pFree[i], reinterpret_cast<size_t>(&_pFree[i]) - iBeginAddr);
 		}
 
-		_pSpanMemHead	= reinterpret_cast<TC_SpanAllocator*>(iBeginAddr + _pShmFlagHead->_iShmSpanAddr);
+		_pSpanMemHead	= reinterpret_cast<XC_SpanAllocator*>(iBeginAddr + _pShmFlagHead->_iShmSpanAddr);
 		_spanAlloc.rebuild();
 		_pPageMap       = reinterpret_cast<size_t*>(iBeginAddr + _pShmFlagHead->_iShmPageMapAddr);
 		memset(_pPageMap, 0, sizeof(size_t)*_pShmFlagHead->_iShmPageMapNum);
 		_pData          = reinterpret_cast<void*>(iBeginAddr + _pShmFlagHead->_iShmPageAddr);
 	}
 
-	size_t TC_Page::getPageNumber()
+	size_t XC_Page::getPageNumber()
 	{
 		return _pShmFlagHead->_iShmPageNum;
 	}
 
-	size_t TC_Page::getPageMemSize()
+	size_t XC_Page::getPageMemSize()
 	{
 		return _pShmFlagHead->_iShmPageNum << kPageShift;
 	}
 
-	size_t TC_Page::getPageMemEnd()
+	size_t XC_Page::getPageMemEnd()
 	{
 		return reinterpret_cast<size_t>(_pShmFlagHead) + _pShmFlagHead->_iShmMemSize;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	void TC_MallocChunkAllocator::init(void *pAddr)
+	void XC_MallocChunkAllocator::init(void *pAddr)
 	{
 		_pHead	= static_cast<tagChunkAllocatorHead*>(pAddr);
 		_pChunk = (char*)_pHead + sizeof(tagChunkAllocatorHead);
 	}
 
-	void TC_MallocChunkAllocator::create(void *pAddr, size_t iSize, bool bProtectedArea)
+	void XC_MallocChunkAllocator::create(void *pAddr, size_t iSize, bool bProtectedArea)
 	{
-		assert(iSize > (sizeof(tagChunkAllocatorHead) + TC_Page::getMinMemSize()));
+		assert(iSize > (sizeof(tagChunkAllocatorHead) + XC_Page::getMinMemSize()));
 		init(pAddr);
 
 		_pHead->_bProtectedArea = bProtectedArea;
@@ -1344,7 +1344,7 @@ namespace taf
 		_page.create(_pChunk, iChunkCapacity, bProtectedArea);
 	}
 
-	void TC_MallocChunkAllocator::_connect(void *pAddr)
+	void XC_MallocChunkAllocator::_connect(void *pAddr)
 	{
 		clear();
 
@@ -1361,18 +1361,18 @@ namespace taf
 		assert(_nallocator == NULL);
 
 		tagChunkAllocatorHead  *pNextHead = (tagChunkAllocatorHead   *)((char*)_pHead + _pHead->_iNext);
-		_nallocator = new TC_MallocChunkAllocator();
+		_nallocator = new XC_MallocChunkAllocator();
 		_nallocator->connect(pNextHead);
 	}
 
-	void TC_MallocChunkAllocator::connect(void *pAddr)
+	void XC_MallocChunkAllocator::connect(void *pAddr)
 	{
 		_connect(pAddr);
 		doUpdate();
 		
 	}
 
-	void TC_MallocChunkAllocator::rebuild()
+	void XC_MallocChunkAllocator::rebuild()
 	{
 		_page.rebuild();
 
@@ -1382,12 +1382,12 @@ namespace taf
 		}
 	}
 
-	TC_MallocChunkAllocator * TC_MallocChunkAllocator::lastAlloc()
+	XC_MallocChunkAllocator * XC_MallocChunkAllocator::lastAlloc()
 	{
 		if(_nallocator == NULL)
 			return NULL;
 
-		TC_MallocChunkAllocator *p = _nallocator;
+		XC_MallocChunkAllocator *p = _nallocator;
 
 		while(p && p->_nallocator)
 		{
@@ -1397,7 +1397,7 @@ namespace taf
 		return p;
 	}
 
-	void TC_MallocChunkAllocator::append(void *pAddr, size_t iSize)
+	void XC_MallocChunkAllocator::append(void *pAddr, size_t iSize)
 	{
 		connect(pAddr);
 
@@ -1405,10 +1405,10 @@ namespace taf
 
 		void *pAppendAddr = (char*)pAddr + _pHead->_iTotalSize;
 
-		TC_MallocChunkAllocator *p = new TC_MallocChunkAllocator();
+		XC_MallocChunkAllocator *p = new XC_MallocChunkAllocator();
 		p->create(pAppendAddr, iSize - _pHead->_iTotalSize, _pHead->_bProtectedArea);
 
-		TC_MallocChunkAllocator *palloc = lastAlloc();
+		XC_MallocChunkAllocator *palloc = lastAlloc();
 		if (palloc)
 		{
 			palloc->_pHead->_iNext = (char*)pAppendAddr - (char*)palloc->_pHead;
@@ -1424,7 +1424,7 @@ namespace taf
 		_pHead->_iTotalSize = iSize;
 	}
 
-	void* TC_MallocChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize)
+	void* XC_MallocChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize)
 	{
 		size_t iPageId = 0;
 		size_t iIndex   = 0;
@@ -1433,7 +1433,7 @@ namespace taf
 		
 	}
 
-	void  TC_MallocChunkAllocator::deallocate(void* pAddr)
+	void  XC_MallocChunkAllocator::deallocate(void* pAddr)
 	{
 		if (_nallocator)
 		{
@@ -1453,7 +1453,7 @@ namespace taf
 		}
 	}
 
-	void* TC_MallocChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
+	void* XC_MallocChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex)
 	{
 		if (iNeedSize > kMaxSize)
 		{
@@ -1505,7 +1505,7 @@ namespace taf
 		return NULL;
 	}
 
-	void TC_MallocChunkAllocator::deallocate(size_t iPageId, size_t iIndex)
+	void XC_MallocChunkAllocator::deallocate(size_t iPageId, size_t iIndex)
 	{
 		if (_nallocator)
 		{
@@ -1525,7 +1525,7 @@ namespace taf
 		}
 	}
 
-	void* TC_MallocChunkAllocator::getAbsolute(size_t iPageId, size_t iIndex)
+	void* XC_MallocChunkAllocator::getAbsolute(size_t iPageId, size_t iIndex)
 	{
 		if(_nallocator == NULL)
 		{
@@ -1547,7 +1547,7 @@ namespace taf
 		return NULL;
 	}
 
-	size_t TC_MallocChunkAllocator::getAllCapacity()
+	size_t XC_MallocChunkAllocator::getAllCapacity()
 	{	
 
 		if(_nallocator == NULL)
@@ -1555,7 +1555,7 @@ namespace taf
 
 		size_t _iCapacity = _page.getPageMemSize();
 
-		TC_MallocChunkAllocator *p = _nallocator;
+		XC_MallocChunkAllocator *p = _nallocator;
 
 		while(p)
 		{
@@ -1566,7 +1566,7 @@ namespace taf
 		return _iCapacity;
 	}
 
-	void   TC_MallocChunkAllocator::getSingleCapacity(vector<size_t> &vec_capacity)
+	void   XC_MallocChunkAllocator::getSingleCapacity(vector<size_t> &vec_capacity)
 	{
 		vec_capacity.clear();
 
@@ -1576,7 +1576,7 @@ namespace taf
 			return ;
 		}
 
-		TC_MallocChunkAllocator *p = _nallocator;
+		XC_MallocChunkAllocator *p = _nallocator;
 
 		while(p)
 		{
@@ -1585,7 +1585,7 @@ namespace taf
 		}
 	}
 
-	void TC_MallocChunkAllocator::doUpdate(bool bUpdate)
+	void XC_MallocChunkAllocator::doUpdate(bool bUpdate)
 	{
 		_page.doUpdate(bUpdate);
 

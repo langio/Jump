@@ -1,18 +1,17 @@
-#ifndef	__TC_MEM_QUEUE_H__
-#define __TC_MEM_QUEUE_H__
+#ifndef	__XC_MEM_QUEUE_H__
+#define __XC_MEM_QUEUE_H__
 
 #include <string>
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file   tc_mem_queue.h 
  * @brief  共享内存循环队列类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 	         
 /////////////////////////////////////////////////
@@ -23,19 +22,19 @@ namespace taf
 *  
 * 做了保护，即使被kill掉，队列不会坏掉，最多错误一个数据
 */
-class TC_MemQueue
+class XC_MemQueue
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_MemQueue();
+    XC_MemQueue();
 
     /**
     * @brief 析构
     */
-    ~TC_MemQueue(){}
+    ~XC_MemQueue(){}
 
     /**
     * @brief 初始化

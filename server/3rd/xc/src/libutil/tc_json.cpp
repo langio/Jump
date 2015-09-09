@@ -5,12 +5,12 @@
 #include <iostream>
 #include <iomanip>
 
-namespace taf
+namespace xutil
 {
 
 #define FILTER_SPACE while(isspace((int)c)) {c=reader.read();}
 
-JsonValuePtr TC_Json::getValue(BufferJsonReader & reader)
+JsonValuePtr XC_Json::getValue(BufferJsonReader & reader)
 {
     char c=reader.read();
     FILTER_SPACE;
@@ -52,11 +52,11 @@ JsonValuePtr TC_Json::getValue(BufferJsonReader & reader)
         default:
             char s[64];
             snprintf(s, sizeof(s), "buffer overflow when peekBuf, over %u.", (uint32_t)(uint32_t)reader.getCur());
-            throw TC_Json_Exception(s);
+            throw XC_Json_Exception(s);
     }
 }
 
-JsonValueObjPtr TC_Json::getObj(BufferJsonReader & reader)
+JsonValueObjPtr XC_Json::getObj(BufferJsonReader & reader)
 {
     JsonValueObjPtr p = new JsonValueObj();
     bool bFirst=true;
@@ -74,7 +74,7 @@ JsonValueObjPtr TC_Json::getObj(BufferJsonReader & reader)
         {
             char s[64];
             snprintf(s, sizeof(s), "get obj error(key is not string)[pos:%u]", (uint32_t)reader.getCur());
-            throw TC_Json_Exception(s);
+            throw XC_Json_Exception(s);
         }
         JsonValueStringPtr pString=getString(reader);
         c=reader.read();
@@ -83,7 +83,7 @@ JsonValueObjPtr TC_Json::getObj(BufferJsonReader & reader)
         {
             char s[64];
             snprintf(s, sizeof(s), "get obj error(: not find)[pos:%u]", (uint32_t)reader.getCur());
-            throw TC_Json_Exception(s);
+            throw XC_Json_Exception(s);
         }
         JsonValuePtr pValue=getValue(reader);
         p->value[pString->value]=pValue;
@@ -98,11 +98,11 @@ JsonValueObjPtr TC_Json::getObj(BufferJsonReader & reader)
 
         char s[64];
         snprintf(s, sizeof(s), "get obj error(, not find)[pos:%u]", (uint32_t)reader.getCur());
-        throw TC_Json_Exception(s);
+        throw XC_Json_Exception(s);
     }
 }
 
-JsonValueArrayPtr TC_Json::getArray(BufferJsonReader & reader)
+JsonValueArrayPtr XC_Json::getArray(BufferJsonReader & reader)
 {
     JsonValueArrayPtr p = new JsonValueArray();
     bool bFirst=true;
@@ -133,11 +133,11 @@ JsonValueArrayPtr TC_Json::getArray(BufferJsonReader & reader)
 
         char s[64];
         snprintf(s, sizeof(s), "get vector error(, not find )[pos:%u]", (uint32_t)reader.getCur());
-        throw TC_Json_Exception(s);
+        throw XC_Json_Exception(s);
     }
 }
 
-JsonValueStringPtr TC_Json::getString(BufferJsonReader & reader,char head)
+JsonValueStringPtr XC_Json::getString(BufferJsonReader & reader,char head)
 {
     JsonValueStringPtr p = new JsonValueString();
     const char * pChar=reader.getPoint();
@@ -171,7 +171,7 @@ JsonValueStringPtr TC_Json::getString(BufferJsonReader & reader,char head)
                 {
                     char s[64];
                     snprintf(s, sizeof(s), "get string error(\\u)[pos:%u]", (uint32_t)reader.getCur());
-                    throw TC_Json_Exception(s);
+                    throw XC_Json_Exception(s);
                 }
                 pChar+=4;
                 p->value.append(1,(char)iCode);
@@ -194,7 +194,7 @@ JsonValueStringPtr TC_Json::getString(BufferJsonReader & reader,char head)
                     {
                         char s[64];
                         snprintf(s, sizeof(s), "get string error(\\u)[pos:%u]", (uint32_t)reader.getCur());
-                        throw TC_Json_Exception(s);
+                        throw XC_Json_Exception(s);
                     }
                     int iBuf=0;
                     iCode=iCode&0x03ff;
@@ -214,7 +214,7 @@ JsonValueStringPtr TC_Json::getString(BufferJsonReader & reader,char head)
     return p;
 }
 
-JsonValueNumPtr TC_Json::getNum(BufferJsonReader & reader,char head)
+JsonValueNumPtr XC_Json::getNum(BufferJsonReader & reader,char head)
 {
     bool bOk=true;
     bool bFloat=false;
@@ -291,7 +291,7 @@ JsonValueNumPtr TC_Json::getNum(BufferJsonReader & reader,char head)
     {
         char s[64];
         snprintf(s, sizeof(s), "get num error[pos:%u]", (uint32_t)reader.getCur());
-        throw TC_Json_Exception(s);
+        throw XC_Json_Exception(s);
     }
     if(bNeedBack)
         reader.back();
@@ -306,7 +306,7 @@ JsonValueNumPtr TC_Json::getNum(BufferJsonReader & reader,char head)
 }
 
 //为了提高效率和代码好写就先这么写了
-JsonValueBooleanPtr TC_Json::getBoolean(BufferJsonReader & reader,char c)
+JsonValueBooleanPtr XC_Json::getBoolean(BufferJsonReader & reader,char c)
 {
     bool bOk=false;
     bool bValue;
@@ -353,7 +353,7 @@ JsonValueBooleanPtr TC_Json::getBoolean(BufferJsonReader & reader,char c)
     {
         char s[64];
         snprintf(s, sizeof(s), "get bool error[pos:%u]", (uint32_t)reader.getCur());
-        throw TC_Json_Exception(s);
+        throw XC_Json_Exception(s);
     }
 
     JsonValueBooleanPtr p = new JsonValueBoolean();
@@ -361,7 +361,7 @@ JsonValueBooleanPtr TC_Json::getBoolean(BufferJsonReader & reader,char c)
     return p;
 }
 
-JsonValuePtr TC_Json::getNull(BufferJsonReader & reader,char c)
+JsonValuePtr XC_Json::getNull(BufferJsonReader & reader,char c)
 {
     assert(c=='n' || c=='N');
     bool bOk=false;
@@ -382,12 +382,12 @@ JsonValuePtr TC_Json::getNull(BufferJsonReader & reader,char c)
     {
         char s[64];
         snprintf(s, sizeof(s), "get NULL error[pos:%u]", (uint32_t)reader.getCur());
-        throw TC_Json_Exception(s);
+        throw XC_Json_Exception(s);
     }
     return NULL;
 }
 
-uint16_t TC_Json::getHex(BufferJsonReader & reader)
+uint16_t XC_Json::getHex(BufferJsonReader & reader)
 {
     uint16_t iCode=0;
     char c;
@@ -404,13 +404,13 @@ uint16_t TC_Json::getHex(BufferJsonReader & reader)
         {
             char s[64];
             snprintf(s, sizeof(s), "get string error(\\u)[pos:%u]", (uint32_t)reader.getCur());
-            throw TC_Json_Exception(s);
+            throw XC_Json_Exception(s);
         }
     }
     return iCode;
 }
 
-string TC_Json::writeValue(const JsonValuePtr & p)
+string XC_Json::writeValue(const JsonValuePtr & p)
 {
     if(!p)
     {
@@ -433,12 +433,12 @@ string TC_Json::writeValue(const JsonValuePtr & p)
     }
 }
 
-string TC_Json::writeString(const JsonValueStringPtr & p)
+string XC_Json::writeString(const JsonValueStringPtr & p)
 {
     return writeString(p->value);
 }
 
-string TC_Json::writeString(const string & s)
+string XC_Json::writeString(const string & s)
 {
     string sReturn;
     string sReplace;
@@ -481,7 +481,7 @@ string TC_Json::writeString(const string & s)
     return sReturn;
 }
 
-string TC_Json::writeNum(const JsonValueNumPtr & p)
+string XC_Json::writeNum(const JsonValueNumPtr & p)
 {
     ostringstream sBuffer;
     if(p->isInt)
@@ -491,7 +491,7 @@ string TC_Json::writeNum(const JsonValueNumPtr & p)
     return sBuffer.str();
 }
 
-string TC_Json::writeObj(const JsonValueObjPtr & p)
+string XC_Json::writeObj(const JsonValueObjPtr & p)
 {
     string s;
     s="{ ";
@@ -507,7 +507,7 @@ string TC_Json::writeObj(const JsonValueObjPtr & p)
     return s;
 }
 
-string TC_Json::writeArray(const JsonValueArrayPtr & p)
+string XC_Json::writeArray(const JsonValueArrayPtr & p)
 {
     string s;
     s="[ ";
@@ -521,7 +521,7 @@ string TC_Json::writeArray(const JsonValueArrayPtr & p)
     return s;
 }
 
-string TC_Json::writeBoolean(const JsonValueBooleanPtr & p)
+string XC_Json::writeBoolean(const JsonValueBooleanPtr & p)
 {
     if(p->value)
         return "true";
@@ -529,7 +529,7 @@ string TC_Json::writeBoolean(const JsonValueBooleanPtr & p)
         return "false";
 }
 
-JsonValuePtr TC_Json::getValue(const string & str)
+JsonValuePtr XC_Json::getValue(const string & str)
 {
     BufferJsonReader reader;
     reader.setBuffer(str.c_str(),str.length());
@@ -537,7 +537,7 @@ JsonValuePtr TC_Json::getValue(const string & str)
 }
 
 //json里面定义的空白字符
-bool TC_Json::isspace(char c)
+bool XC_Json::isspace(char c)
 {
     if(c == ' ' || c == '\t' || c == '\r' || c == '\n')
         return true;

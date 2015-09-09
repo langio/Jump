@@ -3,39 +3,39 @@
 #include "util/tc_common.h"
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-bool TC_RBTree::Block::hasLeft()
+bool XC_RBTree::Block::hasLeft()
 {
     return _pHead->_iLeftChild != 0;
 }
 
-bool TC_RBTree::Block::moveToLeft()
+bool XC_RBTree::Block::moveToLeft()
 {
     _iHead = getBlockHead()->_iLeftChild;
     _pHead = getBlockHead(_iHead);
     return _iHead != 0;
 }
 
-bool TC_RBTree::Block::hasRight()
+bool XC_RBTree::Block::hasRight()
 {
     return _pHead->_iRightChild != 0;
 }
 
-bool TC_RBTree::Block::moveToRight()
+bool XC_RBTree::Block::moveToRight()
 {
     _iHead = getBlockHead()->_iRightChild;
     _pHead = getBlockHead(_iHead);
     return _iHead != 0;
 }
 
-bool TC_RBTree::Block::hasParent()
+bool XC_RBTree::Block::hasParent()
 {
     return _pHead->_iParent != 0;
 }
 
-bool TC_RBTree::Block::moveToParent()
+bool XC_RBTree::Block::moveToParent()
 {
     _iHead = getBlockHead()->_iParent;
     _pHead = getBlockHead(_iHead);
@@ -50,7 +50,7 @@ bool TC_RBTree::Block::moveToParent()
 |       b  y         a   b
  -----------------------------------------------------------*/
 
-void TC_RBTree::Block::rotateLeft(TC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
+void XC_RBTree::Block::rotateLeft(XC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
 {
     assert(i != NULL);
 
@@ -98,7 +98,7 @@ void TC_RBTree::Block::rotateLeft(TC_RBTree::Block::tagBlockHead *i, uint32_t iA
 |   / \               / \
 |  a   b             b   y
 -----------------------------------------------------------*/
-void TC_RBTree::Block::rotateRight(TC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
+void XC_RBTree::Block::rotateRight(XC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
 {
     assert(i != NULL);
 //    assert(iAddr == _pMap->getRelative(i));
@@ -138,7 +138,7 @@ void TC_RBTree::Block::rotateRight(TC_RBTree::Block::tagBlockHead *i, uint32_t i
     _pMap->saveValue(&i->_iParent, iLAddr);
 }
 
-void TC_RBTree::Block::eraseFixUp(TC_RBTree::Block::tagBlockHead *i, uint32_t iAddr, TC_RBTree::Block::tagBlockHead *p, uint32_t iPAddr)
+void XC_RBTree::Block::eraseFixUp(XC_RBTree::Block::tagBlockHead *i, uint32_t iAddr, XC_RBTree::Block::tagBlockHead *p, uint32_t iPAddr)
 {
 //    assert(iAddr == _pMap->getRelative(i));
 //    assert(iPAddr == _pMap->getRelative(p));
@@ -269,7 +269,7 @@ void TC_RBTree::Block::eraseFixUp(TC_RBTree::Block::tagBlockHead *i, uint32_t iA
     }
 }
 
-void TC_RBTree::Block::erase(TC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
+void XC_RBTree::Block::erase(XC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
 {
     assert(i != NULL);
 //    assert(iAddr == _pMap->getRelative(i));
@@ -409,7 +409,7 @@ COLOR:
     }
 }
 
-void TC_RBTree::Block::insertFixUp(TC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
+void XC_RBTree::Block::insertFixUp(XC_RBTree::Block::tagBlockHead *i, uint32_t iAddr)
 {
     tagBlockHead *p = NULL;
     uint32_t iPAddr = 0;
@@ -511,7 +511,7 @@ void TC_RBTree::Block::insertFixUp(TC_RBTree::Block::tagBlockHead *i, uint32_t i
     _pMap->saveValue(&getBlockHead(_pMap->_pHead->_iRootAddr)->_iColor, BLACK);
 }
 
-void TC_RBTree::Block::insertGetSetList(TC_RBTree::Block::tagBlockHead *i)
+void XC_RBTree::Block::insertGetSetList(XC_RBTree::Block::tagBlockHead *i)
 {
     //挂在Set链表的头部
     if(_pMap->_pHead->_iSetHead == 0)
@@ -546,7 +546,7 @@ void TC_RBTree::Block::insertGetSetList(TC_RBTree::Block::tagBlockHead *i)
     }
 }
 
-void TC_RBTree::Block::insertRBTree(tagBlockHead *i, const string &k)
+void XC_RBTree::Block::insertRBTree(tagBlockHead *i, const string &k)
 {
     if(_pMap->_pHead->_iRootAddr == 0)
     {
@@ -564,7 +564,7 @@ void TC_RBTree::Block::insertRBTree(tagBlockHead *i, const string &k)
         
         int iRet = last.getBlockData(data);
 
-        assert(iRet == TC_RBTree::RT_OK || iRet == TC_RBTree::RT_ONLY_KEY);
+        assert(iRet == XC_RBTree::RT_OK || iRet == XC_RBTree::RT_ONLY_KEY);
 
         if(_pMap->_lessf(k, data._key))
         {
@@ -584,9 +584,9 @@ void TC_RBTree::Block::insertRBTree(tagBlockHead *i, const string &k)
     insertFixUp(i, _iHead);
 }
 
-int TC_RBTree::Block::set(const string& k, const string& v, bool bNewBlock, bool bOnlyKey, vector<TC_RBTree::BlockData> &vtData)
+int XC_RBTree::Block::set(const string& k, const string& v, bool bNewBlock, bool bOnlyKey, vector<XC_RBTree::BlockData> &vtData)
 {
-    TC_PackIn pi;
+    XC_PackIn pi;
     pi << k;
 
     if(!bOnlyKey)
@@ -600,7 +600,7 @@ int TC_RBTree::Block::set(const string& k, const string& v, bool bNewBlock, bool
 
     //首先分配刚刚够的长度, 不能多一个chunk, 也不能少一个chunk
     int ret = allocate(iDataLen, vtData);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
@@ -705,10 +705,10 @@ int TC_RBTree::Block::set(const string& k, const string& v, bool bNewBlock, bool
     //设置是否只有Key
     i->_bOnlyKey   = bOnlyKey;
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::Block::getBlockData(TC_RBTree::BlockData &data)
+int XC_RBTree::Block::getBlockData(XC_RBTree::BlockData &data)
 {
     data._dirty = isDirty();
     data._synct = getSyncTime();
@@ -716,14 +716,14 @@ int TC_RBTree::Block::getBlockData(TC_RBTree::BlockData &data)
     string s;
     int ret   = get(s);
 
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
 
     try
     {
-        TC_PackOut po(s.c_str(), s.length());
+        XC_PackOut po(s.c_str(), s.length());
         po >> data._key;
 
         //如果不是只有Key
@@ -733,19 +733,19 @@ int TC_RBTree::Block::getBlockData(TC_RBTree::BlockData &data)
         }
         else
         {
-            return TC_RBTree::RT_ONLY_KEY;
+            return XC_RBTree::RT_ONLY_KEY;
         }
     }
     catch(exception &ex)
     {
         assert(false);
-        ret = TC_RBTree::RT_DECODE_ERR;
+        ret = XC_RBTree::RT_DECODE_ERR;
     }
 
     return ret;
 }
 
-int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
+int XC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
 {
     tagBlockHead *i = getBlockHead();
 
@@ -754,7 +754,7 @@ int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
     {
         memcpy(pData, i->_cData, min(i->_iDataLen, iDataLen));
         iDataLen = i->_iDataLen;
-        return TC_RBTree::RT_OK;
+        return XC_RBTree::RT_OK;
     }
     else
     {
@@ -765,7 +765,7 @@ int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
         memcpy(pData, i->_cData, iCopyLen);
         if (iDataLen < iUseSize)
         {
-            return TC_RBTree::RT_NOTALL_ERR;   //copy数据不完全
+            return XC_RBTree::RT_NOTALL_ERR;   //copy数据不完全
         }
 
         //已经copy长度
@@ -786,10 +786,10 @@ int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
 
                 if(iLeftLen < pChunk->_iDataLen)
                 {
-                    return TC_RBTree::RT_NOTALL_ERR;       //copy不完全
+                    return XC_RBTree::RT_NOTALL_ERR;       //copy不完全
                 }
 
-                return TC_RBTree::RT_OK;
+                return XC_RBTree::RT_OK;
             }
             else
             {
@@ -799,7 +799,7 @@ int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
                 if (iLeftLen <= iUseSize)
                 {
                     iDataLen = iHasLen + iCopyLen;
-                    return TC_RBTree::RT_NOTALL_ERR;   //copy不完全
+                    return XC_RBTree::RT_NOTALL_ERR;   //copy不完全
                 }
 
                 //copy当前chunk完全
@@ -811,17 +811,17 @@ int TC_RBTree::Block::get(void *pData, uint32_t &iDataLen)
         }
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::Block::get(string &s)
+int XC_RBTree::Block::get(string &s)
 {
     uint32_t iLen = getDataLen();
 
     char *cData = new char[iLen];
     uint32_t iGetLen = iLen;
     int ret = get(cData, iGetLen);
-    if(ret == TC_RBTree::RT_OK)
+    if(ret == XC_RBTree::RT_OK)
     {
         s.assign(cData, iGetLen);
     }
@@ -831,7 +831,7 @@ int TC_RBTree::Block::get(string &s)
     return ret;
 }
 
-void TC_RBTree::Block::setDirty(bool b)
+void XC_RBTree::Block::setDirty(bool b)
 {
     tagBlockHead *i = getBlockHead();
 
@@ -850,7 +850,7 @@ void TC_RBTree::Block::setDirty(bool b)
     }
 }
 
-void TC_RBTree::Block::deallocate()
+void XC_RBTree::Block::deallocate()
 {
     tagBlockHead *i = getBlockHead();
 
@@ -865,12 +865,12 @@ void TC_RBTree::Block::deallocate()
     _pMap->_pDataAllocator->deallocateMemBlock(v);
 }
 
-void TC_RBTree::Block::makeNew(uint32_t iAllocSize)
+void XC_RBTree::Block::makeNew(uint32_t iAllocSize)
 {
     tagBlockHead *i    = getBlockHead();
 
     i->_iSize          = iAllocSize;
-    i->_iColor         = TC_RBTree::RED;
+    i->_iColor         = XC_RBTree::RED;
     i->_iParent        = 0;
     i->_iLeftChild     = 0;
     i->_iRightChild    = 0;
@@ -885,7 +885,7 @@ void TC_RBTree::Block::makeNew(uint32_t iAllocSize)
     i->_bOnlyKey       = false;
 }
 
-void TC_RBTree::Block::erase()
+void XC_RBTree::Block::erase()
 {
     tagBlockHead *i = getBlockHead();
 
@@ -1014,7 +1014,7 @@ void TC_RBTree::Block::erase()
 
     //保留头部指针的现场
     _pMap->saveValue(&i->_iSize, 0, false);
-    _pMap->saveValue(&i->_iColor, TC_RBTree::RED, false);
+    _pMap->saveValue(&i->_iColor, XC_RBTree::RED, false);
     _pMap->saveValue(&i->_iParent, 0, false);
     _pMap->saveValue(&i->_iLeftChild, 0, false);
     _pMap->saveValue(&i->_iRightChild, 0, false);
@@ -1035,7 +1035,7 @@ void TC_RBTree::Block::erase()
     deallocate();
 }
 
-void TC_RBTree::Block::refreshSetList()
+void XC_RBTree::Block::refreshSetList()
 {
     tagBlockHead *i = getBlockHead();
 
@@ -1098,7 +1098,7 @@ void TC_RBTree::Block::refreshSetList()
     refreshGetList();
 }
 
-void TC_RBTree::Block::refreshGetList()
+void XC_RBTree::Block::refreshGetList()
 {
     assert(_pMap->_pHead->_iGetHead != 0);
     assert(_pMap->_pHead->_iGetTail != 0);
@@ -1144,7 +1144,7 @@ void TC_RBTree::Block::refreshGetList()
     }
 }
 
-void TC_RBTree::Block::deallocate(uint32_t iChunk)
+void XC_RBTree::Block::deallocate(uint32_t iChunk)
 {
     tagChunkHead *pChunk        = getChunkHead(iChunk);
     vector<uint32_t> v;
@@ -1168,7 +1168,7 @@ void TC_RBTree::Block::deallocate(uint32_t iChunk)
     _pMap->_pDataAllocator->deallocateMemBlock(v);
 }
 
-int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &vtData)
+int XC_RBTree::Block::allocate(uint32_t iDataLen, vector<XC_RBTree::BlockData> &vtData)
 {
     uint32_t fn   = 0;
 
@@ -1188,7 +1188,7 @@ int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &
             //修改成功后再释放区块, 从而保证, 不会core的时候导致整个内存块不可用
             deallocate(iNextChunk);
         }
-        return TC_RBTree::RT_OK;
+        return XC_RBTree::RT_OK;
     }
 
     //计算还需要多少长度
@@ -1210,7 +1210,7 @@ int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &
                     //一旦异常core, 最坏的情况就是少了可用的区块, 但是整个内存结构还是可用的
                     deallocate(iNextChunk);
                 }
-                return TC_RBTree::RT_OK ;
+                return XC_RBTree::RT_OK ;
             }
 
             //计算, 还需要多少长度
@@ -1225,7 +1225,7 @@ int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &
                 //没有后续chunk了, 需要新分配fn的空间
                 vector<uint32_t> chunks;
                 int ret = allocateChunk(fn, chunks, vtData);
-                if(ret != TC_RBTree::RT_OK)
+                if(ret != XC_RBTree::RT_OK)
                 {
                     //没有内存可以分配
                     return ret;
@@ -1249,7 +1249,7 @@ int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &
         //没有后续chunk了, 需要新分配fn空间
         vector<uint32_t> chunks;
         int ret = allocateChunk(fn, chunks, vtData);
-        if(ret != TC_RBTree::RT_OK)
+        if(ret != XC_RBTree::RT_OK)
         {
             //没有内存可以分配
             return ret;
@@ -1267,17 +1267,17 @@ int TC_RBTree::Block::allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &
         return joinChunk(pChunk, chunks);
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::Block::joinChunk(tagChunkHead *pChunk, const vector<uint32_t> chunks)
+int XC_RBTree::Block::joinChunk(tagChunkHead *pChunk, const vector<uint32_t> chunks)
 {
     for (size_t i = 0; i < chunks.size(); ++i)
     {
         if (i == chunks.size() - 1)
         {
             _pMap->saveValue(&pChunk->_bNextChunk, false);
-            return TC_RBTree::RT_OK;
+            return XC_RBTree::RT_OK;
         }
         else
         {
@@ -1289,10 +1289,10 @@ int TC_RBTree::Block::joinChunk(tagChunkHead *pChunk, const vector<uint32_t> chu
         }
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::Block::allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<TC_RBTree::BlockData> &vtData)
+int XC_RBTree::Block::allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<XC_RBTree::BlockData> &vtData)
 {
     assert(fn > 0);
 
@@ -1306,7 +1306,7 @@ int TC_RBTree::Block::allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vecto
             //没有内存可以分配了, 先把分配的归还
             _pMap->_pDataAllocator->deallocateMemBlock(chunks);
             chunks.clear();
-            return TC_RBTree::RT_NO_MEMORY;
+            return XC_RBTree::RT_NO_MEMORY;
         }
 
         //设置分配的数据块的大小
@@ -1324,10 +1324,10 @@ int TC_RBTree::Block::allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vecto
         fn -= iAllocSize - sizeof(tagChunkHead);
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-uint32_t TC_RBTree::Block::getDataLen()
+uint32_t XC_RBTree::Block::getDataLen()
 {
     tagBlockHead *i = getBlockHead();
 
@@ -1362,7 +1362,7 @@ uint32_t TC_RBTree::Block::getDataLen()
 
 ////////////////////////////////////////////////////////
 // 
-uint32_t TC_RBTree::BlockAllocator::allocateMemBlock(uint32_t &iAllocSize, vector<TC_RBTree::BlockData> &vtData)
+uint32_t XC_RBTree::BlockAllocator::allocateMemBlock(uint32_t &iAllocSize, vector<XC_RBTree::BlockData> &vtData)
 {
 begin:
     size_t iIndex;
@@ -1387,7 +1387,7 @@ begin:
     return (uint32_t)iIndex;
 }                     
 
-uint32_t TC_RBTree::BlockAllocator::allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<TC_RBTree::BlockData> &vtData)
+uint32_t XC_RBTree::BlockAllocator::allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<XC_RBTree::BlockData> &vtData)
 {
 begin:
     size_t iIndex;
@@ -1408,7 +1408,7 @@ begin:
     return (uint32_t)iIndex;
 }
 
-void TC_RBTree::BlockAllocator::deallocateMemBlock(const vector<uint32_t> &v)
+void XC_RBTree::BlockAllocator::deallocateMemBlock(const vector<uint32_t> &v)
 {
     for(size_t i = 0; i < v.size(); i++)
     {
@@ -1417,7 +1417,7 @@ void TC_RBTree::BlockAllocator::deallocateMemBlock(const vector<uint32_t> &v)
     }
 }
 
-void TC_RBTree::BlockAllocator::deallocateMemBlock(uint32_t v)
+void XC_RBTree::BlockAllocator::deallocateMemBlock(uint32_t v)
 {
     _pChunkAllocator->deallocate2(v);
     _pMap->delChunkCount();
@@ -1425,19 +1425,19 @@ void TC_RBTree::BlockAllocator::deallocateMemBlock(uint32_t v)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_RBTree::RBTreeLockItem::RBTreeLockItem(TC_RBTree *pMap, uint32_t iAddr)
+XC_RBTree::RBTreeLockItem::RBTreeLockItem(XC_RBTree *pMap, uint32_t iAddr)
 : _pMap(pMap)
 , _iAddr(iAddr)
 {
 }
 
-TC_RBTree::RBTreeLockItem::RBTreeLockItem(const RBTreeLockItem &mcmdi)
+XC_RBTree::RBTreeLockItem::RBTreeLockItem(const RBTreeLockItem &mcmdi)
 : _pMap(mcmdi._pMap)
 , _iAddr(mcmdi._iAddr)
 {
 }
 
-TC_RBTree::RBTreeLockItem &TC_RBTree::RBTreeLockItem::operator=(const TC_RBTree::RBTreeLockItem &mcmdi)
+XC_RBTree::RBTreeLockItem &XC_RBTree::RBTreeLockItem::operator=(const XC_RBTree::RBTreeLockItem &mcmdi)
 {
     if(this != &mcmdi)
     {
@@ -1447,49 +1447,49 @@ TC_RBTree::RBTreeLockItem &TC_RBTree::RBTreeLockItem::operator=(const TC_RBTree:
     return (*this);
 }
 
-bool TC_RBTree::RBTreeLockItem::operator==(const TC_RBTree::RBTreeLockItem &mcmdi)
+bool XC_RBTree::RBTreeLockItem::operator==(const XC_RBTree::RBTreeLockItem &mcmdi)
 {
     return _pMap == mcmdi._pMap && _iAddr == mcmdi._iAddr;
 }
 
-bool TC_RBTree::RBTreeLockItem::operator!=(const TC_RBTree::RBTreeLockItem &mcmdi)
+bool XC_RBTree::RBTreeLockItem::operator!=(const XC_RBTree::RBTreeLockItem &mcmdi)
 {
     return _pMap != mcmdi._pMap || _iAddr != mcmdi._iAddr;
 }
 
-bool TC_RBTree::RBTreeLockItem::isDirty()
+bool XC_RBTree::RBTreeLockItem::isDirty()
 {
     Block block(_pMap, _iAddr);
     return block.isDirty();
 }
 
-bool TC_RBTree::RBTreeLockItem::isOnlyKey()
+bool XC_RBTree::RBTreeLockItem::isOnlyKey()
 {
     Block block(_pMap, _iAddr);
     return block.isOnlyKey();
 }
 
-time_t TC_RBTree::RBTreeLockItem::getSyncTime()
+time_t XC_RBTree::RBTreeLockItem::getSyncTime()
 {
     Block block(_pMap, _iAddr);
     return block.getSyncTime();
 }
 
-int TC_RBTree::RBTreeLockItem::get(string& k, string& v)
+int XC_RBTree::RBTreeLockItem::get(string& k, string& v)
 {
     string s;
 
     Block block(_pMap, _iAddr);
 
     int ret = block.get(s);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
 
     try
     {
-        TC_PackOut po(s.c_str(), s.length());
+        XC_PackOut po(s.c_str(), s.length());
         po >> k;
         if(!block.isOnlyKey())
         {
@@ -1498,63 +1498,63 @@ int TC_RBTree::RBTreeLockItem::get(string& k, string& v)
         else
         {
             v = "";
-            return TC_RBTree::RT_ONLY_KEY;
+            return XC_RBTree::RT_ONLY_KEY;
         }
     }
     catch ( exception &ex )
     {
         assert(false);
-        return TC_RBTree::RT_EXCEPTION_ERR;
+        return XC_RBTree::RT_EXCEPTION_ERR;
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::RBTreeLockItem::get(string& k)
+int XC_RBTree::RBTreeLockItem::get(string& k)
 {
     string s;
 
     Block block(_pMap, _iAddr);
 
     int ret = block.get(s);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
 
     try
     {
-        TC_PackOut po(s.c_str(), s.length());
+        XC_PackOut po(s.c_str(), s.length());
         po >> k;
     }
     catch ( exception &ex )
     {
         assert(false);
-        return TC_RBTree::RT_EXCEPTION_ERR;
+        return XC_RBTree::RT_EXCEPTION_ERR;
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::RBTreeLockItem::set(const string& k, const string& v, bool bNewBlock, vector<TC_RBTree::BlockData> &vtData)
+int XC_RBTree::RBTreeLockItem::set(const string& k, const string& v, bool bNewBlock, vector<XC_RBTree::BlockData> &vtData)
 {
     Block block(_pMap, _iAddr);
 
     return block.set(k, v, bNewBlock, false, vtData);
 }
 
-int TC_RBTree::RBTreeLockItem::set(const string& k, bool bNewBlock, vector<TC_RBTree::BlockData> &vtData)
+int XC_RBTree::RBTreeLockItem::set(const string& k, bool bNewBlock, vector<XC_RBTree::BlockData> &vtData)
 {
     Block block(_pMap, _iAddr);
 
     return block.set(k, "", bNewBlock, true, vtData);
 }
 
-bool TC_RBTree::RBTreeLockItem::equal(const string &k, string &k1, string &v, int &ret)
+bool XC_RBTree::RBTreeLockItem::equal(const string &k, string &k1, string &v, int &ret)
 {
     ret = get(k1, v);
 
-    if ((ret == TC_RBTree::RT_OK || ret == TC_RBTree::RT_ONLY_KEY) && k == k1)
+    if ((ret == XC_RBTree::RT_OK || ret == XC_RBTree::RT_ONLY_KEY) && k == k1)
     {
         return true;
     }
@@ -1562,11 +1562,11 @@ bool TC_RBTree::RBTreeLockItem::equal(const string &k, string &k1, string &v, in
     return false;
 }
 
-bool TC_RBTree::RBTreeLockItem::equal(const string& k, string &k1, int &ret)
+bool XC_RBTree::RBTreeLockItem::equal(const string& k, string &k1, int &ret)
 {
     ret = get(k1);
 
-    if (ret == TC_RBTree::RT_OK && k == k1)
+    if (ret == XC_RBTree::RT_OK && k == k1)
     {
         return true;
     }
@@ -1574,7 +1574,7 @@ bool TC_RBTree::RBTreeLockItem::equal(const string& k, string &k1, int &ret)
     return false;
 }
 
-void TC_RBTree::RBTreeLockItem::nextItem(int iType)
+void XC_RBTree::RBTreeLockItem::nextItem(int iType)
 {
     Block block(_pMap, _iAddr);
 
@@ -1606,7 +1606,7 @@ void TC_RBTree::RBTreeLockItem::nextItem(int iType)
     }
 }
 
-void TC_RBTree::RBTreeLockItem::prevItem(int iType)
+void XC_RBTree::RBTreeLockItem::prevItem(int iType)
 {
     Block block(_pMap, _iAddr);
 
@@ -1640,22 +1640,22 @@ void TC_RBTree::RBTreeLockItem::prevItem(int iType)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_RBTree::RBTreeLockIterator::RBTreeLockIterator()
+XC_RBTree::RBTreeLockIterator::RBTreeLockIterator()
 : _pMap(NULL), _iItem(NULL, 0)
 {
 }
 
-TC_RBTree::RBTreeLockIterator::RBTreeLockIterator(TC_RBTree *pMap, uint32_t iAddr, int iType, int iOrder)
+XC_RBTree::RBTreeLockIterator::RBTreeLockIterator(XC_RBTree *pMap, uint32_t iAddr, int iType, int iOrder)
 : _pMap(pMap), _iItem(_pMap, iAddr), _iType(iType), _iOrder(iOrder)
 {
 }
 
-TC_RBTree::RBTreeLockIterator::RBTreeLockIterator(const RBTreeLockIterator &it)
+XC_RBTree::RBTreeLockIterator::RBTreeLockIterator(const RBTreeLockIterator &it)
 : _pMap(it._pMap),_iItem(it._iItem), _iType(it._iType), _iOrder(it._iOrder)
 {
 }
 
-TC_RBTree::RBTreeLockIterator& TC_RBTree::RBTreeLockIterator::operator=(const RBTreeLockIterator &it)
+XC_RBTree::RBTreeLockIterator& XC_RBTree::RBTreeLockIterator::operator=(const RBTreeLockIterator &it)
 {
     if(this != &it)
     {
@@ -1668,7 +1668,7 @@ TC_RBTree::RBTreeLockIterator& TC_RBTree::RBTreeLockIterator::operator=(const RB
     return (*this);
 }
 
-bool TC_RBTree::RBTreeLockIterator::operator==(const RBTreeLockIterator& mcmi)
+bool XC_RBTree::RBTreeLockIterator::operator==(const RBTreeLockIterator& mcmi)
 {
     if (_iItem.getAddr() != 0 || mcmi._iItem.getAddr() != 0)
     {
@@ -1680,7 +1680,7 @@ bool TC_RBTree::RBTreeLockIterator::operator==(const RBTreeLockIterator& mcmi)
     return true;
 }
 
-bool TC_RBTree::RBTreeLockIterator::operator!=(const RBTreeLockIterator& mcmi)
+bool XC_RBTree::RBTreeLockIterator::operator!=(const RBTreeLockIterator& mcmi)
 {
     if (_iItem.getAddr() != 0 || mcmi._iItem.getAddr() != 0 )
     {
@@ -1692,7 +1692,7 @@ bool TC_RBTree::RBTreeLockIterator::operator!=(const RBTreeLockIterator& mcmi)
     return false;
 }
 
-TC_RBTree::RBTreeLockIterator& TC_RBTree::RBTreeLockIterator::operator++()
+XC_RBTree::RBTreeLockIterator& XC_RBTree::RBTreeLockIterator::operator++()
 {
     if(_iOrder == IT_NEXT)
     {
@@ -1706,7 +1706,7 @@ TC_RBTree::RBTreeLockIterator& TC_RBTree::RBTreeLockIterator::operator++()
 
 }
 
-TC_RBTree::RBTreeLockIterator TC_RBTree::RBTreeLockIterator::operator++(int)
+XC_RBTree::RBTreeLockIterator XC_RBTree::RBTreeLockIterator::operator++(int)
 {
     RBTreeLockIterator it(*this);
 
@@ -1724,21 +1724,21 @@ TC_RBTree::RBTreeLockIterator TC_RBTree::RBTreeLockIterator::operator++(int)
 
 ///////////////////////////////////////////////////////////////////
 
-TC_RBTree::RBTreeItem::RBTreeItem(TC_RBTree *pMap, const string &key, bool bEnd)
+XC_RBTree::RBTreeItem::RBTreeItem(XC_RBTree *pMap, const string &key, bool bEnd)
 : _pMap(pMap)
 , _key(key)
 , _bEnd(bEnd)
 {
 }
 
-TC_RBTree::RBTreeItem::RBTreeItem(const TC_RBTree::RBTreeItem &mcmdi)
+XC_RBTree::RBTreeItem::RBTreeItem(const XC_RBTree::RBTreeItem &mcmdi)
 : _pMap(mcmdi._pMap)
 , _key(mcmdi._key)
 , _bEnd(mcmdi._bEnd)
 {
 }
 
-TC_RBTree::RBTreeItem &TC_RBTree::RBTreeItem::operator=(const TC_RBTree::RBTreeItem &mcmdi)
+XC_RBTree::RBTreeItem &XC_RBTree::RBTreeItem::operator=(const XC_RBTree::RBTreeItem &mcmdi)
 {
     if(this != &mcmdi)
     {
@@ -1749,7 +1749,7 @@ TC_RBTree::RBTreeItem &TC_RBTree::RBTreeItem::operator=(const TC_RBTree::RBTreeI
     return (*this);
 }
 
-bool TC_RBTree::RBTreeItem::operator==(const TC_RBTree::RBTreeItem &mcmdi)
+bool XC_RBTree::RBTreeItem::operator==(const XC_RBTree::RBTreeItem &mcmdi)
 {
     if(_bEnd == mcmdi._bEnd)
     {
@@ -1758,7 +1758,7 @@ bool TC_RBTree::RBTreeItem::operator==(const TC_RBTree::RBTreeItem &mcmdi)
     return _pMap == mcmdi._pMap && _key == mcmdi._key;
 }
 
-bool TC_RBTree::RBTreeItem::operator!=(const TC_RBTree::RBTreeItem &mcmdi)
+bool XC_RBTree::RBTreeItem::operator!=(const XC_RBTree::RBTreeItem &mcmdi)
 {
     if(_bEnd == mcmdi._bEnd)
     {
@@ -1767,24 +1767,24 @@ bool TC_RBTree::RBTreeItem::operator!=(const TC_RBTree::RBTreeItem &mcmdi)
     return _pMap != mcmdi._pMap || _key != mcmdi._key;
 }
 
-int TC_RBTree::RBTreeItem::get(TC_RBTree::BlockData &stData)
+int XC_RBTree::RBTreeItem::get(XC_RBTree::BlockData &stData)
 {
     if(_bEnd)
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
-    TC_RBTree::lock_iterator it = _pMap->find(_key);
+    XC_RBTree::lock_iterator it = _pMap->find(_key);
     if(it != _pMap->end())
     {
         Block block(_pMap, it->getAddr());
         return block.getBlockData(stData);
     }
 
-    return TC_RBTree::RT_NO_DATA;
+    return XC_RBTree::RT_NO_DATA;
 }
 
-void TC_RBTree::RBTreeItem::nextItem()
+void XC_RBTree::RBTreeItem::nextItem()
 {
     if(_bEnd)
     {
@@ -1793,13 +1793,13 @@ void TC_RBTree::RBTreeItem::nextItem()
 
     string k;
     int ret;
-    TC_RBTree::lock_iterator it = _pMap->upper_bound(_key);
+    XC_RBTree::lock_iterator it = _pMap->upper_bound(_key);
 
     while(it != _pMap->end())
     {
         ret = it->get(k);
 
-        if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+        if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
         {
             //数据有错
             ++it;
@@ -1814,7 +1814,7 @@ void TC_RBTree::RBTreeItem::nextItem()
     _bEnd = true;
 }
 
-void TC_RBTree::RBTreeItem::prevItem()
+void XC_RBTree::RBTreeItem::prevItem()
 {
     if(_bEnd)
     {
@@ -1823,14 +1823,14 @@ void TC_RBTree::RBTreeItem::prevItem()
 
     string k;
     int ret;
-    TC_RBTree::lock_iterator it1 = _pMap->lower_bound(_key);
-    TC_RBTree::lock_iterator it(_pMap, it1->getAddr(), TC_RBTree::lock_iterator::IT_RBTREE, TC_RBTree::lock_iterator::IT_PREV);
+    XC_RBTree::lock_iterator it1 = _pMap->lower_bound(_key);
+    XC_RBTree::lock_iterator it(_pMap, it1->getAddr(), XC_RBTree::lock_iterator::IT_RBTREE, XC_RBTree::lock_iterator::IT_PREV);
 
     while(it != _pMap->end())
     {
         ret = it->get(k);
 
-        if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+        if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
         {
             //数据有错
             ++it;
@@ -1854,22 +1854,22 @@ void TC_RBTree::RBTreeItem::prevItem()
 
 ///////////////////////////////////////////////////////////////////
 
-TC_RBTree::RBTreeIterator::RBTreeIterator()
+XC_RBTree::RBTreeIterator::RBTreeIterator()
 : _pMap(NULL), _iItem(NULL, "", true)
 {
 }
 
-TC_RBTree::RBTreeIterator::RBTreeIterator(TC_RBTree *pMap, const string &key, bool bEnd, int iOrder)
+XC_RBTree::RBTreeIterator::RBTreeIterator(XC_RBTree *pMap, const string &key, bool bEnd, int iOrder)
 : _pMap(pMap), _iItem(_pMap, key, bEnd), _iOrder(iOrder)
 {
 }
 
-TC_RBTree::RBTreeIterator::RBTreeIterator(const RBTreeIterator &it)
+XC_RBTree::RBTreeIterator::RBTreeIterator(const RBTreeIterator &it)
 : _pMap(it._pMap),_iItem(it._iItem), _iOrder(it._iOrder)
 {
 }
 
-TC_RBTree::RBTreeIterator& TC_RBTree::RBTreeIterator::operator=(const RBTreeIterator &it)
+XC_RBTree::RBTreeIterator& XC_RBTree::RBTreeIterator::operator=(const RBTreeIterator &it)
 {
     if(this != &it)
     {
@@ -1881,7 +1881,7 @@ TC_RBTree::RBTreeIterator& TC_RBTree::RBTreeIterator::operator=(const RBTreeIter
     return (*this);
 }
 
-bool TC_RBTree::RBTreeIterator::operator==(const RBTreeIterator& mcmi)
+bool XC_RBTree::RBTreeIterator::operator==(const RBTreeIterator& mcmi)
 {
     if (!_iItem.isEnd() || !mcmi._iItem.isEnd())
     {
@@ -1891,7 +1891,7 @@ bool TC_RBTree::RBTreeIterator::operator==(const RBTreeIterator& mcmi)
     return true;
 }
 
-bool TC_RBTree::RBTreeIterator::operator!=(const RBTreeIterator& mcmi)
+bool XC_RBTree::RBTreeIterator::operator!=(const RBTreeIterator& mcmi)
 {
     if (!_iItem.isEnd() || !mcmi._iItem.isEnd())
     {
@@ -1901,7 +1901,7 @@ bool TC_RBTree::RBTreeIterator::operator!=(const RBTreeIterator& mcmi)
     return false;
 }
 
-TC_RBTree::RBTreeIterator& TC_RBTree::RBTreeIterator::operator++()
+XC_RBTree::RBTreeIterator& XC_RBTree::RBTreeIterator::operator++()
 {
     if(_iOrder == IT_NEXT)
     {
@@ -1915,7 +1915,7 @@ TC_RBTree::RBTreeIterator& TC_RBTree::RBTreeIterator::operator++()
 
 }
 
-TC_RBTree::RBTreeIterator TC_RBTree::RBTreeIterator::operator++(int)
+XC_RBTree::RBTreeIterator XC_RBTree::RBTreeIterator::operator++(int)
 {
     RBTreeIterator it(*this);
 
@@ -1934,32 +1934,32 @@ TC_RBTree::RBTreeIterator TC_RBTree::RBTreeIterator::operator++(int)
 
 ///////////////////////////////////////////////////////////////////
 
-void TC_RBTree::init(void *pAddr)
+void XC_RBTree::init(void *pAddr)
 {
     _pHead          = static_cast<tagMapHead*>(pAddr);
     _pstModifyHead  = static_cast<tagModifyHead*>((void*)((char*)pAddr + sizeof(tagMapHead)));
 }
 
-void TC_RBTree::initDataBlockSize(uint32_t iMinDataSize, uint32_t iMaxDataSize, float fFactor)
+void XC_RBTree::initDataBlockSize(uint32_t iMinDataSize, uint32_t iMaxDataSize, float fFactor)
 {
     _iMinDataSize   = iMinDataSize;
     _iMaxDataSize   = iMaxDataSize;
     _fFactor        = fFactor;
 }
 
-void TC_RBTree::create(void *pAddr, size_t iSize)
+void XC_RBTree::create(void *pAddr, size_t iSize)
 {
     if(sizeof(tagMapHead)
        + sizeof(tagModifyHead)
-       + sizeof(TC_MemMultiChunkAllocator::tagChunkAllocatorHead)
+       + sizeof(XC_MemMultiChunkAllocator::tagChunkAllocatorHead)
        + 10 > iSize)
     {
-        throw TC_RBTree_Exception("[TC_RBTree::create] mem size not enougth.");
+        throw XC_RBTree_Exception("[XC_RBTree::create] mem size not enougth.");
     }
 
     if(_iMinDataSize == 0 || _iMaxDataSize == 0 || _fFactor < 1.0)
     {
-        throw TC_RBTree_Exception("[TC_RBTree::create] init data size error:" + TC_Common::tostr(_iMinDataSize) + "|" + TC_Common::tostr(_iMaxDataSize) + "|" + TC_Common::tostr(_fFactor));
+        throw XC_RBTree_Exception("[XC_RBTree::create] init data size error:" + XC_Common::tostr(_iMinDataSize) + "|" + XC_Common::tostr(_iMaxDataSize) + "|" + XC_Common::tostr(_fFactor));
     }
 
     init(pAddr);
@@ -1967,7 +1967,7 @@ void TC_RBTree::create(void *pAddr, size_t iSize)
     //block size用2个字节存储的
     if(sizeof(Block::tagBlockHead) + _pHead->_iMaxDataSize > (uint16_t)(-1))
     {
-        throw TC_RBTree_Exception("[TC_RBTree::create] init block size error, block size must be less then " + TC_Common::tostr((uint16_t)(-1) - sizeof(Block::tagBlockHead)));
+        throw XC_RBTree_Exception("[XC_RBTree::create] init block size error, block size must be less then " + XC_Common::tostr((uint16_t)(-1) - sizeof(Block::tagBlockHead)));
     }
 
     _pHead->_cMaxVersion    = MAX_VERSION;
@@ -2000,7 +2000,7 @@ void TC_RBTree::create(void *pAddr, size_t iSize)
     _pDataAllocator->create(pDataAddr, iSize - ((char*)pDataAddr - (char*)_pHead), sizeof(Block::tagBlockHead) + _pHead->_iMinDataSize, sizeof(Block::tagBlockHead) + _pHead->_iMaxDataSize, _pHead->_fFactor);
 }
 
-void TC_RBTree::connect(void *pAddr, size_t iSize)
+void XC_RBTree::connect(void *pAddr, size_t iSize)
 {
     init(pAddr);
 
@@ -2008,12 +2008,12 @@ void TC_RBTree::connect(void *pAddr, size_t iSize)
     {
         ostringstream os;
         os << (int)_pHead->_cMaxVersion << "." << (int)_pHead->_cMinVersion << " != " << ((int)MAX_VERSION) << "." << ((int)MIN_VERSION);
-        throw TC_RBTree_Exception("[TC_RBTree::connect] rbtree map version not equal:" + os.str() + " (data != code)");
+        throw XC_RBTree_Exception("[XC_RBTree::connect] rbtree map version not equal:" + os.str() + " (data != code)");
     }
 
     if(_pHead->_iMemSize != iSize)
     {
-        throw TC_RBTree_Exception("[TC_RBTree::connect] rbtree map size not equal:" + TC_Common::tostr(_pHead->_iMemSize) + "!=" + TC_Common::tostr(iSize));
+        throw XC_RBTree_Exception("[XC_RBTree::connect] rbtree map size not equal:" + XC_Common::tostr(_pHead->_iMemSize) + "!=" + XC_Common::tostr(iSize));
     }
 
     void *pDataAddr = (char*)_pHead + sizeof(tagMapHead) + sizeof(tagModifyHead);
@@ -2025,7 +2025,7 @@ void TC_RBTree::connect(void *pAddr, size_t iSize)
     _fFactor        = _pHead->_fFactor;
 }
 
-int TC_RBTree::append(void *pAddr, size_t iSize)
+int XC_RBTree::append(void *pAddr, size_t iSize)
 {
     if(iSize <= _pHead->_iMemSize)
     {
@@ -2038,7 +2038,7 @@ int TC_RBTree::append(void *pAddr, size_t iSize)
     {
         ostringstream os;
         os << (int)_pHead->_cMaxVersion << "." << (int)_pHead->_cMinVersion << " != " << ((int)MAX_VERSION) << "." << ((int)MIN_VERSION);
-        throw TC_RBTree_Exception("[TC_RBTree::append] rbtree map version not equal:" + os.str() + " (data != code)");
+        throw XC_RBTree_Exception("[XC_RBTree::append] rbtree map version not equal:" + os.str() + " (data != code)");
     }
     
     _pHead->_iMemSize = iSize;
@@ -2054,7 +2054,7 @@ int TC_RBTree::append(void *pAddr, size_t iSize)
     return 0;
 }
 
-void TC_RBTree::clear()
+void XC_RBTree::clear()
 {
     FailureRecover check(this);
 
@@ -2077,7 +2077,7 @@ void TC_RBTree::clear()
     _pDataAllocator->rebuild();
 }
 
-int TC_RBTree::dump2file(const string &sFile)
+int XC_RBTree::dump2file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "wb");
     if(fp == NULL)
@@ -2095,7 +2095,7 @@ int TC_RBTree::dump2file(const string &sFile)
     return RT_DUMP_FILE_ERR;
 }
 
-int TC_RBTree::load5file(const string &sFile)
+int XC_RBTree::load5file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "rb");
     if(fp == NULL)
@@ -2157,15 +2157,15 @@ int TC_RBTree::load5file(const string &sFile)
     return RT_LOAL_FILE_ERR;
 }
 
-int TC_RBTree::checkDirty(const string &k)
+int XC_RBTree::checkDirty(const string &k)
 {
     FailureRecover check(this);
 
     incGetCount();
 
-    int ret         = TC_RBTree::RT_OK;
+    int ret         = XC_RBTree::RT_OK;
     lock_iterator it= find(_pHead->_iRootAddr, k, ret);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
@@ -2173,25 +2173,25 @@ int TC_RBTree::checkDirty(const string &k)
     //没有数据
     if(it == end())
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_RBTree::RT_ONLY_KEY;
+        return XC_RBTree::RT_ONLY_KEY;
     }
 
     Block block(this, it->getAddr());
     if (block.isDirty())
     {
-        return TC_RBTree::RT_DIRTY_DATA;
+        return XC_RBTree::RT_DIRTY_DATA;
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::setDirty(const string& k)
+int XC_RBTree::setDirty(const string& k)
 {
     FailureRecover check(this);
 
@@ -2199,9 +2199,9 @@ int TC_RBTree::setDirty(const string& k)
 
     incGetCount();
 
-    int ret         = TC_RBTree::RT_OK;
+    int ret         = XC_RBTree::RT_OK;
     lock_iterator it= find(_pHead->_iRootAddr, k, ret);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
@@ -2209,23 +2209,23 @@ int TC_RBTree::setDirty(const string& k)
     //没有数据或只有Key
     if(it == end())
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_RBTree::RT_ONLY_KEY;
+        return XC_RBTree::RT_ONLY_KEY;
     }
 
     Block block(this, it->getAddr());
     block.setDirty(true);
     block.refreshSetList();
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::setClean(const string& k)
+int XC_RBTree::setClean(const string& k)
 {
     FailureRecover check(this);
 
@@ -2233,9 +2233,9 @@ int TC_RBTree::setClean(const string& k)
 
     incGetCount();
 
-    int ret         = TC_RBTree::RT_OK;
+    int ret         = XC_RBTree::RT_OK;
     lock_iterator it= find(_pHead->_iRootAddr, k, ret);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
@@ -2243,33 +2243,33 @@ int TC_RBTree::setClean(const string& k)
     //没有数据或只有Key
     if(it == end())
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_RBTree::RT_ONLY_KEY;
+        return XC_RBTree::RT_ONLY_KEY;
     }
 
     Block block(this, it->getAddr());
     block.setDirty(false);
     block.refreshSetList();
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::get(const string& k, string &v, time_t &iSyncTime)
+int XC_RBTree::get(const string& k, string &v, time_t &iSyncTime)
 {
     FailureRecover check(this);
 
     incGetCount();
 
-    int ret             = TC_RBTree::RT_OK;
+    int ret             = XC_RBTree::RT_OK;
 
     lock_iterator it    = find(_pHead->_iRootAddr, k, v, ret);
 
-    if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+    if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
     {
         return ret;
     }
@@ -2277,13 +2277,13 @@ int TC_RBTree::get(const string& k, string &v, time_t &iSyncTime)
     //没有数据
     if(it == end())
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
     //只有Key
     if(it->isOnlyKey())
     {
-        return TC_RBTree::RT_ONLY_KEY;
+        return XC_RBTree::RT_ONLY_KEY;
     }
 
     Block block(this, it->getAddr());
@@ -2295,34 +2295,34 @@ int TC_RBTree::get(const string& k, string &v, time_t &iSyncTime)
         block.refreshGetList();
     }
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::get(const string& k, string &v)
+int XC_RBTree::get(const string& k, string &v)
 {
     time_t iSyncTime;
     return get(k, v, iSyncTime);
 }
 
-int TC_RBTree::set(const string& k, const string& v, bool bDirty, vector<BlockData> &vtData)
+int XC_RBTree::set(const string& k, const string& v, bool bDirty, vector<BlockData> &vtData)
 {
     FailureRecover check(this);
     incGetCount();
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-    int ret             = TC_RBTree::RT_OK;
+    int ret             = XC_RBTree::RT_OK;
     lock_iterator it    = find(_pHead->_iRootAddr, k, ret);
     bool bNewBlock      = false;
 
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
 
     if(it == end())
     {
-        TC_PackIn pi;
+        XC_PackIn pi;
         pi << k;
         pi << v;
         uint32_t iAllocSize     = sizeof(Block::tagBlockHead) + pi.length();
@@ -2331,7 +2331,7 @@ int TC_RBTree::set(const string& k, const string& v, bool bDirty, vector<BlockDa
         uint32_t iAddr         = _pDataAllocator->allocateMemBlock(iAllocSize, vtData);
         if(iAddr == 0)
         {
-            return TC_RBTree::RT_NO_MEMORY;
+            return XC_RBTree::RT_NO_MEMORY;
         }
 
         it = RBTreeLockIterator(this, iAddr, RBTreeLockIterator::IT_GET, RBTreeLockIterator::IT_NEXT);
@@ -2340,7 +2340,7 @@ int TC_RBTree::set(const string& k, const string& v, bool bDirty, vector<BlockDa
     }
 
     ret = it->set(k, v, bNewBlock, vtData);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         //新记录, 写失败了, 要删除该块
         if(bNewBlock)
@@ -2359,10 +2359,10 @@ int TC_RBTree::set(const string& k, const string& v, bool bDirty, vector<BlockDa
     block.setDirty(bDirty);
     block.refreshSetList();
 
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::set(const string& k, vector<BlockData> &vtData)
+int XC_RBTree::set(const string& k, vector<BlockData> &vtData)
 {
     FailureRecover check(this);
 
@@ -2370,18 +2370,18 @@ int TC_RBTree::set(const string& k, vector<BlockData> &vtData)
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-    int ret             = TC_RBTree::RT_OK;
+    int ret             = XC_RBTree::RT_OK;
     lock_iterator it    = find(_pHead->_iRootAddr, k, ret);
     bool bNewBlock      = false;
 
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         return ret;
     }
 
     if(it == end())
     {
-        TC_PackIn pi;
+        XC_PackIn pi;
         pi << k;
         uint32_t iAllocSize = sizeof(Block::tagBlockHead) + pi.length();
 
@@ -2389,7 +2389,7 @@ int TC_RBTree::set(const string& k, vector<BlockData> &vtData)
         uint32_t iAddr = _pDataAllocator->allocateMemBlock(iAllocSize, vtData);
         if(iAddr == 0)
         {
-            return TC_RBTree::RT_NO_MEMORY;
+            return XC_RBTree::RT_NO_MEMORY;
         }
 
         it = RBTreeLockIterator(this, iAddr, RBTreeLockIterator::IT_GET, RBTreeLockIterator::IT_NEXT);
@@ -2398,7 +2398,7 @@ int TC_RBTree::set(const string& k, vector<BlockData> &vtData)
     }
 
     ret = it->set(k, bNewBlock, vtData);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         //新记录, 写失败了, 要删除该块
         if(bNewBlock)
@@ -2415,10 +2415,10 @@ int TC_RBTree::set(const string& k, vector<BlockData> &vtData)
         block.setSyncTime(time(NULL));
     }
     block.refreshSetList();
-    return TC_RBTree::RT_OK;
+    return XC_RBTree::RT_OK;
 }
 
-int TC_RBTree::del(const string& k, BlockData &data)
+int XC_RBTree::del(const string& k, BlockData &data)
 {
     FailureRecover check(this);
 
@@ -2426,19 +2426,19 @@ int TC_RBTree::del(const string& k, BlockData &data)
 
     if(_pHead->_bReadOnly) return RT_READONLY;
 
-    int    ret      = TC_RBTree::RT_OK;
+    int    ret      = XC_RBTree::RT_OK;
 
     data._key       = k;
 
     lock_iterator it     = find(_pHead->_iRootAddr, k, data._value, ret);
-    if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+    if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
     {
         return ret;
     }
 
     if(it == end())
     {
-        return TC_RBTree::RT_NO_DATA;
+        return XC_RBTree::RT_NO_DATA;
     }
 
     Block block(this, it->getAddr());
@@ -2448,7 +2448,7 @@ int TC_RBTree::del(const string& k, BlockData &data)
     return ret;
 }
 
-int TC_RBTree::erase(int radio, BlockData &data, bool bCheckDirty)
+int XC_RBTree::erase(int radio, BlockData &data, bool bCheckDirty)
 {
     FailureRecover check(this);
 
@@ -2484,22 +2484,22 @@ int TC_RBTree::erase(int radio, BlockData &data, bool bCheckDirty)
     }
     int ret = block.getBlockData(data);
     block.erase();
-    if(ret == TC_RBTree::RT_OK)
+    if(ret == XC_RBTree::RT_OK)
     {
-        return TC_RBTree::RT_ERASE_OK;
+        return XC_RBTree::RT_ERASE_OK;
     }
 
     return ret;
 }
 
-void TC_RBTree::sync()
+void XC_RBTree::sync()
 {
     FailureRecover check(this);
     
     _pHead->_iSyncTail = _pHead->_iDirtyTail;
 }
 
-int TC_RBTree::sync(time_t iNowTime, BlockData &data)
+int XC_RBTree::sync(time_t iNowTime, BlockData &data)
 {
     FailureRecover check(this);
 
@@ -2526,7 +2526,7 @@ int TC_RBTree::sync(time_t iNowTime, BlockData &data)
     }
 
     int ret = block.getBlockData(data);
-    if(ret != TC_RBTree::RT_OK)
+    if(ret != XC_RBTree::RT_OK)
     {
         //没有获取完整的记录
         if(_pHead->_iDirtyTail == iAddr)
@@ -2554,7 +2554,7 @@ int TC_RBTree::sync(time_t iNowTime, BlockData &data)
     return RT_NONEED_SYNC;
 }
 
-void TC_RBTree::backup(bool bForceFromBegin)
+void XC_RBTree::backup(bool bForceFromBegin)
 {
     FailureRecover check(this);
     if(bForceFromBegin || _pHead->_iBackupTail == 0)
@@ -2564,7 +2564,7 @@ void TC_RBTree::backup(bool bForceFromBegin)
     }
 }
 
-int TC_RBTree::backup(BlockData &data)
+int XC_RBTree::backup(BlockData &data)
 {
     FailureRecover check(this);
 
@@ -2582,16 +2582,16 @@ int TC_RBTree::backup(BlockData &data)
     //迁移一次
     _pHead->_iBackupTail = block.getBlockHead()->_iGetPrev;
 
-    if(ret == TC_RBTree::RT_OK)
+    if(ret == XC_RBTree::RT_OK)
     {
-        return TC_RBTree::RT_NEED_BACKUP;
+        return XC_RBTree::RT_NEED_BACKUP;
     }
     return ret;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
 
-TC_RBTree::nolock_iterator TC_RBTree::nolock_begin()
+XC_RBTree::nolock_iterator XC_RBTree::nolock_begin()
 {
     FailureRecover check(this);
 
@@ -2615,7 +2615,7 @@ TC_RBTree::nolock_iterator TC_RBTree::nolock_begin()
         RBTreeLockItem item(this, it->getAddr());
         
         int ret = item.get(key);
-        if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+        if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
         {
             //当前元素有问题, 取下一个元素
             ++it;
@@ -2630,7 +2630,7 @@ TC_RBTree::nolock_iterator TC_RBTree::nolock_begin()
     return nolock_iterator(this, key, false, lock_iterator::IT_NEXT);
 }
 
-TC_RBTree::nolock_iterator TC_RBTree::nolock_rbegin()
+XC_RBTree::nolock_iterator XC_RBTree::nolock_rbegin()
 {
     FailureRecover check(this);
 
@@ -2654,7 +2654,7 @@ TC_RBTree::nolock_iterator TC_RBTree::nolock_rbegin()
         RBTreeLockItem item(this, it->getAddr());
         
         int ret = item.get(key);
-        if(ret != TC_RBTree::RT_OK && ret != TC_RBTree::RT_ONLY_KEY)
+        if(ret != XC_RBTree::RT_OK && ret != XC_RBTree::RT_ONLY_KEY)
         {
             ++it;
             continue;
@@ -2671,7 +2671,7 @@ TC_RBTree::nolock_iterator TC_RBTree::nolock_rbegin()
 ////////////////////////////////////////////////////////////////////////////////
 ///
 
-TC_RBTree::lock_iterator TC_RBTree::begin()
+XC_RBTree::lock_iterator XC_RBTree::begin()
 {
     FailureRecover check(this);
 
@@ -2691,7 +2691,7 @@ TC_RBTree::lock_iterator TC_RBTree::begin()
     return lock_iterator(this, root.getHead(), lock_iterator::IT_RBTREE, lock_iterator::IT_NEXT);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::rbegin()
+XC_RBTree::lock_iterator XC_RBTree::rbegin()
 {
     FailureRecover check(this);
 
@@ -2711,21 +2711,21 @@ TC_RBTree::lock_iterator TC_RBTree::rbegin()
     return lock_iterator(this, root.getHead(), lock_iterator::IT_RBTREE, lock_iterator::IT_PREV);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::find(const string& k)
+XC_RBTree::lock_iterator XC_RBTree::find(const string& k)
 {
     FailureRecover check(this);
     int ret;
     return find(_pHead->_iRootAddr, k, ret);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::rfind(const string& k)
+XC_RBTree::lock_iterator XC_RBTree::rfind(const string& k)
 {
     FailureRecover check(this);
     int ret;
     return find(_pHead->_iRootAddr, k, ret, false);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::lower_bound(const string &k)
+XC_RBTree::lock_iterator XC_RBTree::lower_bound(const string &k)
 {
     FailureRecover check(this);
 
@@ -2749,7 +2749,7 @@ TC_RBTree::lock_iterator TC_RBTree::lower_bound(const string &k)
     return lock_iterator(this, last.getHead(), lock_iterator::IT_RBTREE, lock_iterator::IT_NEXT);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::upper_bound(const string &k)
+XC_RBTree::lock_iterator XC_RBTree::upper_bound(const string &k)
 {
     FailureRecover check(this);
 
@@ -2776,7 +2776,7 @@ TC_RBTree::lock_iterator TC_RBTree::upper_bound(const string &k)
     return it;
 }
 
-pair<TC_RBTree::lock_iterator, TC_RBTree::lock_iterator> TC_RBTree::equal_range(const string& k1, const string &k2)
+pair<XC_RBTree::lock_iterator, XC_RBTree::lock_iterator> XC_RBTree::equal_range(const string& k1, const string &k2)
 {
     FailureRecover check(this);
 
@@ -2796,31 +2796,31 @@ pair<TC_RBTree::lock_iterator, TC_RBTree::lock_iterator> TC_RBTree::equal_range(
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///
-TC_RBTree::lock_iterator TC_RBTree::beginSetTime()
+XC_RBTree::lock_iterator XC_RBTree::beginSetTime()
 {
     FailureRecover check(this);
     return lock_iterator(this, _pHead->_iSetHead, lock_iterator::IT_SET, lock_iterator::IT_NEXT);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::rbeginSetTime()
+XC_RBTree::lock_iterator XC_RBTree::rbeginSetTime()
 {
     FailureRecover check(this);
     return lock_iterator(this, _pHead->_iSetTail, lock_iterator::IT_SET, lock_iterator::IT_PREV);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::beginGetTime()
+XC_RBTree::lock_iterator XC_RBTree::beginGetTime()
 {
     FailureRecover check(this);
     return lock_iterator(this, _pHead->_iGetHead, lock_iterator::IT_GET, lock_iterator::IT_NEXT);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::rbeginGetTime()
+XC_RBTree::lock_iterator XC_RBTree::rbeginGetTime()
 {
     FailureRecover check(this);
     return lock_iterator(this, _pHead->_iGetTail, lock_iterator::IT_GET, lock_iterator::IT_PREV);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::beginDirty()
+XC_RBTree::lock_iterator XC_RBTree::beginDirty()
 {
     FailureRecover check(this);
     return lock_iterator(this, _pHead->_iDirtyTail, lock_iterator::IT_SET, lock_iterator::IT_PREV);
@@ -2828,7 +2828,7 @@ TC_RBTree::lock_iterator TC_RBTree::beginDirty()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-string TC_RBTree::desc()
+string XC_RBTree::desc()
 {
     ostringstream s;
     {
@@ -2837,7 +2837,7 @@ string TC_RBTree::desc()
         s << "[AutoErase        = "   << _pHead->_bAutoErase   << "]" << endl;
         s << "[MemSize          = "   << _pHead->_iMemSize          << "]" << endl;
         s << "[Capacity         = "   << _pDataAllocator->getCapacity()  << "]" << endl;
-        s << "[SingleBlockCount = "   << TC_Common::tostr(singleBlockChunkCount())         << "]" << endl;
+        s << "[SingleBlockCount = "   << XC_Common::tostr(singleBlockChunkCount())         << "]" << endl;
         s << "[AllBlockChunk    = "   << allBlockChunkCount()       << "]" << endl;
         s << "[UsedChunk        = "   << _pHead->_iUsedChunk        << "]" << endl;
         s << "[FreeChunk        = "   << allBlockChunkCount() - _pHead->_iUsedChunk        << "]" << endl;
@@ -2862,7 +2862,7 @@ string TC_RBTree::desc()
         s << "[OnlyKeyCount     = "      << _pHead->_iOnlyKeyCount        << "]" << endl;
     }
 
-    vector<TC_MemChunk::tagChunkHead> vChunkHead = _pDataAllocator->getBlockDetail();
+    vector<XC_MemChunk::tagChunkHead> vChunkHead = _pDataAllocator->getBlockDetail();
 
     s << "*************************************************************************" << endl;
     s << "[DiffBlockCount   = "   << vChunkHead.size()  << "]" << endl;
@@ -2876,7 +2876,7 @@ string TC_RBTree::desc()
     return s.str();
 }
 
-uint32_t TC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
+uint32_t XC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
 {
     //在真正数据淘汰前使修改生效
     doUpdate();
@@ -2893,7 +2893,7 @@ uint32_t TC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
         uint32_t iAddr;
 
         //判断按照哪种方式淘汰
-        if(_pHead->_cEraseMode == TC_RBTree::ERASEBYSET)
+        if(_pHead->_cEraseMode == XC_RBTree::ERASEBYSET)
         {
             iAddr = _pHead->_iSetTail;
         }
@@ -2912,7 +2912,7 @@ uint32_t TC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
         //当前block正在分配空间, 不能删除, 移到上一个数据
         if (iNowAddr == iAddr)
         {
-            if(_pHead->_cEraseMode == TC_RBTree::ERASEBYSET)
+            if(_pHead->_cEraseMode == XC_RBTree::ERASEBYSET)
             {
                 iAddr = block.getBlockHead()->_iSetPrev;
             }
@@ -2930,12 +2930,12 @@ uint32_t TC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
         Block block1(this, iAddr);
         BlockData data;
         int ret = block1.getBlockData(data);
-        if(ret == TC_RBTree::RT_OK)
+        if(ret == XC_RBTree::RT_OK)
         {
             vtData.push_back(data);
             d--;
         }
-        else if(ret == TC_RBTree::RT_NO_DATA)
+        else if(ret == XC_RBTree::RT_NO_DATA)
         {
             d--;
         }
@@ -2949,7 +2949,7 @@ uint32_t TC_RBTree::eraseExcept(uint32_t iNowAddr, vector<BlockData> &vtData)
     return n-d;
 }
 
-TC_RBTree::Block TC_RBTree::getLastBlock(const string &k)
+XC_RBTree::Block XC_RBTree::getLastBlock(const string &k)
 {
     assert(_pHead->_iRootAddr != 0);
 
@@ -2962,7 +2962,7 @@ TC_RBTree::Block TC_RBTree::getLastBlock(const string &k)
         BlockData data;
 
         int iRet = block.getBlockData(data);
-        if(iRet != TC_RBTree::RT_OK && iRet != TC_RBTree::RT_ONLY_KEY)
+        if(iRet != XC_RBTree::RT_OK && iRet != XC_RBTree::RT_ONLY_KEY)
         {
             block.erase();
             //数据块有问题,删除后,自恢复
@@ -2991,12 +2991,12 @@ TC_RBTree::Block TC_RBTree::getLastBlock(const string &k)
     return Block(this, iNowAddr);
 }
 
-TC_RBTree::lock_iterator TC_RBTree::find(uint32_t iAddr, const string& k, int &ret, bool bOrder)
+XC_RBTree::lock_iterator XC_RBTree::find(uint32_t iAddr, const string& k, int &ret, bool bOrder)
 {
     if(iAddr == 0)
         return end();
 
-    ret = TC_RBTree::RT_OK;
+    ret = XC_RBTree::RT_OK;
 
     string k1;
     Block block(this, iAddr);
@@ -3033,12 +3033,12 @@ TC_RBTree::lock_iterator TC_RBTree::find(uint32_t iAddr, const string& k, int &r
     return end();
 }
 
-TC_RBTree::lock_iterator TC_RBTree::find(uint32_t iAddr, const string& k, string &v, int &ret)
+XC_RBTree::lock_iterator XC_RBTree::find(uint32_t iAddr, const string& k, string &v, int &ret)
 {
     if(iAddr == 0)
         return end();
 
-    ret = TC_RBTree::RT_OK;
+    ret = XC_RBTree::RT_OK;
 
     string k1;
     Block block(this, iAddr);
@@ -3068,7 +3068,7 @@ TC_RBTree::lock_iterator TC_RBTree::find(uint32_t iAddr, const string& k, string
     return end();
 }
 
-void TC_RBTree::doRecover()
+void XC_RBTree::doRecover()
 {
 //==1 copy过程中, 程序失败, 恢复原数据
     if(_pstModifyHead->_cModifyStatus == 1)
@@ -3103,7 +3103,7 @@ void TC_RBTree::doRecover()
     }
 }
 
-void TC_RBTree::doUpdate()
+void XC_RBTree::doUpdate()
 {
     //==2,已经修改成功, 清除
     if(_pstModifyHead->_cModifyStatus == 1)

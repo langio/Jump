@@ -1,10 +1,10 @@
 #include "util/tc_http_async.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
 
-TC_HttpAsync::AsyncRequest::AsyncRequest(TC_HttpRequest &stHttpRequest, TC_HttpAsync::RequestCallbackPtr &callbackPtr) 
+XC_HttpAsync::AsyncRequest::AsyncRequest(XC_HttpRequest &stHttpRequest, XC_HttpAsync::RequestCallbackPtr &callbackPtr) 
     : _pHttpAsync(NULL), _callbackPtr(callbackPtr)
 {
 	_bindAddrSet = false;
@@ -14,12 +14,12 @@ TC_HttpAsync::AsyncRequest::AsyncRequest(TC_HttpRequest &stHttpRequest, TC_HttpA
     stHttpRequest.getHostPort(_sHost, _iPort);
 }
 
-TC_HttpAsync::AsyncRequest::~AsyncRequest()
+XC_HttpAsync::AsyncRequest::~AsyncRequest()
 {
     doClose();
 }
 
-void TC_HttpAsync::AsyncRequest::doClose()
+void XC_HttpAsync::AsyncRequest::doClose()
 {
     if(_fd.isValid())
     {
@@ -29,14 +29,14 @@ void TC_HttpAsync::AsyncRequest::doClose()
     }
 }
 
-void TC_HttpAsync::AsyncRequest::setBindAddr(const struct sockaddr* addr)
+void XC_HttpAsync::AsyncRequest::setBindAddr(const struct sockaddr* addr)
 {
 	memcpy(&_bindAddr, addr, sizeof(struct sockaddr));
 
 	_bindAddrSet = true;
 }
 
-int TC_HttpAsync::AsyncRequest::doConnect()
+int XC_HttpAsync::AsyncRequest::doConnect()
 {
     _fd.createSocket();
     _fd.setblock();
@@ -68,7 +68,7 @@ int TC_HttpAsync::AsyncRequest::doConnect()
     return 0;
 }
 
-int TC_HttpAsync::AsyncRequest::doConnect(struct sockaddr* proxyAddr)
+int XC_HttpAsync::AsyncRequest::doConnect(struct sockaddr* proxyAddr)
 {
     _fd.createSocket();
     _fd.setblock();
@@ -99,7 +99,7 @@ int TC_HttpAsync::AsyncRequest::doConnect(struct sockaddr* proxyAddr)
     return 0;
 }
 
-int TC_HttpAsync::AsyncRequest::recv(void* buf, uint32_t len, uint32_t flag)
+int XC_HttpAsync::AsyncRequest::recv(void* buf, uint32_t len, uint32_t flag)
 {
     int ret = ::recv(_fd.getfd(), buf, len, flag);
 
@@ -121,7 +121,7 @@ int TC_HttpAsync::AsyncRequest::recv(void* buf, uint32_t len, uint32_t flag)
     return ret;
 }
         
-int TC_HttpAsync::AsyncRequest::send(const void* buf, uint32_t len, uint32_t flag)
+int XC_HttpAsync::AsyncRequest::send(const void* buf, uint32_t len, uint32_t flag)
 {
     int ret = ::send(_fd.getfd(), buf, len, flag);
 
@@ -136,7 +136,7 @@ int TC_HttpAsync::AsyncRequest::send(const void* buf, uint32_t len, uint32_t fla
     return ret;
 }        
 
-void TC_HttpAsync::AsyncRequest::timeout()
+void XC_HttpAsync::AsyncRequest::timeout()
 {
     try
     {
@@ -154,7 +154,7 @@ void TC_HttpAsync::AsyncRequest::timeout()
     }
 }
 
-void TC_HttpAsync::AsyncRequest::doException()
+void XC_HttpAsync::AsyncRequest::doException()
 {
     string err("unknown error.");
 
@@ -171,7 +171,7 @@ void TC_HttpAsync::AsyncRequest::doException()
     try { if(_callbackPtr) _callbackPtr->onException(err); } catch(...) { }
 }
 
-void TC_HttpAsync::AsyncRequest::doRequest()
+void XC_HttpAsync::AsyncRequest::doRequest()
 {
     if(!_fd.isValid()) return;
 
@@ -197,7 +197,7 @@ void TC_HttpAsync::AsyncRequest::doRequest()
 	}
 }
 
-void TC_HttpAsync::AsyncRequest::doReceive()
+void XC_HttpAsync::AsyncRequest::doReceive()
 {
     if(!_fd.isValid()) return;
 
@@ -260,7 +260,7 @@ void TC_HttpAsync::AsyncRequest::doReceive()
 
 ///////////////////////////////////////////////////////////////////////////
 
-TC_HttpAsync::TC_HttpAsync() : _terminate(false)
+XC_HttpAsync::XC_HttpAsync() : _terminate(false)
 {
 	_bindAddrSet=false;
 
@@ -269,7 +269,7 @@ TC_HttpAsync::TC_HttpAsync() : _terminate(false)
     _epoller.create(1024);
 }
 
-TC_HttpAsync::~TC_HttpAsync()
+XC_HttpAsync::~XC_HttpAsync()
 {
     terminate();
 
@@ -283,10 +283,10 @@ TC_HttpAsync::~TC_HttpAsync()
 */
 }
 
-void TC_HttpAsync::start(int iThreadNum)
+void XC_HttpAsync::start(int iThreadNum)
 {
 //    if(_npool.size() > 0)
-//        throw TC_HttpAsync_Exception("[TC_HttpAsync::start] thread has started.");
+//        throw XC_HttpAsync_Exception("[XC_HttpAsync::start] thread has started.");
 
     _tpool.init(1);
     _tpool.start();
@@ -295,52 +295,52 @@ void TC_HttpAsync::start(int iThreadNum)
 
     for(int i = 0; i < iThreadNum; i++)
     {
-        _npool.push_back(new TC_ThreadPool());
+        _npool.push_back(new XC_ThreadPool());
         _npool.back()->init(1);
         _npool.back()->start();
     }
 */
-    TC_Functor<void> cmd(this, &TC_HttpAsync::run);
-    TC_Functor<void>::wrapper_type wt(cmd);
+    XC_Functor<void> cmd(this, &XC_HttpAsync::run);
+    XC_Functor<void>::wrapper_type wt(cmd);
 
     _tpool.exec(wt);
 }
 
-void TC_HttpAsync::waitForAllDone(int millsecond)
+void XC_HttpAsync::waitForAllDone(int millsecond)
 {
-    time_t now = TC_TimeProvider::getInstance()->getNow();
+    time_t now = XC_TimeProvider::getInstance()->getNow();
 
     while(_data->size() > 0)
     {
         if(millsecond < 0)
         {
-            TC_ThreadLock::Lock lock(*this);
+            XC_ThreadLock::Lock lock(*this);
             timedWait(100);
             continue;
         }
 
         {
             //等待100ms
-            TC_ThreadLock::Lock lock(*this);
+            XC_ThreadLock::Lock lock(*this);
             timedWait(100);
         }
 
-        if((TC_TimeProvider::getInstance()->getNow() - now) >= (millsecond/1000))
+        if((XC_TimeProvider::getInstance()->getNow() - now) >= (millsecond/1000))
             break;
     }
 
     terminate();
 }
 
-void TC_HttpAsync::erase(uint32_t uniqId) 
+void XC_HttpAsync::erase(uint32_t uniqId) 
 { 
     _data->erase(uniqId); 
 
-    TC_ThreadLock::Lock lock(*this);
+    XC_ThreadLock::Lock lock(*this);
     notify();
 }
 
-void TC_HttpAsync::terminate()
+void XC_HttpAsync::terminate()
 {
     _terminate = true;
 /*
@@ -352,12 +352,12 @@ void TC_HttpAsync::terminate()
     _tpool.waitForAllDone();
 }
 
-void TC_HttpAsync::timeout(AsyncRequestPtr& ptr) 
+void XC_HttpAsync::timeout(AsyncRequestPtr& ptr) 
 { 
     ptr->timeout(); 
 }
 
-int TC_HttpAsync::doAsyncRequest(TC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr, bool bUseProxy,struct sockaddr* addr)
+int XC_HttpAsync::doAsyncRequest(XC_HttpRequest &stHttpRequest, RequestCallbackPtr &callbackPtr, bool bUseProxy,struct sockaddr* addr)
 {
 	int ret;
 
@@ -397,7 +397,7 @@ int TC_HttpAsync::doAsyncRequest(TC_HttpRequest &stHttpRequest, RequestCallbackP
     return 0;
 }
 
-int TC_HttpAsync::setBindAddr(const char* sBindAddr)
+int XC_HttpAsync::setBindAddr(const char* sBindAddr)
 {
 	bzero(&_bindAddr,sizeof(_bindAddr));
 
@@ -405,7 +405,7 @@ int TC_HttpAsync::setBindAddr(const char* sBindAddr)
 	
 	try
 	{
-		TC_Socket::parseAddr(sBindAddr, p->sin_addr);
+		XC_Socket::parseAddr(sBindAddr, p->sin_addr);
 	}
     catch(exception &ex)
     {
@@ -421,17 +421,17 @@ int TC_HttpAsync::setBindAddr(const char* sBindAddr)
 }
 
 
-int TC_HttpAsync::setProxyAddr(const char* sProxyAddr)
+int XC_HttpAsync::setProxyAddr(const char* sProxyAddr)
 {
-    vector<string> v = TC_Common::sepstr<string>(sProxyAddr, ":");
+    vector<string> v = XC_Common::sepstr<string>(sProxyAddr, ":");
 
     if(v.size() < 2)
         return -1;
 
-	return setProxyAddr(v[0].c_str(), TC_Common::strto<uint16_t>(v[1]));
+	return setProxyAddr(v[0].c_str(), XC_Common::strto<uint16_t>(v[1]));
 }
 
-int TC_HttpAsync::setProxyAddr(const char* sHost, uint16_t iPort)
+int XC_HttpAsync::setProxyAddr(const char* sHost, uint16_t iPort)
 {
 	bzero(&_proxyAddr,sizeof(_proxyAddr));
 
@@ -439,7 +439,7 @@ int TC_HttpAsync::setProxyAddr(const char* sHost, uint16_t iPort)
 	
 	try
 	{
-		TC_Socket::parseAddr(sHost, p->sin_addr);
+		XC_Socket::parseAddr(sHost, p->sin_addr);
 	}
     catch(exception &ex)
     {
@@ -452,12 +452,12 @@ int TC_HttpAsync::setProxyAddr(const char* sHost, uint16_t iPort)
 	return 0;
 }
 
-void TC_HttpAsync::setProxyAddr(const struct sockaddr* addr)
+void XC_HttpAsync::setProxyAddr(const struct sockaddr* addr)
 {
 	memcpy(&_proxyAddr, addr, sizeof(struct sockaddr));
 }
 
-void TC_HttpAsync::process(AsyncRequestPtr &p, int events)
+void XC_HttpAsync::process(AsyncRequestPtr &p, int events)
 {
     if (events & (EPOLLERR | EPOLLHUP))
     {
@@ -476,11 +476,11 @@ void TC_HttpAsync::process(AsyncRequestPtr &p, int events)
     } 
 }
 
-void TC_HttpAsync::run() 
+void XC_HttpAsync::run() 
 {
-    TC_TimeoutQueue<AsyncRequestPtr>::data_functor df(&TC_HttpAsync::timeout);
+    XC_TimeoutQueue<AsyncRequestPtr>::data_functor df(&XC_HttpAsync::timeout);
     
-    async_process_type apt(&TC_HttpAsync::process);
+    async_process_type apt(&XC_HttpAsync::process);
 
     int64_t lastDealTimeout = 0;
 
@@ -489,7 +489,7 @@ void TC_HttpAsync::run()
         try
         {
             struct timeval tv = {0, 0};
-            TC_TimeProvider::getInstance()->getNow(&tv);
+            XC_TimeProvider::getInstance()->getNow(&tv);
 
             int64_t now = tv.tv_sec * 1000 + tv.tv_usec % 1000;
             if (lastDealTimeout + 500 < now)
@@ -518,7 +518,7 @@ void TC_HttpAsync::run()
         }
         catch(exception &ex)
         {
-            cerr << "[TC_HttpAsync::run] error:" << ex.what() << endl;
+            cerr << "[XC_HttpAsync::run] error:" << ex.what() << endl;
         }
     }
 }

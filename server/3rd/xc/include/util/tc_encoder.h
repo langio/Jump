@@ -1,18 +1,17 @@
-#ifndef __TC_ENCODER_H_
-#define __TC_ENCODER_H_
+#ifndef __XC_ENCODER_H_
+#define __XC_ENCODER_H_
 
 #include <vector>
 
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_encoder.h 
 * @brief  转码类 
 *  
-* @author  jarodruan@tencent.com ,coonzhang@tencent.com
 * 
 * 
 */
@@ -21,11 +20,11 @@ namespace taf
 /**
 *  @brief  转码异常类
 */
-struct TC_Encoder_Exception : public TC_Exception
+struct XC_Encoder_Exception : public XC_Exception
 {
-	TC_Encoder_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Encoder_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-	~TC_Encoder_Exception() throw(){};
+	XC_Encoder_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Encoder_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+	~XC_Encoder_Exception() throw(){};
 };
 
 /**
@@ -37,7 +36,7 @@ struct TC_Encoder_Exception : public TC_Exception
 *  
 *   	  2：UTF8 ==> GBK的转换
 */
-class TC_Encoder
+class XC_Encoder
 {
 public:
     /**
@@ -47,7 +46,7 @@ public:
     * @param iMaxOutLen  输出buffer最大的长度/sOut的长度
     * @param sIn         输入buffer
     * @param iInLen      输入buffer长度
-    * @throws            TC_Encoder_Exception
+    * @throws            XC_Encoder_Exception
     * @return 
     */
     static void  gbk2utf8(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen);
@@ -56,7 +55,7 @@ public:
 	* @brief  gbk 转换到 utf8. 
 	*  
     * @param sIn   输入buffer*
-    * @throws      TC_Encoder_Exception
+    * @throws      XC_Encoder_Exception
     * @return      转换后的utf8编码
     */
     static string gbk2utf8(const string &sIn);
@@ -66,7 +65,7 @@ public:
 	*  
     * @param sIn    输入buffer
     * @param vtStr  输出gbk的vector
-    * @throws       TC_Encoder_Exception
+    * @throws       XC_Encoder_Exception
     * @return
     */
     static void gbk2utf8(const string &sIn, vector<string> &vtStr);
@@ -78,7 +77,7 @@ public:
     * @param iMaxOutLen 输出buffer最大的长度/sOut的长度
     * @param sIn        输入buffer
     * @param iInLen     输入buffer长度
-    * @throws           TC_Encoder_Exception
+    * @throws           XC_Encoder_Exception
     * @return
     */
     static void utf82gbk(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen);
@@ -87,7 +86,7 @@ public:
 	* @brief  utf8 转换到 gbk. 
 	*  
     * @param sIn  输入buffer
-    * @throws     TC_Encoder_Exception
+    * @throws     XC_Encoder_Exception
     * @return    转换后的gbk编码
     */
     static string utf82gbk(const string &sIn);

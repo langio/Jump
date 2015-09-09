@@ -1,26 +1,25 @@
-#ifndef _TC_CLIENTSOCKET_H__
-#define _TC_CLIENTSOCKET_H__
+#ifndef _XC_CLIENTSOCKET_H__
+#define _XC_CLIENTSOCKET_H__
 
 #include "util/tc_socket.h"
 #include "util/tc_http.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file  tc_clientsocket.h 
  * @brief 客户端发包收包类.
  *  
- * @author  jarodruan@tencent.com 
  */             
 /////////////////////////////////////////////////
 /**
 *  @brief 解析endpoint异常类
 */
-struct TC_EndpointParse_Exception : public TC_Exception
+struct XC_EndpointParse_Exception : public XC_Exception
 {
-    TC_EndpointParse_Exception(const string &buffer) : TC_Exception(buffer){};
-    ~TC_EndpointParse_Exception() throw() {};
+    XC_EndpointParse_Exception(const string &buffer) : XC_Exception(buffer){};
+    ~XC_EndpointParse_Exception() throw() {};
 };
 
 /**
@@ -38,13 +37,13 @@ struct TC_EndpointParse_Exception : public TC_Exception
  *  
  * 此时-h表示的文件路径
  */
-class TC_Endpoint
+class XC_Endpoint
 {
 public:
     /**
      *
      */
-    TC_Endpoint();
+    XC_Endpoint();
 
     /**
      * @brief 构造函数
@@ -53,7 +52,7 @@ public:
      * @param timeout, 超时时间, 毫秒
      * @param type, SOCK_STREAM或SOCK_DGRAM
      */
-    TC_Endpoint(const string& host, int port, int timeout, int istcp = true, int grid = 0,int qos = 0)
+    XC_Endpoint(const string& host, int port, int timeout, int istcp = true, int grid = 0,int qos = 0)
     {
         _host    = host;
         _port    = port;
@@ -67,7 +66,7 @@ public:
      * @brief 用字符串描述来构造
      * @param desc
      */
-    TC_Endpoint(const string& desc)
+    XC_Endpoint(const string& desc)
     {
         parse(desc);
     }
@@ -76,7 +75,7 @@ public:
      * @brief 拷贝构造
      * @param l
      */
-    TC_Endpoint(const TC_Endpoint& l)
+    XC_Endpoint(const XC_Endpoint& l)
     {
         _host   = l._host;
         _port   = l._port;
@@ -90,9 +89,9 @@ public:
      * @brief 赋值函数
      * @param l
      *
-     * @return TC_Endpoint&
+     * @return XC_Endpoint&
      */
-    TC_Endpoint& operator = (const TC_Endpoint& l)
+    XC_Endpoint& operator = (const XC_Endpoint& l)
     {
         if(this != &l)
         {
@@ -113,7 +112,7 @@ public:
      *
      * @return bool
      */
-    bool operator == (const TC_Endpoint& l)
+    bool operator == (const XC_Endpoint& l)
     {
         return (_host == l._host && _port == l._port && _timeout == l._timeout && _istcp == l._istcp && _grid == l._grid && _qos == l._qos);
     }
@@ -267,24 +266,24 @@ protected:
     int         _qos;
 };
 
-/*************************************TC_ClientSocket**************************************/
+/*************************************XC_ClientSocket**************************************/
 
 /**
 * @brief 客户端socket相关操作基类
 */
-class TC_ClientSocket
+class XC_ClientSocket
 {
 public:
 
     /**
     *  @brief 构造函数
 	 */
-	TC_ClientSocket() : _timeout(3000) {}
+	XC_ClientSocket() : _timeout(3000) {}
 
     /**
      * @brief 析够函数
      */
-	virtual ~TC_ClientSocket(){}
+	virtual ~XC_ClientSocket(){}
 
     /**
     * @brief 构造函数
@@ -292,7 +291,7 @@ public:
 	* @param iPort    端口, port为0时:表示本地套接字此时ip为文件路径
     * @param iTimeout 超时时间, 毫秒
 	*/
-	TC_ClientSocket(const string &sIp, int iPort, int iTimeout) { init(sIp, iPort, iTimeout); }
+	XC_ClientSocket(const string &sIp, int iPort, int iTimeout) { init(sIp, iPort, iTimeout); }
 
     /**
     * @brief 初始化函数
@@ -350,7 +349,7 @@ protected:
     /**
      * 套接字句柄
      */
-	TC_Socket 	_socket;
+	XC_Socket 	_socket;
 
     /**
      * ip或文件路径
@@ -372,13 +371,13 @@ protected:
  * @brief TCP客户端Socket 
  * 多线程使用的时候，不用多线程同时send/recv，小心串包； 
  */
-class TC_TCPClient : public TC_ClientSocket
+class XC_TCPClient : public XC_ClientSocket
 {
 public:
     /**
     * @brief  构造函数
 	 */
-	TC_TCPClient(){}
+	XC_TCPClient(){}
 
     /**
     * @brief  构造函数
@@ -386,7 +385,7 @@ public:
     * @param iPort     端口
     * @param iTimeout  超时时间, 毫秒
 	*/
-	TC_TCPClient(const string &sIp, int iPort, int iTimeout) : TC_ClientSocket(sIp, iPort, iTimeout)
+	XC_TCPClient(const string &sIp, int iPort, int iTimeout) : XC_ClientSocket(sIp, iPort, iTimeout)
     {
     }
 
@@ -490,17 +489,17 @@ protected:
     int checkSocket();
 };
 
-/*************************************TC_TCPClient**************************************/
+/*************************************XC_TCPClient**************************************/
  /**
   * @brief  多线程使用的时候，不用多线程同时send/recv，小心串包
   */
-class TC_UDPClient : public TC_ClientSocket
+class XC_UDPClient : public XC_ClientSocket
 {
 public:
     /**
     * @brief  构造函数
 	 */
-	TC_UDPClient(){};
+	XC_UDPClient(){};
 
     /**
     * @brief  构造函数
@@ -508,7 +507,7 @@ public:
     * @param iPort     端口
     * @param iTimeout  超时时间, 毫秒
 	*/
-	TC_UDPClient(const string &sIp, int iPort, int iTimeout) : TC_ClientSocket(sIp, iPort, iTimeout)
+	XC_UDPClient(const string &sIp, int iPort, int iTimeout) : XC_ClientSocket(sIp, iPort, iTimeout)
     {
     }
 
@@ -568,7 +567,7 @@ protected:
     /**
      * @brief  获取socket
      *
-     * @return TC_Socket&
+     * @return XC_Socket&
      */
     int checkSocket();
 };

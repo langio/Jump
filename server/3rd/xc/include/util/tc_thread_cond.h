@@ -1,53 +1,52 @@
-#ifndef _TC_THREAD_COND_H
-#define _TC_THREAD_COND_H
+#ifndef _XC_THREAD_COND_H
+#define _XC_THREAD_COND_H
 
 #include <sys/time.h>
 #include <cerrno>
 #include <iostream>
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_thread_cond.h 
  * @brief 条件变量类(修改至ICE源码). 
  *  
- * @author  jarodruan@tencent.com,skingfan@tencent.com   
  */             
 /////////////////////////////////////////////////
-class TC_ThreadMutex;
+class XC_ThreadMutex;
 
 /**
  *  @brief 线程条件异常类
  */
-struct TC_ThreadCond_Exception : public TC_Exception
+struct XC_ThreadCond_Exception : public XC_Exception
 {
-    TC_ThreadCond_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_ThreadCond_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_ThreadCond_Exception() throw() {};
+    XC_ThreadCond_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_ThreadCond_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_ThreadCond_Exception() throw() {};
 };
 
 /**
  *  @brief 线程信号条件类, 所有锁可以在上面等待信号发生
  *  
- *  和TC_ThreadMutex、TC_ThreadRecMutex配合使用,
+ *  和XC_ThreadMutex、XC_ThreadRecMutex配合使用,
  *  
- *  通常不直接使用，而是使用TC_ThreadLock/TC_ThreadRecLock;
+ *  通常不直接使用，而是使用XC_ThreadLock/XC_ThreadRecLock;
  */
-class TC_ThreadCond
+class XC_ThreadCond
 {
 public:
 
     /**
      *  @brief 构造函数
      */
-    TC_ThreadCond();
+    XC_ThreadCond();
 
     /**
      *  @brief 析构函数
      */
-    ~TC_ThreadCond();
+    ~XC_ThreadCond();
 
     /**
      *  @brief 发送信号, 等待在该条件上的一个线程会醒
@@ -77,7 +76,7 @@ public:
         mutex.count(c);
         if(rc != 0)
         {
-            throw TC_ThreadCond_Exception("[TC_ThreadCond::wait] pthread_cond_wait error", errno);
+            throw XC_ThreadCond_Exception("[XC_ThreadCond::wait] pthread_cond_wait error", errno);
         }
     }
 
@@ -102,7 +101,7 @@ public:
         {
             if(rc != ETIMEDOUT)
             {
-                throw TC_ThreadCond_Exception("[TC_ThreadCond::timedWait] pthread_cond_timedwait error", errno);
+                throw XC_ThreadCond_Exception("[XC_ThreadCond::timedWait] pthread_cond_timedwait error", errno);
             }
 
             return false;
@@ -112,8 +111,8 @@ public:
 
 protected:
     // Not implemented; prevents accidental use.
-    TC_ThreadCond(const TC_ThreadCond&);
-    TC_ThreadCond& operator=(const TC_ThreadCond&);
+    XC_ThreadCond(const XC_ThreadCond&);
+    XC_ThreadCond& operator=(const XC_ThreadCond&);
 
 private:
 

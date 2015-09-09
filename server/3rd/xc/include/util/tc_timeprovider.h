@@ -1,5 +1,5 @@
-#ifndef __TC_TIME_PROVIDER_H_
-#define __TC_TIME_PROVIDER_H_
+#ifndef __XC_TIME_PROVIDER_H_
+#define __XC_TIME_PROVIDER_H_
 
 #include <string>
 #include <string.h>
@@ -10,24 +10,23 @@
 #define rdtsc(low,high) \
      __asm__ __volatile__("rdtsc" : "=a" (low), "=d" (high))
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_timeprovider.h
  * @brief 秒级、微妙级时间提供类. 
  *  
- * @author jarodruan@tencent.com,skingfan@tencent.com 
  */                    
 /////////////////////////////////////////////////
-class TC_TimeProvider;
+class XC_TimeProvider;
 
-typedef TC_AutoPtr<TC_TimeProvider> TC_TimeProviderPtr;
+typedef XC_AutoPtr<XC_TimeProvider> XC_TimeProviderPtr;
 
 /**
  * @brief 提供秒级别的时间
  */
-class TC_TimeProvider : public TC_Thread, public TC_HandleBase
+class XC_TimeProvider : public XC_Thread, public XC_HandleBase
 {
 public:
 
@@ -36,12 +35,12 @@ public:
 	 *  
      * @return TimeProvider&
      */
-    static TC_TimeProvider* getInstance();
+    static XC_TimeProvider* getInstance();
 
     /**
      * @brief 构造函数
      */
-    TC_TimeProvider() : _terminate(false),_use_tsc(true),_cpu_cycle(0),_buf_idx(0)
+    XC_TimeProvider() : _terminate(false),_use_tsc(true),_cpu_cycle(0),_buf_idx(0)
     {
         memset(_t,0,sizeof(_t));
         memset(_tsc,0,sizeof(_tsc));
@@ -55,7 +54,7 @@ public:
     /**
      * @brief 析构，停止线程
      */
-    ~TC_TimeProvider(); 
+    ~XC_TimeProvider(); 
 
     /**
      * @brief 获取时间.
@@ -95,9 +94,9 @@ protected:
 
     virtual void run();
 
-    static TC_ThreadLock        g_tl;
+    static XC_ThreadLock        g_tl;
 
-    static TC_TimeProviderPtr   g_tp;
+    static XC_TimeProviderPtr   g_tp;
 
 private:
     void setTsc(timeval& tt);

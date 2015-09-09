@@ -1,5 +1,5 @@
-#ifndef __TC_THREAD_POOL_H_
-#define __TC_THREAD_POOL_H_
+#ifndef __XC_THREAD_POOL_H_
+#define __XC_THREAD_POOL_H_
 
 #include "util/tc_thread.h"
 #include "util/tc_thread_queue.h"
@@ -12,24 +12,23 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_thread_pool.h
  * @brief 线程池类,借鉴loki以及wbl的思想.
  *  
- * @author  jarodruan@tencent.com
  */         
 /////////////////////////////////////////////////
 /**
 * @brief 线程异常
 */
-struct TC_ThreadPool_Exception : public TC_Exception
+struct XC_ThreadPool_Exception : public XC_Exception
 {
-	TC_ThreadPool_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_ThreadPool_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_ThreadPool_Exception() throw(){};
+	XC_ThreadPool_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_ThreadPool_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_ThreadPool_Exception() throw(){};
 };
 
 
@@ -41,7 +40,7 @@ struct TC_ThreadPool_Exception : public TC_Exception
  * 2 用tc_threadpool对调用进行执行 
  * 具体示例代码请参见:test/test_tc_thread_pool.cpp
  */
-class TC_ThreadPool : public TC_ThreadLock
+class XC_ThreadPool : public XC_ThreadLock
 {
 public:
 
@@ -49,12 +48,12 @@ public:
      * @brief 构造函数
      *
      */
-    TC_ThreadPool();
+    XC_ThreadPool();
 
     /**
      * @brief 析构, 会停止所有线程
      */
-    ~TC_ThreadPool();
+    ~XC_ThreadPool();
 
     /**
 	 * @brief 初始化. 
@@ -94,11 +93,11 @@ public:
      * @param tf
      */
     template<class ParentFunctor>
-    void start(const TC_FunctorWrapper<ParentFunctor> &tf)
+    void start(const XC_FunctorWrapper<ParentFunctor> &tf)
     {
         for(size_t i = 0; i < _jobthread.size(); i++)
         {
-            _startqueue.push_back(new TC_FunctorWrapper<ParentFunctor>(tf));
+            _startqueue.push_back(new XC_FunctorWrapper<ParentFunctor>(tf));
         }
 
         start();
@@ -109,9 +108,9 @@ public:
 	 *  	  线程池的线程执行对象
 	 */
     template<class ParentFunctor>
-	void exec(const TC_FunctorWrapper<ParentFunctor> &tf)
+	void exec(const XC_FunctorWrapper<ParentFunctor> &tf)
     {
-        _jobqueue.push_back(new TC_FunctorWrapper<ParentFunctor>(tf));
+        _jobqueue.push_back(new XC_FunctorWrapper<ParentFunctor>(tf));
     }
 
     /**
@@ -203,10 +202,10 @@ protected:
          */
         KeyInitialize()
         {
-            int ret = pthread_key_create(&TC_ThreadPool::g_key, TC_ThreadPool::destructor);
+            int ret = pthread_key_create(&XC_ThreadPool::g_key, XC_ThreadPool::destructor);
             if(ret != 0)
             {
-                throw TC_ThreadPool_Exception("[TC_ThreadPool::KeyInitialize] pthread_key_create error", ret);
+                throw XC_ThreadPool_Exception("[XC_ThreadPool::KeyInitialize] pthread_key_create error", ret);
             }
         }
 
@@ -215,7 +214,7 @@ protected:
          */
         ~KeyInitialize()
         {
-            pthread_key_delete(TC_ThreadPool::g_key);
+            pthread_key_delete(XC_ThreadPool::g_key);
         }
     };
 
@@ -233,7 +232,7 @@ protected:
     /**
      * @brief 线程池中的工作线程
      */
-    class ThreadWorker : public TC_Thread
+    class ThreadWorker : public XC_Thread
     {
     public:
         /**
@@ -241,7 +240,7 @@ protected:
 		 *  
          * @param tpool
          */
-        ThreadWorker(TC_ThreadPool *tpool);
+        ThreadWorker(XC_ThreadPool *tpool);
 
         /**
          * @brief 通知工作线程结束
@@ -258,7 +257,7 @@ protected:
         /**
          * 线程池指针
          */
-        TC_ThreadPool   *_tpool;
+        XC_ThreadPool   *_tpool;
 
         /**
          * 是否结束线程
@@ -276,16 +275,16 @@ protected:
     /**
      * @brief 获取任务, 如果没有任务, 则为NULL.
      *
-     * @return TC_FunctorWrapperInterface*
+     * @return XC_FunctorWrapperInterface*
      */
-    TC_FunctorWrapperInterface *get(ThreadWorker *ptw);
+    XC_FunctorWrapperInterface *get(ThreadWorker *ptw);
 
     /**
      * @brief 获取启动任务.
      *
-     * @return TC_FunctorWrapperInterface*
+     * @return XC_FunctorWrapperInterface*
      */
-    TC_FunctorWrapperInterface *get();
+    XC_FunctorWrapperInterface *get();
 
     /**
 	 * @brief 空闲了一个线程. 
@@ -317,12 +316,12 @@ protected:
     /**
      * 任务队列
      */
-    TC_ThreadQueue<TC_FunctorWrapperInterface*> _jobqueue;
+    XC_ThreadQueue<XC_FunctorWrapperInterface*> _jobqueue;
 
     /**
      * 启动任务
      */
-    TC_ThreadQueue<TC_FunctorWrapperInterface*> _startqueue;
+    XC_ThreadQueue<XC_FunctorWrapperInterface*> _startqueue;
 
     /**
      * 工作线程
@@ -337,7 +336,7 @@ protected:
     /**
      * 任务队列的锁
      */
-    TC_ThreadLock                               _tmutex;
+    XC_ThreadLock                               _tmutex;
 
 };
 

@@ -1,19 +1,18 @@
-#ifndef __TC_PARSEPARA_H
-#define __TC_PARSEPARA_H
+#ifndef __XC_PARSEPARA_H
+#define __XC_PARSEPARA_H
 
 #include <map>
 #include <string>
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_parsepara.h 
 * @brief  name=value格式解析类(非标准的http协议) 
 *  
-* @author  jarodruan@tencent.com   
 */            
 /////////////////////////////////////////////////
 
@@ -26,60 +25,60 @@ namespace taf
 	* （标准cgi参数解析会把空格和+互转）,非线程安全；
     * @param 型如name=value&name=value字符串
     */
-class TC_Parsepara
+class XC_Parsepara
 {
 public:
 
-	TC_Parsepara(){};
+	XC_Parsepara(){};
 
     /**
     * @brief  构造函数
     * @param 型如name=value&name=value字符串
     */
-	TC_Parsepara(const string &sParam);
+	XC_Parsepara(const string &sParam);
 
     /**
     * @brief  copy contructor
     * @param : name=value&name=value字符串
     */
-	TC_Parsepara(const map<string, string> &mpParam);
+	XC_Parsepara(const map<string, string> &mpParam);
 
     /**
     * @brief  copy contructor
     */
-	TC_Parsepara(const TC_Parsepara &para);
+	XC_Parsepara(const XC_Parsepara &para);
 
     /**
     * =
     */
-	TC_Parsepara &operator=(const TC_Parsepara &para);
+	XC_Parsepara &operator=(const XC_Parsepara &para);
 
     /**
     * ==
     */
-	bool operator==(const TC_Parsepara &para);
+	bool operator==(const XC_Parsepara &para);
 
     /**
     *+
     */
-	const TC_Parsepara operator+(const TC_Parsepara &para);
+	const XC_Parsepara operator+(const XC_Parsepara &para);
 
     /**
     * +=
     */
-	TC_Parsepara& operator+=(const TC_Parsepara &para);
+	XC_Parsepara& operator+=(const XC_Parsepara &para);
 
     /**
     * @brief  decontructor
     */
-	~TC_Parsepara();
+	~XC_Parsepara();
 
     /**
     * @brief  遍历函数
     * @param 参数名称
     * @param 参数值
     */
-	typedef int (*TC_ParseparaTraverseFunc)(string, string, void *);
+	typedef int (*XC_ParseparaTraverseFunc)(string, string, void *);
 
     /**
     *@brief  重载[], 获取参数值
@@ -146,7 +145,7 @@ public:
     * @param pParam: 参数,传入func中
     * @return void
     */
-	void traverse(TC_ParseparaTraverseFunc func, void *pParam);
+	void traverse(XC_ParseparaTraverseFunc func, void *pParam);
 
     /**
     * @brief  对字符串解码,%XX转成字符,类似于http协议的编码
@@ -193,4 +192,4 @@ protected:
 };
 
 }
-#endif /*_TC_PARSEPARA_H*/
+#endif /*_XC_PARSEPARA_H*/

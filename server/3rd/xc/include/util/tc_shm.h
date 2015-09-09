@@ -1,19 +1,18 @@
-#ifndef	__TC_SHM_H__
-#define __TC_SHM_H__
+#ifndef	__XC_SHM_H__
+#define __XC_SHM_H__
 
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/shm.h>
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file  tc_shm.h 
  * @brief  共享内存封装类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
 
@@ -21,11 +20,11 @@ namespace taf
 /**
 * @brief 共享内存异常类.
 */
-struct TC_Shm_Exception : public TC_Exception
+struct XC_Shm_Exception : public XC_Exception
 {
-    TC_Shm_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Shm_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Shm_Exception() throw() {};
+    XC_Shm_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Shm_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Shm_Exception() throw() {};
 };
 
 /** 
@@ -34,7 +33,7 @@ struct TC_Shm_Exception : public TC_Exception
 * 2 _bOwner=false: 析够时不detach共享内存 
 * 3 _bOwner=true: 析够时detach共享内存
 */
-class TC_Shm
+class XC_Shm
 {
 public:
 
@@ -43,21 +42,21 @@ public:
 	*  
 	* @param bOwner  是否拥有共享内存,默认为false 
     */
-    TC_Shm(bool bOwner = false) : _bOwner(bOwner), _pshm(NULL) {}
+    XC_Shm(bool bOwner = false) : _bOwner(bOwner), _pshm(NULL) {}
 
     /**
 	* @brief 构造函数. 
 	*  
     * @param iShmSize 共享内存大小
     * @param iKey     共享内存Key
-    * @throws         TC_Shm_Exception
+    * @throws         XC_Shm_Exception
     */
-    TC_Shm(size_t iShmSize, key_t iKey, bool bOwner = false);
+    XC_Shm(size_t iShmSize, key_t iKey, bool bOwner = false);
 
     /**
     * @brief 析构函数.
     */
-    ~TC_Shm();
+    ~XC_Shm();
 
     /**
 	* @brief 初始化. 
@@ -65,7 +64,7 @@ public:
     * @param iShmSize   共享内存大小
     * @param iKey       共享内存Key
     * @param bOwner     是否拥有共享内存
-    * @throws           TC_Shm_Exception
+    * @throws           XC_Shm_Exception
     * @return Ξ
     */
     void init(size_t iShmSize, key_t iKey, bool bOwner = false);

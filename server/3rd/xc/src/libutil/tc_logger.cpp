@@ -3,38 +3,38 @@
 #include <iostream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
-	bool TC_LoggerRoll::_bDyeingFlag = false;
-	TC_ThreadMutex  TC_LoggerRoll::_mutexDyeing;
-	//set<pthread_t>  TC_LoggerRoll::_setThreadID;
-	hash_map<pthread_t, string>  TC_LoggerRoll::_mapThreadID;
+	bool XC_LoggerRoll::_bDyeingFlag = false;
+	XC_ThreadMutex  XC_LoggerRoll::_mutexDyeing;
+	//set<pthread_t>  XC_LoggerRoll::_setThreadID;
+	hash_map<pthread_t, string>  XC_LoggerRoll::_mapThreadID;
 
 
-	void TC_LoggerRoll::setupThread(TC_LoggerThreadGroup *pThreadGroup)
+	void XC_LoggerRoll::setupThread(XC_LoggerThreadGroup *pThreadGroup)
 	{
 		assert(pThreadGroup != NULL);
 
 		unSetupThread();
 
-		TC_LockT<TC_ThreadMutex> lock(_mutex);
+		XC_LockT<XC_ThreadMutex> lock(_mutex);
 
 		_pThreadGroup = pThreadGroup;
 
-		TC_LoggerRollPtr self = this;
+		XC_LoggerRollPtr self = this;
 
 		_pThreadGroup->registerLogger(self);
 	}
 
-	void TC_LoggerRoll::unSetupThread()
+	void XC_LoggerRoll::unSetupThread()
 	{
-		TC_LockT<TC_ThreadMutex> lock(_mutex);
+		XC_LockT<XC_ThreadMutex> lock(_mutex);
 
 		if (_pThreadGroup != NULL)
 		{
 			_pThreadGroup->flush();
 
-			TC_LoggerRollPtr self = this;
+			XC_LoggerRollPtr self = this;
 
 			_pThreadGroup->unRegisterLogger(self);
 
@@ -44,12 +44,12 @@ namespace taf
 		flush();
 	}
 
-	void TC_LoggerRoll::write(const pair<int, string> &buffer)
+	void XC_LoggerRoll::write(const pair<int, string> &buffer)
 	{
 		pthread_t ThreadID = 0;
 		if (_bDyeingFlag)
 		{
-			TC_LockT<TC_ThreadMutex> lock(_mutexDyeing);
+			XC_LockT<XC_ThreadMutex> lock(_mutexDyeing);
 
 			pthread_t tmp = pthread_self();
 			//if (_setThreadID.count(tmp) == 1)
@@ -72,9 +72,9 @@ namespace taf
 		}
 	}
 
-	void TC_LoggerRoll::flush()
+	void XC_LoggerRoll::flush()
 	{
-		TC_ThreadQueue<pair<int, string> >::queue_type qt;
+		XC_ThreadQueue<pair<int, string> >::queue_type qt;
 		_buffer.swap(qt);
 
 		if (!qt.empty())
@@ -85,11 +85,11 @@ namespace taf
 
 //////////////////////////////////////////////////////////////////
 //
-	TC_LoggerThreadGroup::TC_LoggerThreadGroup() : _bTerminate(false)
+	XC_LoggerThreadGroup::XC_LoggerThreadGroup() : _bTerminate(false)
 	{
 	}
 
-	TC_LoggerThreadGroup::~TC_LoggerThreadGroup()
+	XC_LoggerThreadGroup::~XC_LoggerThreadGroup()
 	{
 		flush();
 
@@ -104,34 +104,34 @@ namespace taf
 		_tpool.waitForAllDone();
 	}
 
-	void TC_LoggerThreadGroup::start(size_t iThreadNum)
+	void XC_LoggerThreadGroup::start(size_t iThreadNum)
 	{
 		_tpool.init(iThreadNum);
 		_tpool.start();
 
-		TC_Functor<void> cmd(this, &TC_LoggerThreadGroup::run);
-		TC_Functor<void>::wrapper_type wrapper(cmd);
+		XC_Functor<void> cmd(this, &XC_LoggerThreadGroup::run);
+		XC_Functor<void>::wrapper_type wrapper(cmd);
 		for (size_t i = 0; i < _tpool.getThreadNum(); i++)
 		{
 			_tpool.exec(wrapper);
 		}
 	}
 
-	void TC_LoggerThreadGroup::registerLogger(TC_LoggerRollPtr &l)
+	void XC_LoggerThreadGroup::registerLogger(XC_LoggerRollPtr &l)
 	{
 		Lock lock(*this);
 
 		_logger.insert(l);
 	}
 
-	void TC_LoggerThreadGroup::unRegisterLogger(TC_LoggerRollPtr &l)
+	void XC_LoggerThreadGroup::unRegisterLogger(XC_LoggerRollPtr &l)
 	{
 		Lock lock(*this);
 
 		_logger.erase(l);
 	}
 
-	void TC_LoggerThreadGroup::flush()
+	void XC_LoggerThreadGroup::flush()
 	{
 		logger_set logger;
 
@@ -154,7 +154,7 @@ namespace taf
 		}
 	}
 
-	void TC_LoggerThreadGroup::run()
+	void XC_LoggerThreadGroup::run()
 	{
 		while (!_bTerminate)
 		{
@@ -174,7 +174,7 @@ namespace taf
 	{
 	}
 
-	LoggerBuffer::LoggerBuffer(TC_LoggerRollPtr roll, size_t buffer_len) : _roll(roll), _buffer(NULL), _buffer_len(buffer_len)
+	LoggerBuffer::LoggerBuffer(XC_LoggerRollPtr roll, size_t buffer_len) : _roll(roll), _buffer(NULL), _buffer_len(buffer_len)
 	{
 		//设置get buffer, 无效, 不适用
 		setg(NULL, NULL, NULL);

@@ -1,5 +1,5 @@
-#ifndef	__TC_THREAD_H_
-#define __TC_THREAD_H_
+#ifndef	__XC_THREAD_H_
+#define __XC_THREAD_H_
 
 #include <sys/types.h>
 #include <signal.h>
@@ -7,31 +7,30 @@
 #include "util/tc_ex.h"
 #include "util/tc_monitor.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_thread.h 
  * @brief  线程类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com  
  */          
 /////////////////////////////////////////////////
 
 /**
  * @brief  线程控制异常类
  */
-struct TC_ThreadThreadControl_Exception : public TC_Exception
+struct XC_ThreadThreadControl_Exception : public XC_Exception
 {
-    TC_ThreadThreadControl_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_ThreadThreadControl_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_ThreadThreadControl_Exception() throw() {};
+    XC_ThreadThreadControl_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_ThreadThreadControl_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_ThreadThreadControl_Exception() throw() {};
 };
 
 /**
  * @brief  线程控制类
  */
-class TC_ThreadControl
+class XC_ThreadControl
 {
 public:
 
@@ -40,12 +39,12 @@ public:
 	 *  		join和detach在不能在该对象上调用
 	*/
 	   
-    TC_ThreadControl();
+    XC_ThreadControl();
 
     /**
      * @return explicit
      */
-    explicit TC_ThreadControl(pthread_t);
+    explicit XC_ThreadControl(pthread_t);
 
     /**
      * @brief  等待当前线程结束, 不能在当前线程上调用
@@ -84,10 +83,10 @@ private:
 /**
  *
  */
-class TC_Runable
+class XC_Runable
 {
 public:
-    virtual ~TC_Runable(){};
+    virtual ~XC_Runable(){};
     virtual void run() = 0;
 };
 
@@ -95,33 +94,33 @@ public:
  * @brief 线程基类. 
  * 线程基类，所有自定义线程继承于该类，同时实现run接口即可, 
  *  
- * 可以通过TC_ThreadContorl管理线程。
+ * 可以通过XC_ThreadContorl管理线程。
  */
-class TC_Thread : public TC_Runable
+class XC_Thread : public XC_Runable
 {
 public:
 
 	/**
      * @brief  构造函数
 	 */
-	TC_Thread();
+	XC_Thread();
 
 	/**
      * @brief  析构函数
 	 */
-	virtual ~TC_Thread(){};
+	virtual ~XC_Thread(){};
 
 	/**
      * @brief  线程运行
 	 */
-	TC_ThreadControl start();
+	XC_ThreadControl start();
 
     /**
      * @brief  获取线程控制类.
      *
      * @return ThreadControl
      */
-    TC_ThreadControl getThreadControl() const;
+    XC_ThreadControl getThreadControl() const;
 
     /**
      * @brief  线程是否存活.
@@ -144,7 +143,7 @@ protected:
 	 *  
 	 * @param pThread 线程对象
 	 */
-	static void threadEntry(TC_Thread *pThread);
+	static void threadEntry(XC_Thread *pThread);
 
 	/**
      * @brief  运行
@@ -165,7 +164,7 @@ protected:
     /**
      * 线程锁
      */
-    TC_ThreadLock   _lock;
+    XC_ThreadLock   _lock;
 };
 
 }

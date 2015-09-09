@@ -4,10 +4,10 @@
 #include <sstream>
 #include <stdlib.h>
 
-namespace taf
+namespace xutil
 {
 
-vector<char> TC_Tea::encrypt(const char *key, const char *sIn, size_t iLength)
+vector<char> XC_Tea::encrypt(const char *key, const char *sIn, size_t iLength)
 {
     size_t outlen = 16 + 2*iLength;
 
@@ -22,7 +22,7 @@ vector<char> TC_Tea::encrypt(const char *key, const char *sIn, size_t iLength)
     return v;
 }
 
-vector<char> TC_Tea::decrypt(const char *key, const char *sIn, size_t iLength)
+vector<char> XC_Tea::decrypt(const char *key, const char *sIn, size_t iLength)
 {
     size_t outlen = 2*iLength;
 
@@ -32,7 +32,7 @@ vector<char> TC_Tea::decrypt(const char *key, const char *sIn, size_t iLength)
 
     if (!oi_symmetry_decrypt(sIn, iLength, key, &v[0], &outlen))
     {
-        throw TC_Tea_Exception("[TC_Tea::decrypt] decrypt error.");
+        throw XC_Tea_Exception("[XC_Tea::decrypt] decrypt error.");
     }
 
     v.resize(outlen);
@@ -40,7 +40,7 @@ vector<char> TC_Tea::decrypt(const char *key, const char *sIn, size_t iLength)
     return v;
 }
 
-vector<char> TC_Tea::encrypt2(const char *key, const char *sIn, size_t iLength)
+vector<char> XC_Tea::encrypt2(const char *key, const char *sIn, size_t iLength)
 {
     size_t outlen = oi_symmetry_encrypt2_len(iLength);
 
@@ -55,7 +55,7 @@ vector<char> TC_Tea::encrypt2(const char *key, const char *sIn, size_t iLength)
     return v;
 }
 
-vector<char> TC_Tea::decrypt2(const char *key, const char *sIn, size_t iLength)
+vector<char> XC_Tea::decrypt2(const char *key, const char *sIn, size_t iLength)
 {
     size_t outlen = 2*iLength;
 
@@ -65,7 +65,7 @@ vector<char> TC_Tea::decrypt2(const char *key, const char *sIn, size_t iLength)
 
     if (!oi_symmetry_decrypt2(sIn, iLength, key, &v[0], &outlen))
     {
-        throw TC_Tea_Exception("[TC_Tea::decrypt] decrypt error.");
+        throw XC_Tea_Exception("[XC_Tea::decrypt] decrypt error.");
     }
 
     v.resize(outlen);
@@ -84,7 +84,7 @@ const uint32_t DELTA = 0x9e3779b9;
 
 #define LOG_ROUNDS 4
 
-void TC_Tea::TeaEncryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
+void XC_Tea::TeaEncryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
 {
 	uint32_t y, z;
 	uint32_t sum;
@@ -118,7 +118,7 @@ void TC_Tea::TeaEncryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
 	/*now encrypted buf is TCP/IP-endian;*/
 }
 
-void TC_Tea::TeaDecryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
+void XC_Tea::TeaDecryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
 {
 	uint32_t y, z, sum;
 	uint32_t k[4];
@@ -158,7 +158,7 @@ void TC_Tea::TeaDecryptECB(const char *pInBuf, const char *pKey, char *pOutBuf)
 */
 /*TEA加密算法,CBC模式*/
 /*密文格式:PadLen(1byte)+Padding(var,0-7byte)+Salt(2byte)+Body(var byte)+Zero(7byte)*/
-void TC_Tea::oi_symmetry_encrypt(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
+void XC_Tea::oi_symmetry_encrypt(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
 {
 	size_t nPadSaltBodyZeroLen/*PadLen(1byte)+Salt+Body+Zero的长度*/;
 	size_t nPadlen;
@@ -269,7 +269,7 @@ void TC_Tea::oi_symmetry_encrypt(const char* pInBuf, size_t nInBufLen, const cha
 */
 /*TEA解密算法,CBC模式*/
 /*密文格式:PadLen(1byte)+Padding(var,0-7byte)+Salt(2byte)+Body(var byte)+Zero(7byte)*/
-bool TC_Tea::oi_symmetry_decrypt(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
+bool XC_Tea::oi_symmetry_decrypt(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
 {
 	size_t nPadLen, nPlainLen;
 	char dest_buf[8];
@@ -378,7 +378,7 @@ bool TC_Tea::oi_symmetry_decrypt(const char* pInBuf, size_t nInBufLen, const cha
 
 /*TEA加密算法,CBC模式*/
 /*密文格式:PadLen(1byte)+Padding(var,0-7byte)+Salt(2byte)+Body(var byte)+Zero(7byte)*/
-size_t TC_Tea::oi_symmetry_encrypt2_len(size_t nInBufLen)
+size_t XC_Tea::oi_symmetry_encrypt2_len(size_t nInBufLen)
 {
 	size_t nPadSaltBodyZeroLen/*PadLen(1byte)+Salt+Body+Zero的长度*/;
 	size_t nPadlen;
@@ -401,7 +401,7 @@ size_t TC_Tea::oi_symmetry_encrypt2_len(size_t nInBufLen)
 */
 /*TEA加密算法,CBC模式*/
 /*密文格式:PadLen(1byte)+Padding(var,0-7byte)+Salt(2byte)+Body(var byte)+Zero(7byte)*/
-void TC_Tea::oi_symmetry_encrypt2(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
+void XC_Tea::oi_symmetry_encrypt2(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
 {
 	size_t nPadSaltBodyZeroLen/*PadLen(1byte)+Salt+Body+Zero的长度*/;
 	size_t nPadlen;
@@ -542,7 +542,7 @@ void TC_Tea::oi_symmetry_encrypt2(const char* pInBuf, size_t nInBufLen, const ch
 */
 /*TEA解密算法,CBC模式*/
 /*密文格式:PadLen(1byte)+Padding(var,0-7byte)+Salt(2byte)+Body(var byte)+Zero(7byte)*/
-bool TC_Tea::oi_symmetry_decrypt2(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
+bool XC_Tea::oi_symmetry_decrypt2(const char* pInBuf, size_t nInBufLen, const char* pKey, char* pOutBuf, size_t *pOutBufLen)
 {
 	size_t nPadLen, nPlainLen;
 	char dest_buf[8], zero_buf[8];

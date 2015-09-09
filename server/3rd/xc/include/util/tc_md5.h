@@ -1,19 +1,18 @@
-#ifndef __TC_MD5_H
-#define __TC_MD5_H
+#ifndef __XC_MD5_H
+#define __XC_MD5_H
 
 #include <string>
 #include "util/tc_common.h"
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_md5.h
  * @brief md5类(修改并完善至md5的c版本)
  *  
- * @author jarodruan@tencent.com ,coonzhang@tencent.com  
  */            
 /////////////////////////////////////////////////
 
@@ -42,7 +41,7 @@ namespace taf
 }
 #endif
 
-class TC_MD5
+class XC_MD5
 {
     typedef unsigned char *POINTER;
     typedef unsigned short int UINT2;

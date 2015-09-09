@@ -1,9 +1,9 @@
-#ifndef __TC_FIFO_H
-#define __TC_FIFO_H
+#ifndef __XC_FIFO_H
+#define __XC_FIFO_H
 #include <string>
 
 
-namespace taf
+namespace xutil
 {
 
 /////////////////////////////////////////////////
@@ -18,7 +18,7 @@ namespace taf
 /** 
  *@brief  管道操作类. 
  */
-class TC_Fifo
+class XC_Fifo
 {
 public:
 
@@ -38,12 +38,12 @@ public:
 	*  
     * @param bOwener : 是否拥有管道，默认为ture
     */
-	TC_Fifo(bool bOwener = true);
+	XC_Fifo(bool bOwener = true);
 
    /**
     * @brief 析构函数. 
     */
-	~TC_Fifo();
+	~XC_Fifo();
 
 public:
 	/**

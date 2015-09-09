@@ -4,10 +4,10 @@
 #include <string.h>
 #include <cmath>
 
-namespace taf
+namespace xutil
 {
 
-string TC_Common::trim(const string &sStr, const string &s, bool bChar)
+string XC_Common::trim(const string &sStr, const string &s, bool bChar)
 {
     if(sStr.empty())
     {
@@ -25,7 +25,7 @@ string TC_Common::trim(const string &sStr, const string &s, bool bChar)
     return trimright(trimleft(sStr, s, true), s, true);
 }
 
-string TC_Common::trimleft(const string &sStr, const string &s, bool bChar)
+string XC_Common::trimleft(const string &sStr, const string &s, bool bChar)
 {
     if(sStr.empty())
     {
@@ -69,7 +69,7 @@ string TC_Common::trimleft(const string &sStr, const string &s, bool bChar)
     return sStr.substr(pos);
 }
 
-string TC_Common::trimright(const string &sStr, const string &s, bool bChar)
+string XC_Common::trimright(const string &sStr, const string &s, bool bChar)
 {
     if(sStr.empty())
     {
@@ -113,7 +113,7 @@ string TC_Common::trimright(const string &sStr, const string &s, bool bChar)
     return sStr.substr(0, pos);
 }
 
-string TC_Common::lower(const string &s)
+string XC_Common::lower(const string &s)
 {
     string sString = s;
     for (string::iterator iter = sString.begin(); iter != sString.end(); ++iter)
@@ -124,7 +124,7 @@ string TC_Common::lower(const string &s)
     return sString;
 }
 
-string TC_Common::upper(const string &s)
+string XC_Common::upper(const string &s)
 {
     string sString = s;
 
@@ -136,7 +136,7 @@ string TC_Common::upper(const string &s)
     return sString;
 }
 
-bool TC_Common::isdigit(const string &sInput)
+bool XC_Common::isdigit(const string &sInput)
 {
     string::const_iterator iter = sInput.begin();
 
@@ -156,18 +156,18 @@ bool TC_Common::isdigit(const string &sInput)
     return true;
 }
 
-int TC_Common::str2tm(const string &sString, const string &sFormat, struct tm &stTm)
+int XC_Common::str2tm(const string &sString, const string &sFormat, struct tm &stTm)
 {
     char *p = strptime(sString.c_str(), sFormat.c_str(), &stTm);
     return (p != NULL) ? 0 : -1;
 }
 
-int TC_Common::strgmt2tm(const string &sString, struct tm &stTm)
+int XC_Common::strgmt2tm(const string &sString, struct tm &stTm)
 {
     return str2tm(sString, "%a, %d %b %Y %H:%M:%S GMT", stTm);
 }
 
-string TC_Common::tm2str(const struct tm &stTm, const string &sFormat)
+string XC_Common::tm2str(const struct tm &stTm, const string &sFormat)
 {
     char sTimeString[255] = "\0";
 
@@ -176,7 +176,7 @@ string TC_Common::tm2str(const struct tm &stTm, const string &sFormat)
     return string(sTimeString);
 }
 
-string TC_Common::tm2str(const time_t &t, const string &sFormat)
+string XC_Common::tm2str(const time_t &t, const string &sFormat)
 {
     struct tm tt;
     localtime_r(&t, &tt);
@@ -184,41 +184,41 @@ string TC_Common::tm2str(const time_t &t, const string &sFormat)
     return tm2str(tt, sFormat);
 }
 
-string TC_Common::now2str(const string &sFormat)
+string XC_Common::now2str(const string &sFormat)
 {
     time_t t = time(NULL);
     return tm2str(t, sFormat.c_str());
 }
 
-string TC_Common::now2GMTstr()
+string XC_Common::now2GMTstr()
 {
     time_t t = time(NULL);
     return tm2GMTstr(t);
 }
 
-string TC_Common::tm2GMTstr(const time_t &t)
+string XC_Common::tm2GMTstr(const time_t &t)
 {
     struct tm tt;
     gmtime_r(&t, &tt);
     return tm2str(tt, "%a, %d %b %Y %H:%M:%S GMT");
 }
 
-string TC_Common::tm2GMTstr(const struct tm &stTm)
+string XC_Common::tm2GMTstr(const struct tm &stTm)
 {
     return tm2str(stTm, "%a, %d %b %Y %H:%M:%S GMT");
 }
 
-string TC_Common::nowdate2str()
+string XC_Common::nowdate2str()
 {
     return now2str("%Y%m%d");
 }
 
-string TC_Common::nowtime2str()
+string XC_Common::nowtime2str()
 {
     return now2str("%H%M%S");
 }
 
-int64_t TC_Common::now2ms()
+int64_t XC_Common::now2ms()
 {
     struct timeval tv;
 
@@ -227,7 +227,7 @@ int64_t TC_Common::now2ms()
     return tv.tv_sec * (int64_t)1000 + tv.tv_usec/1000;
 }
 
-int64_t TC_Common::now2us()
+int64_t XC_Common::now2us()
 {
     struct timeval tv;
 
@@ -239,7 +239,7 @@ int64_t TC_Common::now2us()
 //参照phorix的优化
 static char c_b2s[256][4]={"00","01","02","03","04","05","06","07","08","09","0a","0b","0c","0d","0e","0f","10","11","12","13","14","15","16","17","18","19","1a","1b","1c","1d","1e","1f","20","21","22","23","24","25","26","27","28","29","2a","2b","2c","2d","2e","2f","30","31","32","33","34","35","36","37","38","39","3a","3b","3c","3d","3e","3f","40","41","42","43","44","45","46","47","48","49","4a","4b","4c","4d","4e","4f","50","51","52","53","54","55","56","57","58","59","5a","5b","5c","5d","5e","5f","60","61","62","63","64","65","66","67","68","69","6a","6b","6c","6d","6e","6f","70","71","72","73","74","75","76","77","78","79","7a","7b","7c","7d","7e","7f","80","81","82","83","84","85","86","87","88","89","8a","8b","8c","8d","8e","8f","90","91","92","93","94","95","96","97","98","99","9a","9b","9c","9d","9e","9f","a0","a1","a2","a3","a4","a5","a6","a7","a8","a9","aa","ab","ac","ad","ae","af","b0","b1","b2","b3","b4","b5","b6","b7","b8","b9","ba","bb","bc","bd","be","bf","c0","c1","c2","c3","c4","c5","c6","c7","c8","c9","ca","cb","cc","cd","ce","cf","d0","d1","d2","d3","d4","d5","d6","d7","d8","d9","da","db","dc","dd","de","df","e0","e1","e2","e3","e4","e5","e6","e7","e8","e9","ea","eb","ec","ed","ee","ef","f0","f1","f2","f3","f4","f5","f6","f7","f8","f9","fa","fb","fc","fd","fe","ff"};
 
-string TC_Common::bin2str(const void *buf, size_t len, const string &sSep, size_t lines)
+string XC_Common::bin2str(const void *buf, size_t len, const string &sSep, size_t lines)
 {
     if(buf == NULL || len <=0 )
     {
@@ -265,12 +265,12 @@ string TC_Common::bin2str(const void *buf, size_t len, const string &sSep, size_
     return sOut;
 }
 
-string TC_Common::bin2str(const string &sBinData, const string &sSep, size_t lines)
+string XC_Common::bin2str(const string &sBinData, const string &sSep, size_t lines)
 {
     return bin2str((const void *)sBinData.data(), sBinData.length(), sSep, lines);
 }
 
-int TC_Common::str2bin(const char *psAsciiData, unsigned char *sBinData, int iBinSize)
+int XC_Common::str2bin(const char *psAsciiData, unsigned char *sBinData, int iBinSize)
 {
     int iAsciiLength = strlen(psAsciiData);
 
@@ -282,7 +282,7 @@ int TC_Common::str2bin(const char *psAsciiData, unsigned char *sBinData, int iBi
     return iRealLength;
 }
 
-string TC_Common::str2bin(const string &sString, const string &sSep, size_t lines)
+string XC_Common::str2bin(const string &sString, const string &sSep, size_t lines)
 {
     const char *psAsciiData = sString.c_str();
 
@@ -303,7 +303,7 @@ string TC_Common::str2bin(const string &sString, const string &sSep, size_t line
     return sBinData;
 }
 
-char TC_Common::x2c(const string &sWhat)
+char XC_Common::x2c(const string &sWhat)
 {
     register char digit;
 
@@ -319,7 +319,7 @@ char TC_Common::x2c(const string &sWhat)
     return(digit);
 }
 
-string TC_Common::replace(const string &sString, const string &sSrc, const string &sDest)
+string XC_Common::replace(const string &sString, const string &sSrc, const string &sDest)
 {
     if(sSrc.empty())
     {
@@ -339,7 +339,7 @@ string TC_Common::replace(const string &sString, const string &sSrc, const strin
     return sBuf;
 }
 
-bool TC_Common::matchPeriod(const string& s, const string& pat)
+bool XC_Common::matchPeriod(const string& s, const string& pat)
 {
     if(s.empty())
     {
@@ -388,11 +388,11 @@ bool TC_Common::matchPeriod(const string& s, const string& pat)
     return sIndex == s.size() && patIndex == pat.size();
 }
 
-bool TC_Common::matchPeriod(const string& s, const vector<string>& pat)
+bool XC_Common::matchPeriod(const string& s, const vector<string>& pat)
 {
     for(size_t i = 0; i < pat.size(); i++)
     {
-        if(TC_Common::matchPeriod(s,pat[i]))
+        if(XC_Common::matchPeriod(s,pat[i]))
         {
             return true;
         }
@@ -400,7 +400,7 @@ bool TC_Common::matchPeriod(const string& s, const vector<string>& pat)
     return false;   
 }
 
-void TC_Common::daemon()
+void XC_Common::daemon()
 {
     pid_t pid;
 
@@ -432,7 +432,7 @@ void TC_Common::daemon()
   //  chdir("/");
 }
 
-void TC_Common::ignorePipe()
+void XC_Common::ignorePipe()
 {
     struct sigaction sig;
 
@@ -442,7 +442,7 @@ void TC_Common::ignorePipe()
     sigaction(SIGPIPE,&sig,NULL);
 }
 
-bool TC_Common::isPrimeNumber(size_t n)
+bool XC_Common::isPrimeNumber(size_t n)
 {
     size_t nn = (size_t)sqrt((double)n);
     for(size_t i = 2; i < nn;i++)
@@ -455,7 +455,7 @@ bool TC_Common::isPrimeNumber(size_t n)
     return true;
 }
 
-size_t TC_Common::toSize(const string &s, size_t iDefaultSize)
+size_t XC_Common::toSize(const string &s, size_t iDefaultSize)
 {
     if (s.empty())
     {
@@ -463,10 +463,10 @@ size_t TC_Common::toSize(const string &s, size_t iDefaultSize)
     }
 
     char c = s[s.length()-1];
-    if(c != 'K' && c != 'M' && c != 'G' && TC_Common::trim(s) == TC_Common::tostr(TC_Common::strto<size_t>(s)))
+    if(c != 'K' && c != 'M' && c != 'G' && XC_Common::trim(s) == XC_Common::tostr(XC_Common::strto<size_t>(s)))
     {
         //没有后缀, 且转换是正确的
-        return (size_t)(TC_Common::strto<size_t>(s));
+        return (size_t)(XC_Common::strto<size_t>(s));
     }
     else if(c == 'K' || c == 'M' || c == 'G')
     {
@@ -475,9 +475,9 @@ size_t TC_Common::toSize(const string &s, size_t iDefaultSize)
             return iDefaultSize;
         }
 
-        float n = TC_Common::strto<float>(s.substr(0, s.length()-1));
+        float n = XC_Common::strto<float>(s.substr(0, s.length()-1));
 
-        if(TC_Common::trim(s.substr(0, s.length()-1)) != TC_Common::tostr(n))
+        if(XC_Common::trim(s.substr(0, s.length()-1)) != XC_Common::tostr(n))
         {
             return iDefaultSize;
         }

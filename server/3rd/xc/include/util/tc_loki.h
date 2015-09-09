@@ -1,13 +1,12 @@
-#ifndef __TC_TYPETRAITS_H
-#define __TC_TYPETRAITS_H
+#ifndef __XC_TYPETRAITS_H
+#define __XC_TYPETRAITS_H
 
 #include <memory>
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 // 说明: loki(copy至loki库)
-// Author : jarodruan@tencent.com              
 /////////////////////////////////////////////////
 
 namespace TL

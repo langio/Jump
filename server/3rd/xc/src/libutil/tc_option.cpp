@@ -1,10 +1,10 @@
 #include "util/tc_option.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
 
-void TC_Option::decode(int argc, char *argv[])
+void XC_Option::decode(int argc, char *argv[])
 {
     _mParam.clear();
 
@@ -27,7 +27,7 @@ void TC_Option::decode(int argc, char *argv[])
     }
 }
 
-void TC_Option::parse(const string &s)
+void XC_Option::parse(const string &s)
 {
     string::size_type pos = s.find('=');
     if( pos != string::npos)
@@ -40,7 +40,7 @@ void TC_Option::parse(const string &s)
     }
 }
 
-string TC_Option::getValue(const string &sName)
+string XC_Option::getValue(const string &sName)
 {
     if(_mParam.find(sName) != _mParam.end())
     {
@@ -49,17 +49,17 @@ string TC_Option::getValue(const string &sName)
     return "";
 }
 
-bool TC_Option::hasParam(const string &sName)
+bool XC_Option::hasParam(const string &sName)
 {
     return _mParam.find(sName) != _mParam.end();
 }
 
-vector<string>& TC_Option::getSingle()
+vector<string>& XC_Option::getSingle()
 {
     return _vSingle;
 }
 
-map<string, string>& TC_Option::getMulti()
+map<string, string>& XC_Option::getMulti()
 {
     return _mParam;
 }

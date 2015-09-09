@@ -1,29 +1,28 @@
-#ifndef	__TC_MEM_VECTOR_H__
-#define __TC_MEM_VECTOR_H__
+#ifndef	__XC_MEM_VECTOR_H__
+#define __XC_MEM_VECTOR_H__
 
 #include "util/tc_ex.h"
 #include <sstream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_mem_vector.h 
 * @brief  共享内存数组类. 
 *  
-* @author  jarodruan@tencent.com
 */            
 /////////////////////////////////////////////////
 
 /**
 * @brief 异常类
 */
-struct TC_MemVectorException : public TC_Exception
+struct XC_MemVectorException : public XC_Exception
 {
-	TC_MemVectorException(const string &buffer) : TC_Exception(buffer){};
-    TC_MemVectorException(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_MemVectorException() throw(){};
+	XC_MemVectorException(const string &buffer) : XC_Exception(buffer){};
+    XC_MemVectorException(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_MemVectorException() throw(){};
 };
 
 /**
@@ -34,14 +33,14 @@ struct TC_MemVectorException : public TC_Exception
 * 需要具备bit-copy的语义才行 
 */
 template<typename T>
-class TC_MemVector
+class XC_MemVector
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_MemVector() : _pHead(NULL) ,_pData(NULL)
+    XC_MemVector() : _pHead(NULL) ,_pData(NULL)
     {
     }
 
@@ -49,7 +48,7 @@ public:
      * @brief 
      * @param mv
      */
-    TC_MemVector(const TC_MemVector<T> &mv)
+    XC_MemVector(const XC_MemVector<T> &mv)
     : _pHead(mv._pHead) ,_pData(mv._pData)
     {
 
@@ -61,7 +60,7 @@ public:
      *
      * @return bool
      */
-    bool operator==(const TC_MemVector<T> &mv)
+    bool operator==(const XC_MemVector<T> &mv)
     {
         return _pHead == mv._pHead && _pData == mv._pData;
     }
@@ -72,7 +71,7 @@ public:
      *
      * @return bool
      */
-    bool operator!=(const TC_MemVector<T> &mv)
+    bool operator!=(const XC_MemVector<T> &mv)
     {
         return _pHead != mv._pHead || _pData != mv._pData;
     }
@@ -129,7 +128,7 @@ public:
     /**
      * @brief 迭代器
      */
-    class TC_MemVectorIterator : public std::iterator<std::random_access_iterator_tag, T>
+    class XC_MemVectorIterator : public std::iterator<std::random_access_iterator_tag, T>
     {
     public:
         /**
@@ -137,16 +136,16 @@ public:
          * @param pmv
          * @param iIndex
          */
-        TC_MemVectorIterator(TC_MemVector *pmv, size_t iIndex) : _pmv(pmv), _iIndex(iIndex)
+        XC_MemVectorIterator(XC_MemVector *pmv, size_t iIndex) : _pmv(pmv), _iIndex(iIndex)
         {
         }
 
         /**
          * @brief 前置++
          *
-         * @return TC_MemVectorIterator&
+         * @return XC_MemVectorIterator&
          */
-        TC_MemVectorIterator& operator++()
+        XC_MemVectorIterator& operator++()
         {
             ++_iIndex;
             return *this;
@@ -155,9 +154,9 @@ public:
         /**
          * @brief 后置++
          */
-        TC_MemVectorIterator operator++(int)
+        XC_MemVectorIterator operator++(int)
         {
-            TC_MemVectorIterator tmp = *this;
+            XC_MemVectorIterator tmp = *this;
 
             ++_iIndex;
             return tmp;
@@ -167,9 +166,9 @@ public:
          * @brief 
          * @param mv
          *
-         * @return TC_MemVectorIterator
+         * @return XC_MemVectorIterator
          */
-        bool operator==(const TC_MemVectorIterator& mv)
+        bool operator==(const XC_MemVectorIterator& mv)
         {
             return _iIndex == mv._iIndex && _pmv == mv._pmv;
         }
@@ -178,9 +177,9 @@ public:
          * @brief 
          * @param mv
          *
-         * @return TC_MemVectorIterator
+         * @return XC_MemVectorIterator
          */
-        bool operator!=(const TC_MemVectorIterator& mv)
+        bool operator!=(const XC_MemVectorIterator& mv)
         {
             return _iIndex != mv._iIndex || _pmv != mv._pmv;
         }
@@ -203,7 +202,7 @@ public:
         /**
          *
          */
-        TC_MemVector    *_pmv;
+        XC_MemVector    *_pmv;
 
         /**
          *
@@ -211,21 +210,21 @@ public:
         size_t          _iIndex;
     };
 
-    typedef TC_MemVectorIterator iterator;
+    typedef XC_MemVectorIterator iterator;
 
     /**
      *
      *
-     * @return TC_MemVectorIterator
+     * @return XC_MemVectorIterator
      */
-    TC_MemVectorIterator begin()	{ return TC_MemVectorIterator(this, 0); }
+    XC_MemVectorIterator begin()	{ return XC_MemVectorIterator(this, 0); }
 
     /**
      *
      *
-     * @return TC_MemVectorIterator
+     * @return XC_MemVectorIterator
      */
-    TC_MemVectorIterator end()		{ return TC_MemVectorIterator(this, _pHead->_iBlockCount); }
+    XC_MemVectorIterator end()		{ return XC_MemVectorIterator(this, _pHead->_iBlockCount); }
 
     /**
      * @brief 获取数据
@@ -237,9 +236,9 @@ public:
         if(iIndex >= _pHead->_iBlockCount)
         {
 			ostringstream s;
-			s << string("[TC_MemVector::get] index beyond : index = ") << iIndex << " > " << _pHead->_iBlockCount;
+			s << string("[XC_MemVector::get] index beyond : index = ") << iIndex << " > " << _pHead->_iBlockCount;
 
-            throw TC_MemVectorException(s.str());
+            throw XC_MemVectorException(s.str());
         }
 
         return *(T*)((char*)_pData + iIndex * _pHead->_iBlockSize);
@@ -287,13 +286,13 @@ protected:
 };
 
 template<typename T>
-void TC_MemVector<T>::create(void *pAddr, size_t iSize)
+void XC_MemVector<T>::create(void *pAddr, size_t iSize)
 {
     size_t iBlockSize = sizeof(T);
 
     if(iSize <= sizeof(tagMemQueueHead) || ((iSize - sizeof(tagMemQueueHead)) / iBlockSize == 0))
     {
-        throw TC_MemVectorException("[TC_MemVector::create] memory size not enough.");
+        throw XC_MemVectorException("[XC_MemVector::create] memory size not enough.");
     }
 
     init(pAddr);
@@ -306,7 +305,7 @@ void TC_MemVector<T>::create(void *pAddr, size_t iSize)
 }
 
 template<typename T>
-void TC_MemVector<T>::clear()
+void XC_MemVector<T>::clear()
 {
     assert(_pHead);
 
@@ -314,14 +313,14 @@ void TC_MemVector<T>::clear()
 }
 
 template<typename T>
-string TC_MemVector<T>::desc() const
+string XC_MemVector<T>::desc() const
 {
     ostringstream s;
-    s << "[TC_MemVector] [_iSize=" << _pHead->_iSize << "] "
+    s << "[XC_MemVector] [_iSize=" << _pHead->_iSize << "] "
       << "[_iBlockCount="  << _pHead->_iBlockCount << "] "
       << "[_iBlockSize="  << _pHead->_iBlockSize << "] "
       << endl;
-    s << "[~TC_MemVector]";
+    s << "[~XC_MemVector]";
 
     return s.str();
 }

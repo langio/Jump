@@ -1,18 +1,17 @@
-#ifndef __TC_BASE64_H
-#define __TC_BASE64_H
+#ifndef __XC_BASE64_H
+#define __XC_BASE64_H
 
 #include <string>
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_base64.h 
 * @brief  base64编解码类. 
 *  
-* @author  jarodruan@tencent.com,kirkdai@tencent.com
 */
 
 /////////////////////////////////////////////////
@@ -20,7 +19,7 @@ namespace taf
 /**
 * @brief 该类提供标准的Base64的编码解码 
 */
-class TC_Base64
+class XC_Base64
 {
 public:
     /**

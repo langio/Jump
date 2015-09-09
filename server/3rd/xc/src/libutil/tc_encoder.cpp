@@ -3,10 +3,10 @@
 #include <string.h>
 #include "util/tc_encoder.h"
 
-namespace taf
+namespace xutil
 {
 
-void TC_Encoder::gbk2utf8(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen)
+void XC_Encoder::gbk2utf8(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen)
 {
 	char * pIn = (char*)sIn;
 	char * pEnd = pIn+iInLen;
@@ -17,13 +17,13 @@ void TC_Encoder::gbk2utf8(char *sOut, int &iMaxOutLen, const char *sIn, int iInL
 
 	if (iInLen > iMaxOutLen)
 	{
-		throw TC_Encoder_Exception("[TC_Encoder::gbk2utf8] iInLen > iMaxOutLen error : ", errno);
+		throw XC_Encoder_Exception("[XC_Encoder::gbk2utf8] iInLen > iMaxOutLen error : ", errno);
 	}
 
 	cd = iconv_open("UTF-8","GBK");
 	if (cd == (iconv_t)-1)
     {
-        throw TC_Encoder_Exception("[TC_Encoder::gbk2utf8] iconv_open error : ", errno);
+        throw XC_Encoder_Exception("[XC_Encoder::gbk2utf8] iconv_open error : ", errno);
 	}
 
 	iLeftLen = iMaxOutLen;
@@ -61,14 +61,14 @@ void TC_Encoder::gbk2utf8(char *sOut, int &iMaxOutLen, const char *sIn, int iInL
     iMaxOutLen = iMaxOutLen - iLeftLen;
 }
 
-string TC_Encoder::gbk2utf8(const string &sIn)
+string XC_Encoder::gbk2utf8(const string &sIn)
 {
 	iconv_t cd;
 
 	cd = iconv_open("UTF-8","GBK");
 	if (cd == (iconv_t)-1)
     {
-        throw TC_Encoder_Exception("[TC_Encoder::gbk2utf8] iconv_open error", errno);
+        throw XC_Encoder_Exception("[XC_Encoder::gbk2utf8] iconv_open error", errno);
     }
 
     string sOut;
@@ -119,14 +119,14 @@ string TC_Encoder::gbk2utf8(const string &sIn)
 	return sOut;
 }
 
-void TC_Encoder::gbk2utf8(const string &sIn, vector<string> &vtStr)
+void XC_Encoder::gbk2utf8(const string &sIn, vector<string> &vtStr)
 {
 	iconv_t cd;
 
 	cd = iconv_open("UTF-8","GBK");
 	if (cd == (iconv_t)-1)
     {
-        throw TC_Encoder_Exception("[TC_Encoder::gbk2utf8] iconv_open error", errno);
+        throw XC_Encoder_Exception("[XC_Encoder::gbk2utf8] iconv_open error", errno);
 	}
 
     vtStr.clear();
@@ -180,14 +180,14 @@ void TC_Encoder::gbk2utf8(const string &sIn, vector<string> &vtStr)
 	iconv_close(cd);
 }
 
-void TC_Encoder::utf82gbk(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen)
+void XC_Encoder::utf82gbk(char *sOut, int &iMaxOutLen, const char *sIn, int iInLen)
 {
 	iconv_t cd;
 
 	cd = iconv_open("GBK","UTF-8");
 	if (cd == (iconv_t)-1)
     {
-        throw TC_Encoder_Exception("[TC_Encoder::utf82gbk] iconv_open error", errno);
+        throw XC_Encoder_Exception("[XC_Encoder::utf82gbk] iconv_open error", errno);
 	}
 
 	char * pIn = (char*)sIn;
@@ -200,7 +200,7 @@ void TC_Encoder::utf82gbk(char *sOut, int &iMaxOutLen, const char *sIn, int iInL
     {
         iMaxOutLen = 0;
         iconv_close(cd);
-        throw TC_Encoder_Exception("[TC_Encoder::utf82gbk] iconv error", errno);
+        throw XC_Encoder_Exception("[XC_Encoder::utf82gbk] iconv error", errno);
         return;
     }
 
@@ -211,7 +211,7 @@ void TC_Encoder::utf82gbk(char *sOut, int &iMaxOutLen, const char *sIn, int iInL
     iMaxOutLen = iMaxOutLen - (int)sizeLeftLen;
 }
 
-string TC_Encoder::utf82gbk(const string &sIn)
+string XC_Encoder::utf82gbk(const string &sIn)
 {
     if(sIn.length() == 0)
     {
@@ -227,7 +227,7 @@ string TC_Encoder::utf82gbk(const string &sIn)
     {
         utf82gbk(pOut, iLen, sIn.c_str(), sIn.length());
     }
-    catch (TC_Encoder_Exception& e)
+    catch (XC_Encoder_Exception& e)
     {
         delete[] pOut;
 
@@ -245,7 +245,7 @@ string TC_Encoder::utf82gbk(const string &sIn)
  * \n -> \r\0
  * \r -> \r\r
  */
-string TC_Encoder::transTo(const string& str, char f /*='\n'*/, char t /*= '\r'*/, char u /*= '\0'*/)
+string XC_Encoder::transTo(const string& str, char f /*='\n'*/, char t /*= '\r'*/, char u /*= '\0'*/)
 {
 	string ret = str;
 
@@ -269,7 +269,7 @@ string TC_Encoder::transTo(const string& str, char f /*='\n'*/, char t /*= '\r'*
  * \r\0 -> \n
  * \r\r -> \r
  */
-string TC_Encoder::transFrom(const string& str, char f /*= '\n'*/, char t /*= '\r'*/, char u /*= '\0'*/)
+string XC_Encoder::transFrom(const string& str, char f /*= '\n'*/, char t /*= '\r'*/, char u /*= '\0'*/)
 {
 	string ret = "";
 

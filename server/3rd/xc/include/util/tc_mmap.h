@@ -1,29 +1,28 @@
-#ifndef __TC_MMAP_H
-#define __TC_MMAP_H
+#ifndef __XC_MMAP_H
+#define __XC_MMAP_H
 
 #include <sys/mman.h>
 #include <string>
 #include "util/tc_ex.h"
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_mmap.h 
 * @brief  mmap封装类. 
 *  
-* @author  jarodruan@tencent.com   
 */           
 /////////////////////////////////////////////////
 /**
 * @brief MMap异常
 */
-struct TC_Mmap_Exception : public TC_Exception
+struct XC_Mmap_Exception : public XC_Exception
 {
-    TC_Mmap_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Mmap_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Mmap_Exception() throw() {};
+    XC_Mmap_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Mmap_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Mmap_Exception() throw() {};
 };
 
 
@@ -43,7 +42,7 @@ struct TC_Mmap_Exception : public TC_Exception
  *      
  *   实现了类似的封装, 推荐直接使用
  */
-class TC_Mmap
+class XC_Mmap
 {
 public:
 
@@ -52,12 +51,12 @@ public:
 	 *  
      * @param bOwner, 如果拥有, 则析够的时候unmap
      */
-    TC_Mmap(bool bOwner = true);
+    XC_Mmap(bool bOwner = true);
 
     /**
      * @brief 析够
      */
-    ~TC_Mmap();
+    ~XC_Mmap();
 
     /**
 	 * @brief 映射到进程空间. 
@@ -74,7 +73,7 @@ public:
      * @param flags, MAP_SHARED,MAP_PRIVATE,MAP_FIXED:一般取:MAP_SHARED
      * @param fd, 进程空间中的文件描述符
      * @param offset,文件的偏移地址, 一般为0
-     * @throws TC_Mmap_Exception
+     * @throws XC_Mmap_Exception
      * @return
      */
 	void mmap(size_t length, int prot, int flags, int fd, off_t offset = 0);
@@ -87,7 +86,7 @@ public:
 	 * 注意的文件大小会比length大一个字节(初始化时生成空洞文件的原因) 
      * @param file    文件名
      * @param length  映射文件的长度
-     * @throws        TC_Mmap_Exception
+     * @throws        XC_Mmap_Exception
      * @return
      */
 	void mmap(const char *file, size_t length);
@@ -95,7 +94,7 @@ public:
     /**
 	 * @brief 解除映射关系, 解除后不能在访问这段空间了. 
 	 *  
-     * @throws TC_Mmap_Exception
+     * @throws XC_Mmap_Exception
      * @return
      */
 	void munmap();
@@ -104,7 +103,7 @@ public:
      * @brief 把共享内存中的改变写回磁盘中.
      *
      * @param bSync true:同步写回, false:异步写回
-     * @throws      TC_Mmap_Exception
+     * @throws      XC_Mmap_Exception
      * @return
      */
 	void msync(bool bSync = false);

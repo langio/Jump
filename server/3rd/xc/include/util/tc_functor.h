@@ -1,5 +1,5 @@
-#ifndef __TC_FUNCTOR_H
-#define __TC_FUNCTOR_H
+#ifndef __XC_FUNCTOR_H
+#define __XC_FUNCTOR_H
 
 #include <memory>
 #include <iostream>
@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 /** 
@@ -32,11 +32,11 @@ namespace taf
  *
  *  }
  *
- * TC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(TestFunction3);
+ * XC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(TestFunction3);
  * string s3("s3");
  * cmd3(s3, 10);
- * C函数调用用TC_FunctorWrapper封装:*
- *  TC_FunctorWrapper<TC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, s3, 10);
+ * C函数调用用XC_FunctorWrapper封装:*
+ *  XC_FunctorWrapper<XC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, s3, 10);
  *  fwrapper3();
  * 说明:
  * void : 函数的返回值
@@ -56,15 +56,15 @@ namespace taf
  *
  *  TestFunctor f;
  *
- *  TC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(f);
+ *  XC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(f);
  *
  *  string s3("s3");
  *
  *  cmd3(s3, 10);
  *
- * C++函数对象调用用TC_FunctorWrapper封装:
+ * C++函数对象调用用XC_FunctorWrapper封装:
  *
- *  TC_FunctorWrapper<TC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, s3, 10);
+ *  XC_FunctorWrapper<XC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, s3, 10);
  *
  *  fwrapper3();
  *
@@ -76,16 +76,16 @@ namespace taf
  *          cout << "TestMember::mem3(" << s << "," << i << ") called" << endl;
  *     }
  *  }
- *  TC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(&tm, &TestMember::mem3);
+ *  XC_Functor<void, TL::TLMaker<const string&, int>::Result> cmd3(&tm, &TestMember::mem3);
  * cmd3("a", 33);
- * 指向类成员函数的调用用TC_FunctorWrapper封装:
- *  TC_FunctorWrapper<TC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, "a", 10);
+ * 指向类成员函数的调用用XC_FunctorWrapper封装:
+ *  XC_FunctorWrapper<XC_Functor<void, TL::TLMaker<const string&, int>::Result> > fwrapper3(cmd3, "a", 10);
  *  fwrapper3();
- * 注意所有的TC_FunctorWrapper的调用, 在具体调用的时候是不带参数的, 参数在构造的时候已经传进去了
+ * 注意所有的XC_FunctorWrapper的调用, 在具体调用的时候是不带参数的, 参数在构造的时候已经传进去了
  ///////////////////////////////////////////////////////////////////////////////////////////////////
  *
  * 对于C风格的函数调用, 同名称的函数通常只有一个, 如果有多个相同名称的函数
- *不同参数类型的函数, 则在构造TC_Functor的时候需要强制类型转换, 如下:
+ *不同参数类型的函数, 则在构造XC_Functor的时候需要强制类型转换, 如下:
  *  void TestFunction1()
  *  {
  *      cout << "TestFunction1()" << endl;
@@ -95,15 +95,15 @@ namespace taf
  *      cout << "TestFunction1(" << c << ")" << endl;
  * }
  * typedef void (*TpFunc)();
- * TC_Functor<void> cmd1(static_cast<TpFunc>(TestFunction1));
+ * XC_Functor<void> cmd1(static_cast<TpFunc>(TestFunction1));
  * cmd1();
  * typedef void (*TpFunc1)(char);
- * TC_Functor<void, TL::TLMaker<char>::Result>
+ * XC_Functor<void, TL::TLMaker<char>::Result>
  * cmd11(static_cast<TpFunc1>(TestFunction1)); cmd11('c');
  ///////////////////////////////////////////////////////////////////////////////////////////////////
  *
  * 对于类成员函数的指针调用, 同名称的函数通常只有一个, 如果有多个相同名称的函数
- * 不同参数类型的函数, 则在构造TC_Functor的时候需要强制类型转换, 如下:
+ * 不同参数类型的函数, 则在构造XC_Functor的时候需要强制类型转换, 如下:
  *  class TestMember
  *  {
  *  public:
@@ -123,82 +123,81 @@ namespace taf
  
  *  typedef void (TestMember::*TpMem1)(char);
  
- *  TC_Functor<void> cmd1(&tm, static_cast<TpMem>(&TestMember::mem1));
+ *  XC_Functor<void> cmd1(&tm, static_cast<TpMem>(&TestMember::mem1));
  *  cmd1();
  *
  *  typedef void (TestMember::*TpMem1)(char);
  
- * TC_Functor<void, TL::TLMaker<char>::Result> cmd11(&tm,
+ * XC_Functor<void, TL::TLMaker<char>::Result> cmd11(&tm,
  
  * static_cast<TpMem1>(&TestMember::mem1)); cmd11('c');
  *
  * 具体示例请参见test/test_tc_functor.cpp.
  
- * @author jarodruan@tencent.com 
  */
 
 template<typename R, class TList>
-class TC_FunctorImp
+class XC_FunctorImp
 {
 public:
     virtual R operator()() = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R>
-class TC_FunctorImp<R, TL::EmptyType>
+class XC_FunctorImp<R, TL::EmptyType>
 {
 public:
     virtual R operator()() = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1>
-class TC_FunctorImp<R, TL::TYPELIST_1(P1)>
+class XC_FunctorImp<R, TL::TYPELIST_1(P1)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2>
-class TC_FunctorImp<R, TL::TYPELIST_2(P1, P2)>
+class XC_FunctorImp<R, TL::TYPELIST_2(P1, P2)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
                          typename TL::TypeTraits<P2>::ReferenceType p2) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3>
-class TC_FunctorImp<R, TL::TYPELIST_3(P1, P2, P3)>
+class XC_FunctorImp<R, TL::TYPELIST_3(P1, P2, P3)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
                          typename TL::TypeTraits<P2>::ReferenceType p2,
                          typename TL::TypeTraits<P3>::ReferenceType p3) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4>
-class TC_FunctorImp<R, TL::TYPELIST_4(P1, P2, P3, P4)>
+class XC_FunctorImp<R, TL::TYPELIST_4(P1, P2, P3, P4)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
                          typename TL::TypeTraits<P2>::ReferenceType p2,
                          typename TL::TypeTraits<P3>::ReferenceType p3,
                          typename TL::TypeTraits<P4>::ReferenceType p4) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5>
-class TC_FunctorImp<R, TL::TYPELIST_5(P1, P2, P3, P4, P5)>
+class XC_FunctorImp<R, TL::TYPELIST_5(P1, P2, P3, P4, P5)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -206,12 +205,12 @@ public:
                          typename TL::TypeTraits<P3>::ReferenceType p3,
                          typename TL::TypeTraits<P4>::ReferenceType p4,
                          typename TL::TypeTraits<P5>::ReferenceType p5) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6>
-class TC_FunctorImp<R, TL::TYPELIST_6(P1, P2, P3, P4, P5, P6)>
+class XC_FunctorImp<R, TL::TYPELIST_6(P1, P2, P3, P4, P5, P6)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -220,12 +219,12 @@ public:
                          typename TL::TypeTraits<P4>::ReferenceType p4,
                          typename TL::TypeTraits<P5>::ReferenceType p5,
                          typename TL::TypeTraits<P6>::ReferenceType p6) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7>
-class TC_FunctorImp<R, TL::TYPELIST_7(P1, P2, P3, P4, P5, P6, P7)>
+class XC_FunctorImp<R, TL::TYPELIST_7(P1, P2, P3, P4, P5, P6, P7)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -235,12 +234,12 @@ public:
                          typename TL::TypeTraits<P5>::ReferenceType p5,
                          typename TL::TypeTraits<P6>::ReferenceType p6,
                          typename TL::TypeTraits<P7>::ReferenceType p7) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8>
-class TC_FunctorImp<R, TL::TYPELIST_8(P1, P2, P3, P4, P5, P6, P7, P8)>
+class XC_FunctorImp<R, TL::TYPELIST_8(P1, P2, P3, P4, P5, P6, P7, P8)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -251,12 +250,12 @@ public:
                          typename TL::TypeTraits<P6>::ReferenceType p6,
                          typename TL::TypeTraits<P7>::ReferenceType p7,
                          typename TL::TypeTraits<P8>::ReferenceType p8) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9>
-class TC_FunctorImp<R, TL::TYPELIST_9(P1, P2, P3, P4, P5, P6, P7, P8, P9)>
+class XC_FunctorImp<R, TL::TYPELIST_9(P1, P2, P3, P4, P5, P6, P7, P8, P9)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -268,12 +267,12 @@ public:
                          typename TL::TypeTraits<P7>::ReferenceType p7,
                          typename TL::TypeTraits<P8>::ReferenceType p8,
                          typename TL::TypeTraits<P9>::ReferenceType p9) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 template<typename R, typename P1, typename P2, typename P3, typename P4, typename P5, typename P6, typename P7, typename P8, typename P9, typename P10>
-class TC_FunctorImp<R, TL::TYPELIST_10(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10)>
+class XC_FunctorImp<R, TL::TYPELIST_10(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10)>
 {
 public:
     virtual R operator()(typename TL::TypeTraits<P1>::ReferenceType p1,
@@ -286,27 +285,27 @@ public:
                          typename TL::TypeTraits<P8>::ReferenceType p8,
                          typename TL::TypeTraits<P9>::ReferenceType p9,
                          typename TL::TypeTraits<P10>::ReferenceType p10) = 0;
-    virtual TC_FunctorImp* clone() const = 0;
-    virtual ~TC_FunctorImp() {};
+    virtual XC_FunctorImp* clone() const = 0;
+    virtual ~XC_FunctorImp() {};
 };
 
 /**
  * 封装对函数对象以及函数的调用
  */
 template<class ParentFunctor, typename Fun>
-class TC_FunctorHandler : public TC_FunctorImp<typename ParentFunctor::ResultType, typename ParentFunctor::ParamList>
+class XC_FunctorHandler : public XC_FunctorImp<typename ParentFunctor::ResultType, typename ParentFunctor::ParamList>
 {
 public:
     typedef typename ParentFunctor::ResultType ResultType;
 
-    TC_FunctorHandler(Fun fun) : _fun(fun)
+    XC_FunctorHandler(Fun fun) : _fun(fun)
     {
 
     }
 
-    TC_FunctorHandler *clone() const
+    XC_FunctorHandler *clone() const
     {
-        return new TC_FunctorHandler(*this);
+        return new XC_FunctorHandler(*this);
     }
 
     ResultType operator()()
@@ -395,20 +394,20 @@ template<class ParentFunctor, typename PointerToObj, typename PointerToMemFun>
 /**
  * @brief 封装对成员函数的调用
  */
-class TC_MemFunHandler
-	: public TC_FunctorImp<typename ParentFunctor::ResultType, typename ParentFunctor::ParamList>
+class XC_MemFunHandler
+	: public XC_FunctorImp<typename ParentFunctor::ResultType, typename ParentFunctor::ParamList>
 {
 public:
 	typedef typename ParentFunctor::ResultType ResultType;
 
-	TC_MemFunHandler(const PointerToObj &pObj, PointerToMemFun pMemFn)
+	XC_MemFunHandler(const PointerToObj &pObj, PointerToMemFun pMemFn)
 		: _pObj(pObj), _pMemFn(pMemFn)
 	{
 	}
 
-	TC_MemFunHandler* clone() const
+	XC_MemFunHandler* clone() const
 	{
-		return new TC_MemFunHandler(*this);
+		return new XC_MemFunHandler(*this);
 	}
 
 	ResultType operator()()
@@ -495,7 +494,7 @@ private:
 };
 
 template<class ParentFunctor>
-class TC_FunctorWrapper;
+class XC_FunctorWrapper;
 
 
 template<typename R, class TList = TL::NullType>
@@ -503,14 +502,14 @@ template<typename R, class TList = TL::NullType>
  * @brief 函数对象类, 可以封装对: 函数对象, 函数, 成员函数 
  *  	  的调用
  */
-class TC_Functor
+class XC_Functor
 {
 public:
     typedef R     ResultType;
     typedef TList ParamList;
 
     /**定义封装类型*/
-    typedef TC_FunctorWrapper<TC_Functor<R, TList> > wrapper_type;
+    typedef XC_FunctorWrapper<XC_Functor<R, TList> > wrapper_type;
 
     /**定义类型列表中每个参数的原类型*/
     typedef typename TL::TypeTraits<typename TL::TypeAtNonStrict<TList, 0, TL::EmptyType>::Result>::ParameterType Param1;
@@ -537,16 +536,16 @@ public:
     typedef typename TL::TypeTraits<Param10>::ReferenceType Reference10;
 
 public:
-    TC_Functor()
+    XC_Functor()
     {
     }
 
-    TC_Functor(const TC_Functor &functor)
+    XC_Functor(const XC_Functor &functor)
     : _spImpl(functor._spImpl->clone())
     {
     }
 
-    TC_Functor& operator=(const TC_Functor &functor)
+    XC_Functor& operator=(const XC_Functor &functor)
     {
         if(this != &functor)
         {
@@ -557,14 +556,14 @@ public:
     }
 
     template<class Fun>
-    TC_Functor(Fun fun)
-	: _spImpl(new TC_FunctorHandler<TC_Functor, Fun>(fun))
+    XC_Functor(Fun fun)
+	: _spImpl(new XC_FunctorHandler<XC_Functor, Fun>(fun))
     {
     }
 
 	template<typename PointerToObj, typename PointerToMemFun>
-	TC_Functor(const PointerToObj &pObj, PointerToMemFun pMemFn)
-	: _spImpl(new TC_MemFunHandler<TC_Functor, PointerToObj, PointerToMemFun>(pObj, pMemFn))
+	XC_Functor(const PointerToObj &pObj, PointerToMemFun pMemFn)
+	: _spImpl(new XC_MemFunHandler<XC_Functor, PointerToObj, PointerToMemFun>(pObj, pMemFn))
 	{
 	}
 
@@ -633,9 +632,9 @@ public:
 
 private:
     template<class ParentFunctor>
-    friend class TC_FunctorWrapper;
+    friend class XC_FunctorWrapper;
 
-    typedef TC_FunctorImp<R, TList> Impl;
+    typedef XC_FunctorImp<R, TList> Impl;
 
     std::auto_ptr<Impl>     _spImpl;
 };
@@ -643,19 +642,19 @@ private:
 /**
  * @brief wapper基类
  */
-class TC_FunctorWrapperInterface
+class XC_FunctorWrapperInterface
 {
 public:
     virtual void operator()() = 0;
-    virtual ~TC_FunctorWrapperInterface(){}
+    virtual ~XC_FunctorWrapperInterface(){}
 };
 
 template<class ParentFunctor>
 
 /**
- * @brief 对TC_Functor进行封装, 可以让TC_Functor做到事后被调用
+ * @brief 对XC_Functor进行封装, 可以让XC_Functor做到事后被调用
  */
-class TC_FunctorWrapper : public TC_FunctorWrapperInterface
+class XC_FunctorWrapper : public XC_FunctorWrapperInterface
 {
 public:
     typedef typename ParentFunctor::ResultType R;
@@ -665,7 +664,7 @@ public:
      * @brief 拷贝构造
      * @param fw
      */
-    TC_FunctorWrapper(const TC_FunctorWrapper &fw)
+    XC_FunctorWrapper(const XC_FunctorWrapper &fw)
     : _spImpl(fw._spImpl->clone())
     , _p1(fw._p1)
     , _p2(fw._p2)
@@ -684,7 +683,7 @@ public:
      * @brief 构造函数
      * @param tf
      */
-    TC_FunctorWrapper(ParentFunctor &tf)
+    XC_FunctorWrapper(ParentFunctor &tf)
     : _spImpl(tf._spImpl->clone())
     {
     }
@@ -694,7 +693,7 @@ public:
      * @param tf
      * @param p1
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                   typename ParentFunctor::Reference1 p1)
     : _spImpl(tf._spImpl->clone()), _p1(p1)
     {
@@ -706,7 +705,7 @@ public:
      * @param p1
      * @param p2
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                   typename ParentFunctor::Reference1 p1,
                   typename ParentFunctor::Reference2 p2)
     : _spImpl(tf._spImpl->clone()), _p1(p1), _p2(p2)
@@ -720,7 +719,7 @@ public:
      * @param p2
      * @param p3
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                   typename ParentFunctor::Reference1 p1,
                   typename ParentFunctor::Reference2 p2,
                   typename ParentFunctor::Reference3 p3)
@@ -736,7 +735,7 @@ public:
      * @param p3
      * @param p4
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -754,7 +753,7 @@ public:
      * @param p4
      * @param p5
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -774,7 +773,7 @@ public:
      * @param p5
      * @param p6
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -796,7 +795,7 @@ public:
      * @param p6
      * @param p7
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -820,7 +819,7 @@ public:
      * @param p7
      * @param p8
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -846,7 +845,7 @@ public:
      * @param p8
      * @param p9
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -874,7 +873,7 @@ public:
      * @param p9
      * @param p10
      */
-    TC_FunctorWrapper(ParentFunctor &tf,
+    XC_FunctorWrapper(ParentFunctor &tf,
                                             typename ParentFunctor::Reference1 p1,
                                             typename ParentFunctor::Reference2 p2,
                                             typename ParentFunctor::Reference3 p3,
@@ -899,16 +898,16 @@ public:
 		return todo(TL::Int2Type<TL::Length<TList>::value>());
 	}
 
-	virtual ~TC_FunctorWrapper(){ }
+	virtual ~XC_FunctorWrapper(){ }
 
 protected:
     /**
      * @brief 赋值函数不定义, 只声明
      * @param fw
      *
-     * @return TC_FunctorWrapper&
+     * @return XC_FunctorWrapper&
      */
-    TC_FunctorWrapper& operator=(const TC_FunctorWrapper &fw);
+    XC_FunctorWrapper& operator=(const XC_FunctorWrapper &fw);
 
 	R todo(TL::Int2Type<0>)
     {
@@ -966,7 +965,7 @@ protected:
 	}
 
 protected:
-    typedef TC_FunctorImp<R, TList> Impl;
+    typedef XC_FunctorImp<R, TList> Impl;
 
     std::auto_ptr<Impl>             _spImpl;
 

@@ -1,5 +1,5 @@
-#ifndef _TC_LOCK_H
-#define _TC_LOCK_H
+#ifndef _XC_LOCK_H
+#define _XC_LOCK_H
 
 #include <string>
 #include <stdexcept>
@@ -8,13 +8,12 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_lock.h 
  * @brief  锁类 
- * @author  jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 
@@ -22,11 +21,11 @@ namespace taf
 /**
 * @brief  锁异常
 */
-struct TC_Lock_Exception : public TC_Exception
+struct XC_Lock_Exception : public XC_Exception
 {
-    TC_Lock_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Lock_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Lock_Exception() throw() {};
+    XC_Lock_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Lock_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Lock_Exception() throw() {};
 };
 
 /**
@@ -34,7 +33,7 @@ struct TC_Lock_Exception : public TC_Exception
  * 构造时候加锁，析够的时候解锁
  */
 template <typename T>
-class TC_LockT
+class XC_LockT
 {
 public:
 
@@ -43,7 +42,7 @@ public:
 	 *  
      * @param mutex 锁对象
      */
-    TC_LockT(const T& mutex) : _mutex(mutex)
+    XC_LockT(const T& mutex) : _mutex(mutex)
     {
         _mutex.lock();
         _acquired = true;
@@ -52,7 +51,7 @@ public:
     /**
      * @brief  析构，析构时解锁
      */
-    virtual ~TC_LockT()
+    virtual ~XC_LockT()
     {
         if (_acquired)
         {
@@ -67,7 +66,7 @@ public:
     {
         if (_acquired)
         {
-            throw TC_Lock_Exception("thread has locked!");
+            throw XC_Lock_Exception("thread has locked!");
         }
         _mutex.lock();
         _acquired = true;
@@ -91,7 +90,7 @@ public:
     {
         if (!_acquired)
         {
-            throw TC_Lock_Exception("thread hasn't been locked!");
+            throw XC_Lock_Exception("thread hasn't been locked!");
         }
         _mutex.unlock();
         _acquired = false;
@@ -111,10 +110,10 @@ protected:
 
     /**
 	 * @brief 构造函数
-	 * 用于锁尝试操作，与TC_LockT相似
+	 * 用于锁尝试操作，与XC_LockT相似
 	 *  
      */
-    TC_LockT(const T& mutex, bool) : _mutex(mutex)
+    XC_LockT(const T& mutex, bool) : _mutex(mutex)
     {
         _acquired = _mutex.tryLock();
     }
@@ -122,8 +121,8 @@ protected:
 private:
 
     // Not implemented; prevents accidental use.
-    TC_LockT(const TC_LockT&);
-    TC_LockT& operator=(const TC_LockT&);
+    XC_LockT(const XC_LockT&);
+    XC_LockT& operator=(const XC_LockT&);
 
 protected:
     /**
@@ -141,11 +140,11 @@ protected:
  * @brief  尝试上锁
  */
 template <typename T>
-class TC_TryLockT : public TC_LockT<T>
+class XC_TryLockT : public XC_LockT<T>
 {
 public:
 
-    TC_TryLockT(const T& mutex) : TC_LockT<T>(mutex, true)
+    XC_TryLockT(const T& mutex) : XC_LockT<T>(mutex, true)
     {
     }
 };
@@ -153,7 +152,7 @@ public:
 /**
  * @brief  空锁, 不做任何锁动作
  */
-class TC_EmptyMutex
+class XC_EmptyMutex
 {
 public:
     /**

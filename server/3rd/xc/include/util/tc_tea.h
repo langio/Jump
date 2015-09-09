@@ -1,5 +1,5 @@
-#ifndef _TC_TEA_H_
-#define _TC_TEA_H_
+#ifndef _XC_TEA_H_
+#define _XC_TEA_H_
 
 #include <vector>
 #include <string>
@@ -10,14 +10,13 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_tea.h 
  * @brief tea加解密类(修改至c版本) . 
  *  
- * @author jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
            
@@ -26,16 +25,16 @@ namespace taf
 /**
  * @brief 加密异常类
  */	           
-struct TC_Tea_Exception : public TC_Exception
+struct XC_Tea_Exception : public XC_Exception
 {
-    TC_Tea_Exception(const string &buffer) : TC_Exception(buffer){};
-    ~TC_Tea_Exception() throw(){};
+    XC_Tea_Exception(const string &buffer) : XC_Exception(buffer){};
+    ~XC_Tea_Exception() throw(){};
 };
 
 /**
  * @brief tea算法，通常用第二代算法 
  */
-class TC_Tea
+class XC_Tea
 {
 public:
     /**
@@ -54,7 +53,7 @@ public:
      * @param key       解密的key, 16个字节 
      * @param sIn       需要解密的buffer 
      * @param iLength   buffer长度 
-	 * @throw           TC_Tea_Exception, 解密失败会抛出异常 
+	 * @throw           XC_Tea_Exception, 解密失败会抛出异常 
      * @return          vector<char>, 解密后数据
 	 */
 	static vector<char> decrypt(const char *key, const char *sIn, size_t iLength);
@@ -75,7 +74,7 @@ public:
      * @param key      解密的key, 16个字节 
      * @param sIn      需要解密的buffer 
      * @param iLength  buffer长度 
-	 * @throw          TC_Tea_Exception, 解密失败会抛出异常 
+	 * @throw          XC_Tea_Exception, 解密失败会抛出异常 
      * @return         vector<char>, 解密后数据
 	 */
 	static vector<char> decrypt2(const char *key, const char *sIn, size_t iLength);

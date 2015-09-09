@@ -1,11 +1,11 @@
-#ifndef __TC_SINGLETON_H__
-#define __TC_SINGLETON_H__
+#ifndef __XC_SINGLETON_H__
+#define __XC_SINGLETON_H__
 
 #include "util/tc_monitor.h"
 #include <cassert>
 #include <cstdlib>
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
@@ -16,7 +16,7 @@ namespace taf
  * 
  * 没有实现对单件生命周期的管理,使用示例代码如下:
  * 
- * class A : public TC_Singleton<A, CreateStatic,  DefaultLifetime>
+ * class A : public XC_Singleton<A, CreateStatic,  DefaultLifetime>
  * 
  * {
  * 
@@ -56,7 +56,6 @@ namespace taf
  * 
  * 对象创建后不会调用析够函数析够, 通常采用实例中的方式就可以了
  * 
- * @author jarodruan@tencent.com
  */              
 /////////////////////////////////////////////////
 
@@ -182,7 +181,7 @@ template
     template<class> class CreatePolicy   = CreateUsingNew,
     template<class> class LifetimePolicy = DefaultLifetime
 >
-class TC_Singleton 
+class XC_Singleton 
 {
 public:
     typedef T  instance_type;
@@ -198,7 +197,7 @@ public:
         //加锁, 双check机制, 保证正确和效率
         if(!_pInstance)
         {
-            TC_ThreadLock::Lock lock(_tl);
+            XC_ThreadLock::Lock lock(_tl);
             if(!_pInstance)
             {
                 if(_destroyed)
@@ -214,7 +213,7 @@ public:
         return (T*)_pInstance;
     }
     
-    virtual ~TC_Singleton(){}; 
+    virtual ~XC_Singleton(){}; 
 
 protected:
 
@@ -227,24 +226,24 @@ protected:
     }
 protected:
 
-    static TC_ThreadLock    _tl;
+    static XC_ThreadLock    _tl;
     static volatile T*      _pInstance;
     static bool             _destroyed;
 
 protected:
-    TC_Singleton(){}
-    TC_Singleton (const TC_Singleton &); 
-    TC_Singleton &operator=(const TC_Singleton &);
+    XC_Singleton(){}
+    XC_Singleton (const XC_Singleton &); 
+    XC_Singleton &operator=(const XC_Singleton &);
 };
 
 template <class T, template<class> class CreatePolicy, template<class> class LifetimePolicy> 
-TC_ThreadLock TC_Singleton<T, CreatePolicy, LifetimePolicy>::_tl; 
+XC_ThreadLock XC_Singleton<T, CreatePolicy, LifetimePolicy>::_tl; 
 
 template <class T, template<class> class CreatePolicy, template<class> class LifetimePolicy> 
-bool TC_Singleton<T, CreatePolicy, LifetimePolicy>::_destroyed = false; 
+bool XC_Singleton<T, CreatePolicy, LifetimePolicy>::_destroyed = false; 
 
 template <class T, template<class> class CreatePolicy, template<class> class LifetimePolicy> 
-volatile T* TC_Singleton<T, CreatePolicy, LifetimePolicy>::_pInstance = NULL; 
+volatile T* XC_Singleton<T, CreatePolicy, LifetimePolicy>::_pInstance = NULL; 
 
 }
 

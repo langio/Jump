@@ -1,16 +1,15 @@
-#ifndef __TC_FILE_MUTEX_H
-#define __TC_FILE_MUTEX_H
+#ifndef __XC_FILE_MUTEX_H
+#define __XC_FILE_MUTEX_H
 
 #include "util/tc_lock.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_file_mutex.h 
 * @brief  文件锁类. 
 *  
-* @author  jarodruan@tencent.com      
 * 
 */
 /////////////////////////////////////////////////
@@ -18,29 +17,29 @@ namespace taf
 /**
 * @brief  异常类
 */
-struct TC_FileMutex_Exception : public TC_Lock_Exception
+struct XC_FileMutex_Exception : public XC_Lock_Exception
 {
-    TC_FileMutex_Exception(const string &buffer) : TC_Lock_Exception(buffer){};
-    TC_FileMutex_Exception(const string &buffer, int err) : TC_Lock_Exception(buffer, err){};
-    ~TC_FileMutex_Exception() throw() {};
+    XC_FileMutex_Exception(const string &buffer) : XC_Lock_Exception(buffer){};
+    XC_FileMutex_Exception(const string &buffer, int err) : XC_Lock_Exception(buffer, err){};
+    ~XC_FileMutex_Exception() throw() {};
 };
 
 /**
  * @brief  文件锁, 注意:只能在进程间加锁.
  */
-class TC_FileMutex
+class XC_FileMutex
 {
 public:
 
 	/**
      * @brief  构造函数.
 	 */
-	TC_FileMutex();
+	XC_FileMutex();
 
 	/**
      * @brief  析够函数.
 	 */
-	virtual ~TC_FileMutex();
+	virtual ~XC_FileMutex();
 
 	/**
 	 * @brief  初始化文件锁. 
@@ -66,7 +65,7 @@ public:
     /**
 	* @brief  尝试读锁. 
 	*  
-    * @throws TC_FileMutex_Exception
+    * @throws XC_FileMutex_Exception
     * @return  加锁成功则返回false, 否则返回false
     */
     bool tryrlock();
@@ -87,7 +86,7 @@ public:
 	* @brief  尝试写锁. 
 	*  
 	* @return bool，加锁成功则返回false, 否则返回false 
-	* @throws TC_FileMutex_Exception 
+	* @throws XC_FileMutex_Exception 
     */
     bool trywlock();
 
@@ -106,7 +105,7 @@ public:
     /**
 	* @brief  尝试解锁. 
 	*  
-    * @throws TC_FileMutex_Exception
+    * @throws XC_FileMutex_Exception
     * @return int, 0 正确
     */
     bool trylock() {return trywlock();};

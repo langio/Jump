@@ -1,23 +1,22 @@
-#ifndef __TC_EX_H
-#define __TC_EX_H
+#ifndef __XC_EX_H
+#define __XC_EX_H
 
 #include <stdexcept>
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file  tc_ex.h 
 * @brief 异常类 
-* @author  jarodruan@tencent.com  
 */           
 /////////////////////////////////////////////////
 
 /**
 * @brief 异常类.
 */
-class TC_Exception : public exception
+class XC_Exception : public exception
 {
 public:
     /**
@@ -27,7 +26,7 @@ public:
 	 *  
 	 * @param buffer 异常的告警信息 
      */
-	explicit TC_Exception(const string &buffer);
+	explicit XC_Exception(const string &buffer);
 
     /**
 	 * @brief 构造函数,提供了一个可以传入errno的构造函数， 
@@ -37,12 +36,12 @@ public:
      * @param buffer 异常的告警信息 
      * @param err    错误码, 可用strerror获取错误信息
      */
-	TC_Exception(const string &buffer, int err);
+	XC_Exception(const string &buffer, int err);
 
     /**
      * @brief 析够数函
      */
-    virtual ~TC_Exception() throw();
+    virtual ~XC_Exception() throw();
 
     /**
      * @brief 错误信息.

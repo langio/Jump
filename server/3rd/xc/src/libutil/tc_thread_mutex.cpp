@@ -3,10 +3,10 @@
 #include <iostream>
 #include <cassert>
 
-namespace taf
+namespace xutil
 {
 
-TC_ThreadMutex::TC_ThreadMutex()
+XC_ThreadMutex::XC_ThreadMutex()
 {
     int rc;
     pthread_mutexattr_t attr;
@@ -24,74 +24,74 @@ TC_ThreadMutex::TC_ThreadMutex()
 
     if(rc != 0)
     {
-        throw TC_ThreadMutex_Exception("[TC_ThreadMutex::TC_ThreadMutex] pthread_mutexattr_init error", rc);
+        throw XC_ThreadMutex_Exception("[XC_ThreadMutex::XC_ThreadMutex] pthread_mutexattr_init error", rc);
     }
 }
 
-TC_ThreadMutex::~TC_ThreadMutex()
+XC_ThreadMutex::~XC_ThreadMutex()
 {
     int rc = 0;
     rc = pthread_mutex_destroy(&_mutex);
     if(rc != 0)
     {
-        cerr << "[TC_ThreadMutex::~TC_ThreadMutex] pthread_mutex_destroy error:" << string(strerror(rc)) << endl;
+        cerr << "[XC_ThreadMutex::~XC_ThreadMutex] pthread_mutex_destroy error:" << string(strerror(rc)) << endl;
     }
 //    assert(rc == 0);
 }
 
-void TC_ThreadMutex::lock() const
+void XC_ThreadMutex::lock() const
 {
     int rc = pthread_mutex_lock(&_mutex);
     if(rc != 0)
     {
         if(rc == EDEADLK)
     	{
-            throw TC_ThreadMutex_Exception("[TC_ThreadMutex::lock] pthread_mutex_lock dead lock error", rc);
+            throw XC_ThreadMutex_Exception("[XC_ThreadMutex::lock] pthread_mutex_lock dead lock error", rc);
     	}
     	else
     	{
-            throw TC_ThreadMutex_Exception("[TC_ThreadMutex::lock] pthread_mutex_lock error", rc);
+            throw XC_ThreadMutex_Exception("[XC_ThreadMutex::lock] pthread_mutex_lock error", rc);
     	}
     }
 }
 
-bool TC_ThreadMutex::tryLock() const
+bool XC_ThreadMutex::tryLock() const
 {
     int rc = pthread_mutex_trylock(&_mutex);
     if(rc != 0 && rc != EBUSY)
     {
         if(rc == EDEADLK)
     	{
-            throw TC_ThreadMutex_Exception("[TC_ThreadMutex::tryLock] pthread_mutex_trylock dead lock error", rc);
+            throw XC_ThreadMutex_Exception("[XC_ThreadMutex::tryLock] pthread_mutex_trylock dead lock error", rc);
     	}
     	else
     	{
-            throw TC_ThreadMutex_Exception("[TC_ThreadMutex::tryLock] pthread_mutex_trylock error", rc);
+            throw XC_ThreadMutex_Exception("[XC_ThreadMutex::tryLock] pthread_mutex_trylock error", rc);
     	}
     }
     return (rc == 0);
 }
 
-void TC_ThreadMutex::unlock() const
+void XC_ThreadMutex::unlock() const
 {
     int rc = pthread_mutex_unlock(&_mutex);
     if(rc != 0)
     {
-        throw TC_ThreadMutex_Exception("[TC_ThreadMutex::unlock] pthread_mutex_unlock error", rc);
+        throw XC_ThreadMutex_Exception("[XC_ThreadMutex::unlock] pthread_mutex_unlock error", rc);
     }
 }
 
-int TC_ThreadMutex::count() const
+int XC_ThreadMutex::count() const
 {
     return 0;
 }
 
-void TC_ThreadMutex::count(int c) const
+void XC_ThreadMutex::count(int c) const
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TC_ThreadRecMutex::TC_ThreadRecMutex()
+XC_ThreadRecMutex::XC_ThreadRecMutex()
 : _count(0)
 {
     int rc;
@@ -100,28 +100,28 @@ TC_ThreadRecMutex::TC_ThreadRecMutex()
     rc = pthread_mutexattr_init(&attr);
     if(rc != 0)
     {
-		throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::TC_ThreadRecMutex] pthread_mutexattr_init error", rc);
+		throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::XC_ThreadRecMutex] pthread_mutexattr_init error", rc);
     }
     rc = pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     if(rc != 0)
     {
-		throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::TC_ThreadRecMutex] pthread_mutexattr_settype error", rc);
+		throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::XC_ThreadRecMutex] pthread_mutexattr_settype error", rc);
     }
 
     rc = pthread_mutex_init(&_mutex, &attr);
     if(rc != 0)
     {
-		throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::TC_ThreadRecMutex] pthread_mutex_init error", rc);
+		throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::XC_ThreadRecMutex] pthread_mutex_init error", rc);
     }
 
     rc = pthread_mutexattr_destroy(&attr);
     if(rc != 0)
     {
-		throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::TC_ThreadRecMutex] pthread_mutexattr_destroy error", rc);
+		throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::XC_ThreadRecMutex] pthread_mutexattr_destroy error", rc);
     }
 }
 
-TC_ThreadRecMutex::~TC_ThreadRecMutex()
+XC_ThreadRecMutex::~XC_ThreadRecMutex()
 {
 	while (_count)
 	{
@@ -132,17 +132,17 @@ TC_ThreadRecMutex::~TC_ThreadRecMutex()
     rc = pthread_mutex_destroy(&_mutex);
     if(rc != 0)
     {
-        cerr << "[TC_ThreadRecMutex::~TC_ThreadRecMutex] pthread_mutex_destroy error:" << string(strerror(rc)) << endl;
+        cerr << "[XC_ThreadRecMutex::~XC_ThreadRecMutex] pthread_mutex_destroy error:" << string(strerror(rc)) << endl;
     }
 //    assert(rc == 0);
 }
 
-int TC_ThreadRecMutex::lock() const
+int XC_ThreadRecMutex::lock() const
 {
     int rc = pthread_mutex_lock(&_mutex);
     if(rc != 0)
     {
-		throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::lock] pthread_mutex_lock error", rc);
+		throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::lock] pthread_mutex_lock error", rc);
     }
 
     if(++_count > 1)
@@ -154,7 +154,7 @@ int TC_ThreadRecMutex::lock() const
 	return rc;
 }
 
-int TC_ThreadRecMutex::unlock() const
+int XC_ThreadRecMutex::unlock() const
 {
     if(--_count == 0)
     {
@@ -165,14 +165,14 @@ int TC_ThreadRecMutex::unlock() const
 	return 0;
 }
 
-bool TC_ThreadRecMutex::tryLock() const
+bool XC_ThreadRecMutex::tryLock() const
 {
     int rc = pthread_mutex_trylock(&_mutex);
     if(rc != 0 )
     {
 		if(rc != EBUSY)
 		{
-			throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::tryLock] pthread_mutex_trylock error", rc);
+			throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::tryLock] pthread_mutex_trylock error", rc);
 		}
     }
     else if(++_count > 1)
@@ -180,25 +180,25 @@ bool TC_ThreadRecMutex::tryLock() const
         rc = pthread_mutex_unlock(&_mutex);
         if(rc != 0)
         {
-            throw TC_ThreadMutex_Exception("[TC_ThreadRecMutex::tryLock] pthread_mutex_unlock error", rc);
+            throw XC_ThreadMutex_Exception("[XC_ThreadRecMutex::tryLock] pthread_mutex_unlock error", rc);
         }
     }
     return (rc == 0);
 }
 
-bool TC_ThreadRecMutex::willUnlock() const
+bool XC_ThreadRecMutex::willUnlock() const
 {
     return _count == 1;
 }
 
-int TC_ThreadRecMutex::count() const
+int XC_ThreadRecMutex::count() const
 {
     int c   = _count;
     _count  = 0;
     return c;
 }
 
-void TC_ThreadRecMutex::count(int c) const
+void XC_ThreadRecMutex::count(int c) const
 {
     _count = c;
 }

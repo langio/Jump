@@ -1,19 +1,18 @@
-#ifndef __TC_DES_H
-#define __TC_DES_H
+#ifndef __XC_DES_H
+#define __XC_DES_H
 
 #include <string>
 #include <stdint.h>
 #include "util/tc_ex.h"
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_des.h
  * @brief des加解密类.
  *  
- * @author  jarodruan@tencent.com
  */             
 /////////////////////////////////////////////////
 
@@ -22,10 +21,10 @@ namespace taf
 /**
  * @brief des异常. 
  */
-struct TC_DES_Exception : public TC_Exception
+struct XC_DES_Exception : public XC_Exception
 {
-    TC_DES_Exception(const string &buffer) : TC_Exception(buffer){};
-    ~TC_DES_Exception() throw(){};
+    XC_DES_Exception(const string &buffer) : XC_Exception(buffer){};
+    ~XC_DES_Exception() throw(){};
 };
 
 
@@ -51,7 +50,7 @@ struct TC_DES_Exception : public TC_Exception
  * Key必须是null结束的字符串.
  *
  */
-class TC_Des
+class XC_Des
 {
 public:
     /**

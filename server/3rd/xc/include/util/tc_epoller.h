@@ -1,24 +1,23 @@
-#ifndef	__TC_EPOLLER_H_
-#define __TC_EPOLLER_H_
+#ifndef	__XC_EPOLLER_H_
+#define __XC_EPOLLER_H_
 
 #include <sys/epoll.h>
 #include <cassert>
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file  tc_epoller.h 
  * @brief  epoll操作封装类 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
  
 /**
  * @brief epoller操作类，已经默认采用了EPOLLET方式做触发 
  */
-class TC_Epoller
+class XC_Epoller
 {
 public:
 
@@ -27,12 +26,12 @@ public:
 	 *  
      * @param bEt 默认是ET模式，当状态发生变化的时候才获得通知
 	 */
-	TC_Epoller(bool bEt = true);
+	XC_Epoller(bool bEt = true);
 
 	/**
      * @brief 析够函数.
 	 */
-	~TC_Epoller();
+	~XC_Epoller();
 
 	/**
 	 * @brief 生成epoll句柄. 

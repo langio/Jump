@@ -1,5 +1,5 @@
-#ifndef	__TC_HASHMAP_COMPACT_H__
-#define __TC_HASHMAP_COMPACT_H__
+#ifndef	__XC_HASHMAP_COMPACT_H__
+#define __XC_HASHMAP_COMPACT_H__
 
 #include <vector>
 #include <memory>
@@ -13,32 +13,31 @@
 #include "util/tc_hash_fun.h"
 #include "util/tc_thread.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file tc_hashmap_compact.h
  * @brief  hashmap类(紧凑型, 64位os下, 每个chunk的额外内存占用比tc_hashmap要小30个字节)
  *
- * @author  jarodruan@tencent.com,skingfan@tencent.com
  */
 /////////////////////////////////////////////////
 /**
 * @brief Hash map异常类
 */
-struct TC_HashMapCompact_Exception : public TC_Exception
+struct XC_HashMapCompact_Exception : public XC_Exception
 {
-	TC_HashMapCompact_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_HashMapCompact_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_HashMapCompact_Exception() throw(){};
+	XC_HashMapCompact_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_HashMapCompact_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_HashMapCompact_Exception() throw(){};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
 /**
  * @brief 紧凑性hashmap.
- * 基于内存的hashmap,所有操作需要自己加锁 , 使用方式同TC_Hashmap，但是64位系统下更节约额外的管理空间
+ * 基于内存的hashmap,所有操作需要自己加锁 , 使用方式同XC_Hashmap，但是64位系统下更节约额外的管理空间
  */
-class TC_HashMapCompact
+class XC_HashMapCompact
 {
 public:
 	struct HashMapIterator;
@@ -127,7 +126,7 @@ public:
          * @param 当前MemBlock的地址
          * @param pAdd
          */
-        Block(TC_HashMapCompact *pMap, uint32_t iAddr)
+        Block(XC_HashMapCompact *pMap, uint32_t iAddr)
         : _pMap(pMap)
         , _iHead(iAddr)
         {
@@ -220,18 +219,18 @@ public:
          * @brief 获取Block中的数据
          *
          * @return int
-         *          TC_HashMapCompact::RT_OK, 正常, 其他异常
-         *          TC_HashMapCompact::RT_ONLY_KEY, 只有Key
+         *          XC_HashMapCompact::RT_OK, 正常, 其他异常
+         *          XC_HashMapCompact::RT_ONLY_KEY, 只有Key
          *          其他异常
          */
-        int getBlockData(TC_HashMapCompact::BlockData &data);
+        int getBlockData(XC_HashMapCompact::BlockData &data);
 
         /**
          * @brief 获取数据
          * @param pData
          * @param iDatalen
          * @return int,
-         *          TC_HashMapCompact::RT_OK, 正常
+         *          XC_HashMapCompact::RT_OK, 正常
          *          其他异常
          */
         int get(void *pData, uint32_t &iDataLen);
@@ -240,7 +239,7 @@ public:
          * @brief 获取数据
          * @param s
          * @return int
-         *          TC_HashMapCompact::RT_OK, 正常
+         *          XC_HashMapCompact::RT_OK, 正常
          *          其他异常
          */
         int get(string &s);
@@ -251,7 +250,7 @@ public:
          * @param iDatalen
          * @param vtData, 淘汰的数据
          */
-        int set(const string& k, const string& v, uint32_t iExpireTime, uint8_t iVersion, bool bNewBlock, bool bOnlyKey, vector<TC_HashMapCompact::BlockData> &vtData);
+        int set(const string& k, const string& v, uint32_t iExpireTime, uint8_t iVersion, bool bNewBlock, bool bOnlyKey, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 是否是脏数据
@@ -355,7 +354,7 @@ public:
          *
          * @return int,
          */
-        int allocate(uint32_t iDataLen, vector<TC_HashMapCompact::BlockData> &vtData);
+        int allocate(uint32_t iDataLen, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 挂接chunk, 如果core则挂接失败, 保证内存块还可以用
@@ -374,7 +373,7 @@ public:
          * @param vtData  淘汰的数据
          * @return        int
          */
-        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<TC_HashMapCompact::BlockData> &vtData);
+        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 获取数据长度
@@ -388,7 +387,7 @@ public:
         /**
          * Map
          */
-        TC_HashMapCompact   *_pMap;
+        XC_HashMapCompact   *_pMap;
 
         /**
          * block区块首地址, 相对地址
@@ -412,9 +411,9 @@ public:
         /**
          * @brief 构造函数
          */
-        BlockAllocator(TC_HashMapCompact *pMap)
+        BlockAllocator(XC_HashMapCompact *pMap)
         : _pMap(pMap)
-        , _pChunkAllocator(new TC_MemMultiChunkAllocator())
+        , _pChunkAllocator(new XC_MemMultiChunkAllocator())
         {
         }
 
@@ -473,9 +472,9 @@ public:
         /**
          * @brief 获取每种数据块头部信息
          *
-         * @return TC_MemChunk::tagChunkHead
+         * @return XC_MemChunk::tagChunkHead
          */
-        vector<TC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
+        vector<XC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
 
         /**
          * @brief 内存大小
@@ -513,7 +512,7 @@ public:
          * @param vtData, 返回释放的内存块数据
          * @return size_t, 相对地址,0表示没有空间可以分配
          */
-        uint32_t allocateMemBlock(uint32_t index, uint32_t &iAllocSize, vector<TC_HashMapCompact::BlockData> &vtData);
+        uint32_t allocateMemBlock(uint32_t index, uint32_t &iAllocSize, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 为地址为iAddr的Block分配一个chunk
@@ -523,7 +522,7 @@ public:
          * @param vtData 返回释放的内存块数据
          * @return size_t, 相对地址,0表示没有空间可以分配
          */
-        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<TC_HashMapCompact::BlockData> &vtData);
+        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 释放Block
@@ -551,12 +550,12 @@ public:
         /**
          * map
          */
-    	TC_HashMapCompact           *_pMap;
+    	XC_HashMapCompact           *_pMap;
 
         /**
          * chunk分配器
          */
-        TC_MemMultiChunkAllocator   *_pChunkAllocator;
+        XC_MemMultiChunkAllocator   *_pChunkAllocator;
     };
 
     ////////////////////////////////////////////////////////////////
@@ -572,7 +571,7 @@ public:
          * @param pMap
          * @param iAddr
     	 */
-    	HashMapLockItem(TC_HashMapCompact *pMap, uint32_t iAddr);
+    	HashMapLockItem(XC_HashMapCompact *pMap, uint32_t iAddr);
 
         /**
          *
@@ -661,7 +660,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int set(const string& k, const string& v, uint32_t iExpireTime, uint8_t iVersion, bool bNewBlock, vector<TC_HashMapCompact::BlockData> &vtData);
+        int set(const string& k, const string& v, uint32_t iExpireTime, uint8_t iVersion, bool bNewBlock, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          * @brief 设置Key, 无数据
@@ -670,7 +669,7 @@ public:
          *
          * @return int
          */
-        int set(const string& k, uint8_t iVersion, bool bNewBlock, vector<TC_HashMapCompact::BlockData> &vtData);
+        int set(const string& k, uint8_t iVersion, bool bNewBlock, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          *
@@ -703,14 +702,14 @@ public:
          */
     	void prevItem(int iType);
 
-        friend class TC_HashMapCompact;
-        friend struct TC_HashMapCompact::HashMapLockIterator;
+        friend class XC_HashMapCompact;
+        friend struct XC_HashMapCompact::HashMapLockIterator;
 
     private:
         /**
          * map
          */
-    	TC_HashMapCompact *_pMap;
+    	XC_HashMapCompact *_pMap;
 
         /**
          * block的地址
@@ -755,7 +754,7 @@ public:
          * @param iAddr, 地址
     	 * @param type
     	 */
-    	HashMapLockIterator(TC_HashMapCompact *pMap, uint32_t iAddr, int iType, int iOrder);
+    	HashMapLockIterator(XC_HashMapCompact *pMap, uint32_t iAddr, int iType, int iOrder);
 
         /**
          * @brief copy
@@ -819,7 +818,7 @@ public:
         /**
          *
          */
-        TC_HashMapCompact  *_pMap;
+        XC_HashMapCompact  *_pMap;
 
         /**
          *
@@ -849,7 +848,7 @@ public:
          * @param pMap
          * @param iIndex
          */
-        HashMapItem(TC_HashMapCompact *pMap, uint32_t iIndex);
+        HashMapItem(XC_HashMapCompact *pMap, uint32_t iIndex);
 
         /**
          *
@@ -887,7 +886,7 @@ public:
          *
          * @return
          */
-        void get(vector<TC_HashMapCompact::BlockData> &vtData);
+        void get(vector<XC_HashMapCompact::BlockData> &vtData);
 
 		/**
          * @brief 获取当前hash桶的过期数据, 注意只获取有key/value的数据,
@@ -895,7 +894,7 @@ public:
          *
          * @return
          */
-        void getExpire(uint32_t t, vector<TC_HashMapCompact::BlockData> &vtData);
+        void getExpire(uint32_t t, vector<XC_HashMapCompact::BlockData> &vtData);
 
         /**
          *
@@ -918,14 +917,14 @@ public:
          */
 		int setDirty();
 
-        friend class TC_HashMapCompact;
-        friend struct TC_HashMapCompact::HashMapIterator;
+        friend class XC_HashMapCompact;
+        friend struct XC_HashMapCompact::HashMapIterator;
 
     private:
         /**
          * map
          */
-        TC_HashMapCompact *_pMap;
+        XC_HashMapCompact *_pMap;
 
         /**
          * 数据块地址
@@ -952,7 +951,7 @@ public:
          * @param iIndex, 地址
     	 * @param type
     	 */
-    	HashMapIterator(TC_HashMapCompact *pMap, uint32_t iIndex);
+    	HashMapIterator(XC_HashMapCompact *pMap, uint32_t iIndex);
 
         /**
          * @brief 拷贝构造
@@ -1016,7 +1015,7 @@ public:
         /**
          *
          */
-        TC_HashMapCompact  *_pMap;
+        XC_HashMapCompact  *_pMap;
 
         /**
          *
@@ -1160,7 +1159,7 @@ public:
 	/**
 	 * @brief 定义hash处理器
 	  */
-    typedef TC_Functor<size_t, TL::TLMaker<const string &>::Result> hash_functor;
+    typedef XC_Functor<size_t, TL::TLMaker<const string &>::Result> hash_functor;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //map的接口定义
@@ -1168,7 +1167,7 @@ public:
     /**
      * @brief 构造函数
      */
-    TC_HashMapCompact()
+    XC_HashMapCompact()
     : _iMinDataSize(0)
     , _iMaxDataSize(0)
     , _fFactor(1.0)
@@ -1227,9 +1226,9 @@ public:
     /**
      * @brief 获取每种大小内存块的头部信息
      *
-     * @return vector<TC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
+     * @return vector<XC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
      */
-    vector<TC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
+    vector<XC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
 
     /**
      * @brief 所有block中chunk的个数
@@ -1314,8 +1313,8 @@ public:
 
     /**
      * @brief 设置淘汰方式
-     * TC_HashMapCompact::ERASEBYGET
-     * TC_HashMapCompact::ERASEBYSET
+     * XC_HashMapCompact::ERASEBYGET
+     * XC_HashMapCompact::ERASEBYSET
      * @param cEraseMode
      */
     void setEraseMode(char cEraseMode)              { _pHead->_cEraseMode = cEraseMode; }
@@ -1724,7 +1723,7 @@ public:
      */
     struct FailureRecover
     {
-        FailureRecover(TC_HashMapCompact *pMap) : _pMap(pMap)
+        FailureRecover(XC_HashMapCompact *pMap) : _pMap(pMap)
         {
             _pMap->doRecover();
         }
@@ -1735,7 +1734,7 @@ public:
         }
 
     protected:
-        TC_HashMapCompact   *_pMap;
+        XC_HashMapCompact   *_pMap;
     };
 
 protected:
@@ -1750,11 +1749,11 @@ protected:
     /**
 	 * @brief 禁止copy构造
 	 *  */
-    TC_HashMapCompact(const TC_HashMapCompact &mcm);
+    XC_HashMapCompact(const XC_HashMapCompact &mcm);
     /**
 	 * @brief 禁止复制
 	 *  */
-    TC_HashMapCompact &operator=(const TC_HashMapCompact &mcm);
+    XC_HashMapCompact &operator=(const XC_HashMapCompact &mcm);
 
     /**
      * @brief 初始化
@@ -1994,7 +1993,7 @@ protected:
     /**
      * hash对象
      */
-    TC_MemVector<tagHashItem>   _hash;
+    XC_MemVector<tagHashItem>   _hash;
 
     /**
      * 修改数据块

@@ -1,47 +1,46 @@
-#ifndef _TC_MONITOR_H
-#define _TC_MONITOR_H
+#ifndef _XC_MONITOR_H
+#define _XC_MONITOR_H
 
 #include "util/tc_thread_mutex.h"
 #include "util/tc_thread_cond.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_monitor.h 
  * @brief 锁监控器类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 /**
  * @brief 线程锁监控模板类.
- * 通常线程锁，都通过该类来使用，而不是直接用TC_ThreadMutex、TC_ThreadRecMutex 
+ * 通常线程锁，都通过该类来使用，而不是直接用XC_ThreadMutex、XC_ThreadRecMutex 
  *  
- * 该类将TC_ThreadMutex/TC_ThreadRecMutex 与TC_ThreadCond结合起来； 
+ * 该类将XC_ThreadMutex/XC_ThreadRecMutex 与XC_ThreadCond结合起来； 
  */
 template <class T, class P>
-class TC_Monitor
+class XC_Monitor
 {
 public:
 
     /**
      * @brief 定义锁控制对象
      */
-    typedef TC_LockT<TC_Monitor<T, P> > Lock;
-    typedef TC_TryLockT<TC_Monitor<T, P> > TryLock;
+    typedef XC_LockT<XC_Monitor<T, P> > Lock;
+    typedef XC_TryLockT<XC_Monitor<T, P> > TryLock;
 
     /**
      * @brief 构造函数
      */
-    TC_Monitor() : _nnotify(0)
+    XC_Monitor() : _nnotify(0)
     {
     }
 
     /**
      * @brief 析够
      */
-    virtual ~TC_Monitor()
+    virtual ~XC_Monitor()
     {
     }
 
@@ -182,8 +181,8 @@ private:
 	 /** 
 	  * @brief noncopyable
 	  */
-    TC_Monitor(const TC_Monitor&);
-    void operator=(const TC_Monitor&);
+    XC_Monitor(const XC_Monitor&);
+    void operator=(const XC_Monitor&);
 
 protected:
 
@@ -198,12 +197,12 @@ protected:
 /**
  * 普通线程锁
  */
-typedef TC_Monitor<TC_ThreadMutex, TC_ThreadCond> TC_ThreadLock;
+typedef XC_Monitor<XC_ThreadMutex, XC_ThreadCond> XC_ThreadLock;
 
 /**
  * 循环锁(一个线程可以加多次锁)
  */
-typedef TC_Monitor<TC_ThreadRecMutex, TC_ThreadCond> TC_ThreadRecLock;
+typedef XC_Monitor<XC_ThreadRecMutex, XC_ThreadCond> XC_ThreadRecLock;
 
 }
 #endif

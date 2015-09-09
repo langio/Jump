@@ -1,52 +1,52 @@
 #include "util/tc_thread.h"
 #include <cerrno>
 
-namespace taf
+namespace xutil
 {
 
-TC_ThreadControl::TC_ThreadControl(pthread_t thread) : _thread(thread)
-{
-}
-
-TC_ThreadControl::TC_ThreadControl() : _thread(pthread_self())
+XC_ThreadControl::XC_ThreadControl(pthread_t thread) : _thread(thread)
 {
 }
 
-void TC_ThreadControl::join()
+XC_ThreadControl::XC_ThreadControl() : _thread(pthread_self())
+{
+}
+
+void XC_ThreadControl::join()
 {
     if(pthread_self() == _thread)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_ThreadControl::join] can't be called in the same thread");
+        throw XC_ThreadThreadControl_Exception("[XC_ThreadControl::join] can't be called in the same thread");
     }
 
     void* ignore = 0;
     int rc = pthread_join(_thread, &ignore);
     if(rc != 0)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_ThreadControl::join] pthread_join error ", rc);
+        throw XC_ThreadThreadControl_Exception("[XC_ThreadControl::join] pthread_join error ", rc);
     }
 }
 
-void TC_ThreadControl::detach()
+void XC_ThreadControl::detach()
 {
     if(pthread_self() == _thread)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_ThreadControl::join] can't be called in the same thread");
+        throw XC_ThreadThreadControl_Exception("[XC_ThreadControl::join] can't be called in the same thread");
     }
 
     int rc = pthread_detach(_thread);
     if(rc != 0)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_ThreadControl::join] pthread_join error", rc);
+        throw XC_ThreadThreadControl_Exception("[XC_ThreadControl::join] pthread_join error", rc);
     }
 }
 
-pthread_t TC_ThreadControl::id() const
+pthread_t XC_ThreadControl::id() const
 {
     return _thread;
 }
 
-void TC_ThreadControl::sleep(long millsecond)
+void XC_ThreadControl::sleep(long millsecond)
 {
     struct timespec ts;
     ts.tv_sec = millsecond / 1000;
@@ -54,21 +54,21 @@ void TC_ThreadControl::sleep(long millsecond)
     nanosleep(&ts, 0);
 }
 
-void TC_ThreadControl::yield()
+void XC_ThreadControl::yield()
 {
     sched_yield();
 }
 
-TC_Thread::TC_Thread() : _running(false)
+XC_Thread::XC_Thread() : _running(false)
 {
 }
 
-void TC_Thread::threadEntry(TC_Thread *pThread)
+void XC_Thread::threadEntry(XC_Thread *pThread)
 {
     pThread->_running = true;
 
     {
-        TC_ThreadLock::Lock sync(pThread->_lock);
+        XC_ThreadLock::Lock sync(pThread->_lock);
         pThread->_lock.notifyAll();
     }
 
@@ -84,13 +84,13 @@ void TC_Thread::threadEntry(TC_Thread *pThread)
     pThread->_running = false;
 }
 
-TC_ThreadControl TC_Thread::start()
+XC_ThreadControl XC_Thread::start()
 {
-    TC_ThreadLock::Lock sync(_lock);
+    XC_ThreadLock::Lock sync(_lock);
 
     if(_running)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_Thread::start] thread has start");
+        throw XC_ThreadThreadControl_Exception("[XC_Thread::start] thread has start");
     }
 
     int ret = pthread_create(&_tid,
@@ -100,20 +100,20 @@ TC_ThreadControl TC_Thread::start()
 
     if(ret != 0)
     {
-        throw TC_ThreadThreadControl_Exception("[TC_Thread::start] thread start error", ret);
+        throw XC_ThreadThreadControl_Exception("[XC_Thread::start] thread start error", ret);
     }
 
     _lock.wait();
 
-    return TC_ThreadControl(_tid);
+    return XC_ThreadControl(_tid);
 }
 
-TC_ThreadControl TC_Thread::getThreadControl() const
+XC_ThreadControl XC_Thread::getThreadControl() const
 {
-    return TC_ThreadControl(_tid);
+    return XC_ThreadControl(_tid);
 }
 
-bool TC_Thread::isAlive() const
+bool XC_Thread::isAlive() const
 {
     return _running;
 }

@@ -1,5 +1,5 @@
-#ifndef __TC_CONFIG_H_
-#define __TC_CONFIG_H_
+#ifndef __XC_CONFIG_H_
+#define __XC_CONFIG_H_
 
 #include <map>
 #include <list>
@@ -7,86 +7,85 @@
 #include <vector>
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file  tc_config.h 
  * @brief  配置文件读取类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
 
 /**
 * 域分隔符
 */
-const char TC_CONFIG_DOMAIN_SEP = '/';
+const char XC_CONFIG_DOMAIN_SEP = '/';
 
 /**
 * 参数开始符
 */
-const char TC_CONFIG_PARAM_BEGIN = '<';
+const char XC_CONFIG_PARAM_BEGIN = '<';
 
 /**
 * 参数结束符
 */
-const char TC_CONFIG_PARAM_END = '>';
+const char XC_CONFIG_PARAM_END = '>';
 
 /**
 * @brief 配置文件异常类.
 */
-struct TC_Config_Exception : public TC_Exception
+struct XC_Config_Exception : public XC_Exception
 {
-	TC_Config_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Config_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-	~TC_Config_Exception() throw(){};
+	XC_Config_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Config_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+	~XC_Config_Exception() throw(){};
 };
 
 /**
  * @brief 配置没有文件错误
  */
-struct TC_ConfigNoParam_Exception : public TC_Exception
+struct XC_ConfigNoParam_Exception : public XC_Exception
 {
-	TC_ConfigNoParam_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_ConfigNoParam_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-	~TC_ConfigNoParam_Exception() throw(){};
+	XC_ConfigNoParam_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_ConfigNoParam_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+	~XC_ConfigNoParam_Exception() throw(){};
 };
 
 
 /** 
 * @brief 定义配置文件中的域的类. 
 */
-class TC_ConfigDomain
+class XC_ConfigDomain
 {
 public:
-    friend class TC_Config;
+    friend class XC_Config;
 
     /**
 	* @brief 构造函数. 
 	*  
     * @param sLine  指配置文件中的一行，按行读取
     */
-    TC_ConfigDomain(const string &sLine);
+    XC_ConfigDomain(const string &sLine);
 
     /**
     *  @brief 析够函数.
     */
-    ~TC_ConfigDomain();
+    ~XC_ConfigDomain();
 
     /**
 	 * @brief 拷贝复制.
 	 *  
-     * @param tcd 一个TC_ConfigDomain对象，指配置文件的一个域
+     * @param tcd 一个XC_ConfigDomain对象，指配置文件的一个域
      */
-    TC_ConfigDomain(const TC_ConfigDomain &tcd);
+    XC_ConfigDomain(const XC_ConfigDomain &tcd);
 
     /**
 	 * @brief 赋值. 
 	 * 
-	 * @param tcd 一个TC_ConfigDomain对象，指配置文件的一个域
+	 * @param tcd 一个XC_ConfigDomain对象，指配置文件的一个域
      */
-    TC_ConfigDomain& operator=(const TC_ConfigDomain &tcd);
+    XC_ConfigDomain& operator=(const XC_ConfigDomain &tcd);
 
 
     struct DomainPath
@@ -113,20 +112,20 @@ public:
 	* 再增加一个name为subDomain的子域,变成"/Main/Domain/subDomain" 
 	*  
 	* @param name               子域的名称 
-	* @return TC_ConfigDomain*  指向子域的指针 
-	* @throws TC_Config_Exception 
+	* @return XC_ConfigDomain*  指向子域的指针 
+	* @throws XC_Config_Exception 
     */
-    TC_ConfigDomain* addSubDomain(const string& name);
+    XC_ConfigDomain* addSubDomain(const string& name);
 
     /**
 	* @brief 递归搜索子域 Sub Domain. 
 	*  
 	* @param itBegin 迭代器 ，指向_domains的顶部
 	* @param itEnd  迭代器 ，指向_domains的底部
-	* @return TC_ConfigDomain* 指向目标子域的指针
+	* @return XC_ConfigDomain* 指向目标子域的指针
     */
-    TC_ConfigDomain *getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd);
-    const TC_ConfigDomain *getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd) const;
+    XC_ConfigDomain *getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd);
+    const XC_ConfigDomain *getSubTcConfigDomain(vector<string>::const_iterator itBegin, vector<string>::const_iterator itEnd) const;
 
     /**
 	* @brief Get Param Value 获取参数/值对. 
@@ -149,7 +148,7 @@ public:
 	*  
     * @return map
     */
-    const map<string, TC_ConfigDomain*>& getDomainMap() const { return _subdomain; }
+    const map<string, XC_ConfigDomain*>& getDomainMap() const { return _subdomain; }
 
     /**
 	* @brief Set Param Value 设置参数/值对. 
@@ -211,11 +210,11 @@ public:
     /**
      * @brief 克隆.
      * 
-     * @return TC_ConfigDomain*
+     * @return XC_ConfigDomain*
      */
-    TC_ConfigDomain* clone() const 
+    XC_ConfigDomain* clone() const 
     { 
-        return new TC_ConfigDomain(*this); 
+        return new XC_ConfigDomain(*this); 
     }
 
 protected:
@@ -264,7 +263,7 @@ protected:
     /**
     * 子域
     */
-    map<string, TC_ConfigDomain*>	    _subdomain;
+    map<string, XC_ConfigDomain*>	    _subdomain;
 
     /**
      * 域的插入顺序
@@ -314,29 +313,29 @@ protected:
    可以增加域或域下面的值对
  
  */
-class TC_Config
+class XC_Config
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_Config();
+    XC_Config();
 
     /**
 	 * @brief 拷贝复制.
 	 *  
-     * @param tc为TC_Config类型
+     * @param tc为XC_Config类型
      */
-    TC_Config(const TC_Config &tc);
+    XC_Config(const XC_Config &tc);
 
     /**
 	 * @brief 赋值. 
 	 *  
 	 * @param tcd 
-     * @return TC_Config&
+     * @return XC_Config&
      */
-    TC_Config& operator=(const TC_Config &tc);
+    XC_Config& operator=(const XC_Config &tc);
 
     /**
 	* @brief 解析文件. 
@@ -344,7 +343,7 @@ public:
 	* 把fileName对应的文件转化为输入流后调用parse对其进行解析 
 	* @param sFileName : 文件名称 
 	* @return 无 
-	* @throws TC_Config_Exception 
+	* @throws XC_Config_Exception 
     */
     void parseFile(const string& sFileName);
 
@@ -353,7 +352,7 @@ public:
 	*  
 	* 把string 类型先转化为输入流后调用parse对其进行解析 
 	* @return void 
-	* @throws TC_Config_Exception 
+	* @throws XC_Config_Exception 
     */
     void parseString(const string& buffer);
 
@@ -362,7 +361,7 @@ public:
 	* 对于型如/Main/Domain<Param>的字符串，获取域/Main/Domain下的配置项名字为Param的值
     * @param sName 参数名称,例如: /Main/Domain<Param>
 	* @return      配置项对应的值 
-	*  @throws     TC_Config_Exception 
+	*  @throws     XC_Config_Exception 
     */
     string operator[](const string &sName);
 
@@ -451,7 +450,7 @@ public:
      * @param cf
      * @param bUpdate true-冲突项更新本配置, false-冲突项不更新
      */
-    void joinConfig(const TC_Config &cf, bool bUpdate);
+    void joinConfig(const XC_Config &cf, bool bUpdate);
 
     /**
 	* @brief 转换成配置文件的字符串格式. 
@@ -463,9 +462,9 @@ public:
 protected:
     /**
 	* @brief Parse输入流， 
-	* 最终把输入流解析成为一个TC_ConfigDomain装入stack中 
+	* 最终把输入流解析成为一个XC_ConfigDomain装入stack中 
 	* @param  要解析的输入流，按行解析 
-    * @throws TC_Config_Exception
+    * @throws XC_Config_Exception
     * @return
     */
     void parse(istream &is);
@@ -475,9 +474,9 @@ protected:
 	*  
     * @param sName 域名称
 	* @return      指向新生成的子域的指针 
-	* @throws TC_Config_Exception 
+	* @throws XC_Config_Exception 
     */
-    TC_ConfigDomain *newTcConfigDomain(const string& sName);
+    XC_ConfigDomain *newTcConfigDomain(const string& sName);
 
     /**
 	* @brief Search Domain 搜索域. 
@@ -485,16 +484,16 @@ protected:
     * @param sDomainName 参数名称,支持子域搜索
     * @return value
     */
-	TC_ConfigDomain *searchTcConfigDomain(const vector<string>& domains);
-	const TC_ConfigDomain *searchTcConfigDomain(const vector<string>& domains) const;
+	XC_ConfigDomain *searchTcConfigDomain(const vector<string>& domains);
+	const XC_ConfigDomain *searchTcConfigDomain(const vector<string>& domains) const;
 
 protected:
 
     /**
     * 根domain
     */
-	TC_ConfigDomain _root;
+	XC_ConfigDomain _root;
 };
 
 }
-#endif //_TC_CONFIG_H_
+#endif //_XC_CONFIG_H_

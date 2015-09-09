@@ -2,20 +2,20 @@
 #include "util/tc_common.h"
 #include "util/tc_clientsocket.h"
 
-namespace taf
+namespace xutil
 {
 
-bool TC_URL::isValid() const
+bool XC_URL::isValid() const
 {
     return !_sURL.empty();
 }
 
-string TC_URL::getURL() const
+string XC_URL::getURL() const
 {
     return _sURL;
 }
 
-string TC_URL::type2String() const
+string XC_URL::type2String() const
 {
     switch(_iURLType)
     {
@@ -30,7 +30,7 @@ string TC_URL::type2String() const
     return "http";
 }
 
-string TC_URL::getDefaultPort() const
+string XC_URL::getDefaultPort() const
 {
     switch(_iURLType)
     {
@@ -45,12 +45,12 @@ string TC_URL::getDefaultPort() const
     return "80";
 }
 
-bool TC_URL::isDefaultPort() const
+bool XC_URL::isDefaultPort() const
 {
     return getFragment("port") == getDefaultPort();
 }
 
-string TC_URL::toURL() const
+string XC_URL::toURL() const
 {
     string sUserName    = getFragment("user");
     string sPassword    = getFragment("pass");
@@ -81,7 +81,7 @@ string TC_URL::toURL() const
     return sURL;
 }
 
-string TC_URL::getRequest() const
+string XC_URL::getRequest() const
 {
     string sURL;
 
@@ -103,9 +103,9 @@ string TC_URL::getRequest() const
     return sURL;    
 }
 
-bool TC_URL::parseURL(const string &sURL)
+bool XC_URL::parseURL(const string &sURL)
 {
-    string originRequest  = TC_Common::trim(sURL, " ");
+    string originRequest  = XC_Common::trim(sURL, " ");
 
     if(originRequest.empty())
     {
@@ -250,7 +250,7 @@ bool TC_URL::parseURL(const string &sURL)
     _fragment["scheme"] = type2String();
     _fragment["user"]   = sUserName;
     _fragment["pass"]   = sPassword;
-    _fragment["domain"] = TC_Common::lower(sDomain);
+    _fragment["domain"] = XC_Common::lower(sDomain);
     _fragment["port"]   = sPort;
     _fragment["path"]   = sUrlPath;
     _fragment["query"]  = sUrlQuery;
@@ -267,7 +267,7 @@ bool TC_URL::parseURL(const string &sURL)
     return true;
 }
 
-void TC_URL::specialize()
+void XC_URL::specialize()
 {
     //规整化路径
     string sUrlPath = simplePath(getPath());
@@ -277,54 +277,54 @@ void TC_URL::specialize()
     _sURL = toURL();
 }
 
-void TC_URL::clear()
+void XC_URL::clear()
 {
     _fragment.clear();
 
     _sURL.clear();
 }
 
-string TC_URL::getScheme() const
+string XC_URL::getScheme() const
 {
     return type2String();
 }
 
-string TC_URL::getUserName() const
+string XC_URL::getUserName() const
 {
     return getFragment("user");
 }
 
-string TC_URL::getPassword() const
+string XC_URL::getPassword() const
 {
     return getFragment("pass");
 }
 
-string TC_URL::getDomain() const
+string XC_URL::getDomain() const
 {
     return getFragment("domain");
 }
 
-string TC_URL::getPort() const
+string XC_URL::getPort() const
 {
     return getFragment("port");
 }
 
-string TC_URL::getPath() const
+string XC_URL::getPath() const
 {
     return getFragment("path");
 }
 
-string TC_URL::getQuery() const
+string XC_URL::getQuery() const
 {
     return getFragment("query");
 }
 
-string TC_URL::getRef() const
+string XC_URL::getRef() const
 {
     return getFragment("ref");
 }
 
-string TC_URL::getFragment(const string& frag) const
+string XC_URL::getFragment(const string& frag) const
 {
     map<string, string>::const_iterator it = _fragment.find(frag);
     if(it == _fragment.end())
@@ -335,7 +335,7 @@ string TC_URL::getFragment(const string& frag) const
     return it->second;
 }
 
-string TC_URL::getRelativePath() const
+string XC_URL::getRelativePath() const
 {
     string sURL = getPath();
 
@@ -362,7 +362,7 @@ string TC_URL::getRelativePath() const
     return sRelative;
 }
 
-string TC_URL::getRootPath() const
+string XC_URL::getRootPath() const
 {
     string sUserName    = getFragment("user");
     string sPassword    = getFragment("pass");
@@ -390,7 +390,7 @@ string TC_URL::getRootPath() const
     return sURL;
 }
 
-TC_URL TC_URL::buildWithRelativePath(const string &sRelativePath) const
+XC_URL XC_URL::buildWithRelativePath(const string &sRelativePath) const
 {
     string sURL;
 
@@ -417,14 +417,14 @@ TC_URL TC_URL::buildWithRelativePath(const string &sRelativePath) const
 
     sURL = getRootPath() + simplePath("/" + sURL).substr(1);
 
-    TC_URL url;
+    XC_URL url;
 
     url.parseURL(sURL);
 
     return url;
 }
 
-string TC_URL::simplePath(const string &sPath) const
+string XC_URL::simplePath(const string &sPath) const
 {
     //所有./都去掉
     size_t pos      = 0;
@@ -508,7 +508,7 @@ string TC_URL::simplePath(const string &sPath) const
 
 ////////////////////////////////////////////////////////////////////
 
-string TC_Http::getHeader(const string& sHeader) const
+string XC_Http::getHeader(const string& sHeader) const
 {
     http_header_type::const_iterator it = _headers.find(sHeader);
     if(it == _headers.end())
@@ -519,17 +519,17 @@ string TC_Http::getHeader(const string& sHeader) const
     return it->second;
 }
 
-string TC_Http::getContentType() const
+string XC_Http::getContentType() const
 {
     return getHeader("Content-Type");
 }
 
-string TC_Http::getHost() const
+string XC_Http::getHost() const
 {
     return getHeader("Host");
 }
 
-size_t TC_Http::getContentLength() const
+size_t XC_Http::getContentLength() const
 {
     string s = getHeader("Content-Length");
     if(s.empty())
@@ -537,10 +537,10 @@ size_t TC_Http::getContentLength() const
         return 0;
     }
 
-    return TC_Common::strto<size_t>(s);
+    return XC_Common::strto<size_t>(s);
 }
 
-string TC_Http::genHeader() const
+string XC_Http::genHeader() const
 {
 	ostringstream sHttpHeader;
 
@@ -555,7 +555,7 @@ string TC_Http::genHeader() const
 	return sHttpHeader.str();
 }
 
-vector<string> TC_Http::getHeaderMulti(const string &sHeadName) const
+vector<string> XC_Http::getHeaderMulti(const string &sHeadName) const
 {
     vector<string> v;
 
@@ -572,7 +572,7 @@ vector<string> TC_Http::getHeaderMulti(const string &sHeadName) const
     return v;
 }
 
-string TC_Http::getLine(const char** ppChar)
+string XC_Http::getLine(const char** ppChar)
 {
 	string sTmp;
 
@@ -595,7 +595,7 @@ string TC_Http::getLine(const char** ppChar)
 }
 
 
-string TC_Http::getLine(const char** ppChar, int iBufLen)
+string XC_Http::getLine(const char** ppChar, int iBufLen)
 {
 	string sTmp;
 
@@ -644,7 +644,7 @@ string TC_Http::getLine(const char** ppChar, int iBufLen)
 }
 
 
-const char* TC_Http::parseHeader(const char* szBuffer, http_header_type &sHeader)
+const char* XC_Http::parseHeader(const char* szBuffer, http_header_type &sHeader)
 {
     sHeader.clear();
 
@@ -667,14 +667,14 @@ const char* TC_Http::parseHeader(const char* szBuffer, http_header_type &sHeader
 		string::size_type index = sLine.find(":");
 		if(index != string::npos)
 		{                                                          
-            sHeader.insert(multimap<string, string>::value_type(TC_Common::trim(sLine.substr(0, index), " "), TC_Common::trim(sLine.substr(index + 1), " ")));
+            sHeader.insert(multimap<string, string>::value_type(XC_Common::trim(sLine.substr(0, index), " "), XC_Common::trim(sLine.substr(index + 1), " ")));
 		}
 	}
 
 	return *ppChar;
 }
 
-void TC_Http::reset()
+void XC_Http::reset()
 {
     _headers.clear();
     _headLength = 0;
@@ -682,11 +682,11 @@ void TC_Http::reset()
     _bIsChunked = false;
 }
 
-/********************* TC_HttpCookie ***********************/
+/********************* XC_HttpCookie ***********************/
 
-bool TC_HttpCookie::matchDomain(const string &sCookieDomain, const string &sDomain)
+bool XC_HttpCookie::matchDomain(const string &sCookieDomain, const string &sDomain)
 {
-    string sCookieDomainNew = TC_Common::lower(sCookieDomain);
+    string sCookieDomainNew = XC_Common::lower(sCookieDomain);
 
     //没有点的自动加点
     if(sCookieDomainNew.find(".") != 0)
@@ -702,7 +702,7 @@ bool TC_HttpCookie::matchDomain(const string &sCookieDomain, const string &sDoma
         return false;
     }
 
-    string sLowerDomain = TC_Common::lower(sDomain);
+    string sLowerDomain = XC_Common::lower(sDomain);
 
     //后边是子域名
     if(sDomain.length() >= sCookieDomainNew.length() && 
@@ -720,7 +720,7 @@ bool TC_HttpCookie::matchDomain(const string &sCookieDomain, const string &sDoma
     return false;
 }
 
-size_t TC_HttpCookie::matchPath(const string &sCookiePath, const string &sPath)
+size_t XC_HttpCookie::matchPath(const string &sCookiePath, const string &sPath)
 {
     if(sCookiePath.empty() || sPath.empty()) return 0;
 
@@ -737,12 +737,12 @@ size_t TC_HttpCookie::matchPath(const string &sCookiePath, const string &sPath)
     return 0;
 }
 
-void TC_HttpCookie::clear()
+void XC_HttpCookie::clear()
 {
     _cookies.clear();
 }
 
-bool TC_HttpCookie::fixDomain(const string &sDomain, string &sFixDomain)
+bool XC_HttpCookie::fixDomain(const string &sDomain, string &sFixDomain)
 {
     if(sDomain.empty())
     {
@@ -764,7 +764,7 @@ bool TC_HttpCookie::fixDomain(const string &sDomain, string &sFixDomain)
     return true;
 }
 
-void TC_HttpCookie::addCookie(const Cookie &cookie, list<Cookie> &cookies)
+void XC_HttpCookie::addCookie(const Cookie &cookie, list<Cookie> &cookies)
 {
     string sDomain;
 
@@ -823,12 +823,12 @@ void TC_HttpCookie::addCookie(const Cookie &cookie, list<Cookie> &cookies)
     cookies.push_back(cookieNew);
 }
 
-void TC_HttpCookie::addCookie(const Cookie &cookie)
+void XC_HttpCookie::addCookie(const Cookie &cookie)
 {
     addCookie(cookie, _cookies);
 }
 
-void TC_HttpCookie::addCookie(const list<Cookie> &cookie)
+void XC_HttpCookie::addCookie(const list<Cookie> &cookie)
 {
     list<Cookie>::const_iterator it = cookie.begin();
 
@@ -840,20 +840,20 @@ void TC_HttpCookie::addCookie(const list<Cookie> &cookie)
     }
 }
 
-void TC_HttpCookie::addCookie(const string &sRspURL, const vector<string> &vCookies)
+void XC_HttpCookie::addCookie(const string &sRspURL, const vector<string> &vCookies)
 {
-    TC_URL cURL;
+    XC_URL cURL;
 
     cURL.parseURL(sRspURL);
 
-    string sRspURLDomain= TC_Common::lower(cURL.getDomain());
+    string sRspURLDomain= XC_Common::lower(cURL.getDomain());
 
     string sRspURLPath  = cURL.getPath();
 
     for(size_t i = 0; i < vCookies.size(); i++)
     {
         //处理一行SetCookie
-        vector<string> v = TC_Common::sepstr<string>(vCookies[i], ";");
+        vector<string> v = XC_Common::sepstr<string>(vCookies[i], ";");
 
         Cookie cookie;
 
@@ -871,13 +871,13 @@ void TC_HttpCookie::addCookie(const string &sRspURL, const vector<string> &vCook
 
     		if(index != string::npos)
     		{                                                          
-                name  = TC_Common::trim(v[j].substr(0, index), " ");
+                name  = XC_Common::trim(v[j].substr(0, index), " ");
 
-                value = TC_Common::trim(v[j].substr(index + 1));
+                value = XC_Common::trim(v[j].substr(index + 1));
     		}
             else
             {
-                name  = TC_Common::trim(v[j]);
+                name  = XC_Common::trim(v[j]);
             }
             if(strcasecmp(name.c_str(), "secure") == 0)
             {
@@ -889,17 +889,17 @@ void TC_HttpCookie::addCookie(const string &sRspURL, const vector<string> &vCook
                 //兼容时间格式
                 //expires=Mon, 09-May-41 08:39:32 GMT
                 //expires=Thu, 01-Jan-1970 01:00:00 GMT
-                value = TC_Common::replace(value, "-", " ");
+                value = XC_Common::replace(value, "-", " ");
                 if(value.length() == 27  && value.at(11) == ' ' && value.at(14) == ' ')
                 {
-                    int year = TC_Common::strto<int> (value.substr(12, 2));
+                    int year = XC_Common::strto<int> (value.substr(12, 2));
                     if(year >= 69 && year <= 99)
                         value = value.substr(0, 12) + "19" + value.substr(12);
                     else
                         value = value.substr(0, 12) + "20" + value.substr(12);
                 }
 
-                TC_Common::strgmt2tm(value, stTm);
+                XC_Common::strgmt2tm(value, stTm);
 
                 cookie._expires = timegm(&stTm); 
             }
@@ -958,7 +958,7 @@ void TC_HttpCookie::addCookie(const string &sRspURL, const vector<string> &vCook
     }
 }
 
-bool TC_HttpCookie::isCookieExpires(const Cookie &cookie) const
+bool XC_HttpCookie::isCookieExpires(const Cookie &cookie) const
 {
     //过期了
     if(cookie._expires !=0 && cookie._expires < time(NULL))
@@ -967,7 +967,7 @@ bool TC_HttpCookie::isCookieExpires(const Cookie &cookie) const
     return false;
 }
 
-size_t TC_HttpCookie::isCookieMatch(const Cookie &cookie, const TC_URL &tURL) const
+size_t XC_HttpCookie::isCookieMatch(const Cookie &cookie, const XC_URL &tURL) const
 {
     //域名没有匹配
     if(!matchDomain(cookie._domain, tURL.getDomain()))
@@ -979,15 +979,15 @@ size_t TC_HttpCookie::isCookieMatch(const Cookie &cookie, const TC_URL &tURL) co
         return 0;
 
     //安全的cookie,不安全的URL
-    if(cookie._isSecure && (tURL.getType() != TC_URL::HTTPS))
+    if(cookie._isSecure && (tURL.getType() != XC_URL::HTTPS))
         return 0;
 
     return len;
 }
 
-void TC_HttpCookie::getCookieForURL(const string &sReqURL, list<TC_HttpCookie::Cookie> &cookies)
+void XC_HttpCookie::getCookieForURL(const string &sReqURL, list<XC_HttpCookie::Cookie> &cookies)
 {
-    TC_URL tURL;
+    XC_URL tURL;
 
     tURL.parseURL(sReqURL);
 
@@ -1017,7 +1017,7 @@ void TC_HttpCookie::getCookieForURL(const string &sReqURL, list<TC_HttpCookie::C
     }
 }
 
-void TC_HttpCookie::getCookieForURL(const string &sReqURL, string &sCookie)
+void XC_HttpCookie::getCookieForURL(const string &sReqURL, string &sCookie)
 {
     list<Cookie> cookies;
 
@@ -1033,8 +1033,8 @@ void TC_HttpCookie::getCookieForURL(const string &sReqURL, string &sCookie)
         while(itd != it->_data.end())
         {
             //被删除的cookie不输出
-            if(itd->first != "" && itd->second != "" && TC_Common::lower(itd->second) != "null" 
-                    && TC_Common::lower(itd->second) != "deleted")
+            if(itd->first != "" && itd->second != "" && XC_Common::lower(itd->second) != "null" 
+                    && XC_Common::lower(itd->second) != "deleted")
                 sCookie += itd->first + "=" + itd->second + "; ";
 
             ++itd;
@@ -1048,7 +1048,7 @@ void TC_HttpCookie::getCookieForURL(const string &sReqURL, string &sCookie)
         sCookie = sCookie.substr(0, sCookie.length()-2); 
 }
 
-list<TC_HttpCookie::Cookie> TC_HttpCookie::getSerializeCookie(time_t t)
+list<XC_HttpCookie::Cookie> XC_HttpCookie::getSerializeCookie(time_t t)
 {
     list<Cookie> cookies;
 
@@ -1074,14 +1074,14 @@ list<TC_HttpCookie::Cookie> TC_HttpCookie::getSerializeCookie(time_t t)
     return cookies;
 }
 
-list<TC_HttpCookie::Cookie> TC_HttpCookie::getAllCookie()
+list<XC_HttpCookie::Cookie> XC_HttpCookie::getAllCookie()
 {
     deleteExpires(time(NULL));
 
     return _cookies;
 }
 
-void TC_HttpCookie::deleteExpires(time_t t, bool bErase)
+void XC_HttpCookie::deleteExpires(time_t t, bool bErase)
 {
     list<Cookie>::iterator it = _cookies.begin();
 
@@ -1102,13 +1102,13 @@ void TC_HttpCookie::deleteExpires(time_t t, bool bErase)
     }
 }
 
-/********************* TC_HttpResponse ***********************/
+/********************* XC_HttpResponse ***********************/
 
-void TC_HttpResponse::parseResponseHeader(const char* szBuffer)
+void XC_HttpResponse::parseResponseHeader(const char* szBuffer)
 {
 	const char **ppChar = &szBuffer;
 
-	_headerLine = TC_Common::trim(getLine(ppChar));
+	_headerLine = XC_Common::trim(getLine(ppChar));
 
     string::size_type pos = _headerLine.find(' ');
 
@@ -1116,19 +1116,19 @@ void TC_HttpResponse::parseResponseHeader(const char* szBuffer)
     {
         _version    = _headerLine.substr(0, pos);
 
-        string left = TC_Common::trim(_headerLine.substr(pos));
+        string left = XC_Common::trim(_headerLine.substr(pos));
 
         string::size_type pos1 = left.find(' ');
 
         if(pos1 != string::npos)
         {
-            _status  = TC_Common::strto<int>(left.substr(0, pos));
+            _status  = XC_Common::strto<int>(left.substr(0, pos));
 
-            _about   = TC_Common::trim(left.substr(pos1 + 1));
+            _about   = XC_Common::trim(left.substr(pos1 + 1));
         }
         else
         {
-            _status  = TC_Common::strto<int>(left);
+            _status  = XC_Common::strto<int>(left);
 
             _about   = "";
         }
@@ -1143,12 +1143,12 @@ void TC_HttpResponse::parseResponseHeader(const char* szBuffer)
         _about   = "";
     }
 
-//    throw TC_HttpResponse_Exception("[TC_HttpResponse_Exception::parseResponeHeader] http response format error : " + _headerLine);
+//    throw XC_HttpResponse_Exception("[XC_HttpResponse_Exception::parseResponeHeader] http response format error : " + _headerLine);
 }
 
-void TC_HttpResponse::reset()
+void XC_HttpResponse::reset()
 {
-    TC_Http::reset();
+    XC_Http::reset();
 
     _status = 200;
     _about  = "OK";
@@ -1157,12 +1157,12 @@ void TC_HttpResponse::reset()
     _iTmpContentLength = 0;
 }
 
-vector<string> TC_HttpResponse::getSetCookie() const
+vector<string> XC_HttpResponse::getSetCookie() const
 {
     return getHeaderMulti("Set-Cookie");
 }
 
-bool TC_HttpResponse::incrementDecode(string &sBuffer)
+bool XC_HttpResponse::incrementDecode(string &sBuffer)
 {
     //解析头部
     if(_headLength == 0)
@@ -1285,7 +1285,7 @@ bool TC_HttpResponse::incrementDecode(string &sBuffer)
     return true;
 }
 
-bool TC_HttpResponse::decode(const string &sBuffer)
+bool XC_HttpResponse::decode(const string &sBuffer)
 {
     string::size_type pos = sBuffer.find("\r\n\r\n");
 
@@ -1305,7 +1305,7 @@ bool TC_HttpResponse::decode(const string &sBuffer)
     return getContentLength() + getHeadLength() <= sBuffer.length();
 }
 
-bool TC_HttpResponse::decode(const char *sBuffer, size_t iLength)
+bool XC_HttpResponse::decode(const char *sBuffer, size_t iLength)
 {
     assert(sBuffer != NULL);
 
@@ -1326,7 +1326,7 @@ bool TC_HttpResponse::decode(const char *sBuffer, size_t iLength)
     return (getContentLength() + getHeadLength() <= iLength);
 }
 
-string TC_HttpResponse::encode() const
+string XC_HttpResponse::encode() const
 {
     ostringstream os;
 	os << _version << " " << _status << " " << _about << "\r\n";
@@ -1338,7 +1338,7 @@ string TC_HttpResponse::encode() const
     return os.str();
 }
 
-void TC_HttpResponse::encode(vector<char> &buffer) const
+void XC_HttpResponse::encode(vector<char> &buffer) const
 {
     buffer.clear();
 
@@ -1348,7 +1348,7 @@ void TC_HttpResponse::encode(vector<char> &buffer) const
     memcpy(&buffer[0], s.c_str(), s.length());
 }
 
-void TC_HttpResponse::setResponse(int status, const string& about, const string& body)
+void XC_HttpResponse::setResponse(int status, const string& about, const string& body)
 {
     _status = status;
     _about  = about;
@@ -1360,10 +1360,10 @@ void TC_HttpResponse::setResponse(int status, const string& about, const string&
 
     _headerLine = os.str();
 
-    setHeader("Content-Length", TC_Common::tostr(_content.length()));
+    setHeader("Content-Length", XC_Common::tostr(_content.length()));
 }
 
-void TC_HttpResponse::setResponse(int status, const string& about, const char *sBuffer, size_t iLength)
+void XC_HttpResponse::setResponse(int status, const string& about, const char *sBuffer, size_t iLength)
 {
     _status = status;
     _about  = about;
@@ -1384,24 +1384,24 @@ void TC_HttpResponse::setResponse(int status, const string& about, const char *s
     }
 
 
-    setHeader("Content-Length", TC_Common::tostr(_content.length()));
+    setHeader("Content-Length", XC_Common::tostr(_content.length()));
 }
 
-void TC_HttpResponse::setResponse(const char *sBuffer, size_t iLength)
+void XC_HttpResponse::setResponse(const char *sBuffer, size_t iLength)
 {
     setResponse(200, "OK", sBuffer, iLength);
 }
 
-/********************* TC_HttpRequest ***********************/
+/********************* XC_HttpRequest ***********************/
 
-void TC_HttpRequest::reset()
+void XC_HttpRequest::reset()
 {
-    TC_Http::reset();
+    XC_Http::reset();
 
     _httpURL.clear();
 }
 
-string TC_HttpRequest::requestType2str(int iRequestType) const
+string XC_HttpRequest::requestType2str(int iRequestType) const
 {
     if(iRequestType == REQUEST_GET)
     {
@@ -1416,7 +1416,7 @@ string TC_HttpRequest::requestType2str(int iRequestType) const
     return "";
 }
 
-vector<string> TC_HttpRequest::getCookie()
+vector<string> XC_HttpRequest::getCookie()
 {
     vector<string> v;
 
@@ -1433,7 +1433,7 @@ vector<string> TC_HttpRequest::getCookie()
     return v;
 }
 
-void TC_HttpRequest::parseURL(const string& sUrl)
+void XC_HttpRequest::parseURL(const string& sUrl)
 {
     _httpURL.parseURL(sUrl);
 
@@ -1447,14 +1447,14 @@ void TC_HttpRequest::parseURL(const string& sUrl)
     }
 }
 
-void TC_HttpRequest::encode(int iRequestType, ostream &os)
+void XC_HttpRequest::encode(int iRequestType, ostream &os)
 {
 	os << requestType2str(iRequestType) << " " << _httpURL.getRequest() << " HTTP/1.1\r\n";
 	os << genHeader();
 	os << "\r\n";
 }
 
-void TC_HttpRequest::setGetRequest(const string &sUrl, bool bNewCreateHost)
+void XC_HttpRequest::setGetRequest(const string &sUrl, bool bNewCreateHost)
 {
     if(bNewCreateHost)
     {
@@ -1470,7 +1470,7 @@ void TC_HttpRequest::setGetRequest(const string &sUrl, bool bNewCreateHost)
     eraseHeader("Content-Length");
 }
 
-void TC_HttpRequest::setPostRequest(const string &sUrl, const string &sPostBody, bool bNewCreateHost)
+void XC_HttpRequest::setPostRequest(const string &sUrl, const string &sPostBody, bool bNewCreateHost)
 {
     if(bNewCreateHost)
     {
@@ -1483,10 +1483,10 @@ void TC_HttpRequest::setPostRequest(const string &sUrl, const string &sPostBody,
 
     _content        = sPostBody;
 
-    setHeader("Content-Length", TC_Common::tostr(_content.length()));
+    setHeader("Content-Length", XC_Common::tostr(_content.length()));
 }
 
-void TC_HttpRequest::setPostRequest(const string &sUrl, const char *sBuffer, size_t iLength, bool bNewCreateHost)
+void XC_HttpRequest::setPostRequest(const string &sUrl, const char *sBuffer, size_t iLength, bool bNewCreateHost)
 {
     assert(sBuffer != NULL);
 
@@ -1508,10 +1508,10 @@ void TC_HttpRequest::setPostRequest(const string &sUrl, const char *sBuffer, siz
         _content.clear();
     }
 
-    setHeader("Content-Length", TC_Common::tostr(_content.length()));
+    setHeader("Content-Length", XC_Common::tostr(_content.length()));
 }
 
-string TC_HttpRequest::encode()
+string XC_HttpRequest::encode()
 {
 //    assert(_requestType == REQUEST_GET || _requestType == REQUEST_POST || !_originRequest.empty());
 
@@ -1531,7 +1531,7 @@ string TC_HttpRequest::encode()
     return os.str();
 }
 
-void TC_HttpRequest::encode(vector<char> &buffer)
+void XC_HttpRequest::encode(vector<char> &buffer)
 {
 //    assert(_requestType == REQUEST_GET || _requestType == REQUEST_POST || !_originRequest.empty());
 
@@ -1542,18 +1542,18 @@ void TC_HttpRequest::encode(vector<char> &buffer)
     memcpy(&buffer[0], s.c_str(), s.length());
 }
 
-bool TC_HttpRequest::decode(const string &sBuffer)
+bool XC_HttpRequest::decode(const string &sBuffer)
 {
     return decode(sBuffer.c_str(), sBuffer.length());
 }
 
-bool TC_HttpRequest::decode(const char *sBuffer, size_t iLength)
+bool XC_HttpRequest::decode(const char *sBuffer, size_t iLength)
 {
     assert(sBuffer != NULL);
 
     if(strncasecmp(sBuffer, "GET " ,4) !=0 && strncasecmp(sBuffer, "POST " ,5) !=0)
     {
-        throw TC_HttpRequest_Exception("[TC_HttpRequest::decode] protocol not support, only support GET and POST");
+        throw XC_HttpRequest_Exception("[XC_HttpRequest::decode] protocol not support, only support GET and POST");
     }
 
     if(strstr(sBuffer, "\r\n\r\n") == NULL)
@@ -1607,11 +1607,11 @@ bool TC_HttpRequest::decode(const char *sBuffer, size_t iLength)
 }
 
 
-bool TC_HttpRequest::checkRequest(const char* sBuffer, size_t iLen)
+bool XC_HttpRequest::checkRequest(const char* sBuffer, size_t iLen)
 {
    if(strncasecmp(sBuffer, "GET " ,4) !=0 && strncasecmp(sBuffer, "POST " ,5) !=0)
    {
-	   throw runtime_error("[TC_HttpRequest::checkRequest] protocol not support, only support GET and POST");
+	   throw runtime_error("[XC_HttpRequest::checkRequest] protocol not support, only support GET and POST");
    }
 
    const char *p = strstr(sBuffer, "\r\n\r\n");
@@ -1646,7 +1646,7 @@ bool TC_HttpRequest::checkRequest(const char* sBuffer, size_t iLen)
 	   }
 	   else if(strncasecmp(sLine.c_str(), "Transfer-Encoding:", 18) == 0)
 	   {
-		   bChunk = (taf::TC_Common::trim(sLine.substr(18)) == "chunked");
+		   bChunk = (xutil::XC_Common::trim(sLine.substr(18)) == "chunked");
 		   if(bChunk) break;
 	   }
 	   else if(strncasecmp(sLine.c_str(), "Content-Length:", 15) != 0)
@@ -1655,7 +1655,7 @@ bool TC_HttpRequest::checkRequest(const char* sBuffer, size_t iLen)
 	   }
 	   else
 	   {
-		   len = taf::TC_Common::strto<size_t>(TC_Common::trim(sLine.substr(15), " "));
+		   len = xutil::XC_Common::strto<size_t>(XC_Common::trim(sLine.substr(15), " "));
 	   }
 
 	   if(len + pos + 4 <= iLen)
@@ -1736,13 +1736,13 @@ bool TC_HttpRequest::checkRequest(const char* sBuffer, size_t iLen)
     }
 
     return false;
-//	 throw TC_HttpRequest_Exception("[TC_HttpRequest::checkRequest] Content-Length not exists.");
+//	 throw XC_HttpRequest_Exception("[XC_HttpRequest::checkRequest] Content-Length not exists.");
 
 //	 return true;
 }
 
 
-size_t TC_HttpRequest::parseRequestHeader(const char* szBuffer)
+size_t XC_HttpRequest::parseRequestHeader(const char* szBuffer)
 {
     const char *szBuffer_copy = szBuffer;
     const char **ppChar = &szBuffer;
@@ -1753,10 +1753,10 @@ size_t TC_HttpRequest::parseRequestHeader(const char* szBuffer)
     string::size_type pos = sLine.find(" ");
     if(pos == string::npos)
     {
-        throw TC_HttpRequest_Exception("[TC_HttpRequest::parseRequestHeader] http request format error: " + sLine);
+        throw XC_HttpRequest_Exception("[XC_HttpRequest::parseRequestHeader] http request format error: " + sLine);
     }
 
-    string sMethod = TC_Common::trim(sLine.substr(0, pos));
+    string sMethod = XC_Common::trim(sLine.substr(0, pos));
 
     //解析请求类型
     if(sMethod == "GET")
@@ -1769,20 +1769,20 @@ size_t TC_HttpRequest::parseRequestHeader(const char* szBuffer)
     }
     else
     {
-        throw TC_HttpRequest_Exception("[TC_HttpRequest::parseRequestHeader] http request command error: " + sMethod);
+        throw XC_HttpRequest_Exception("[XC_HttpRequest::parseRequestHeader] http request command error: " + sMethod);
     }
 
     string::size_type pos1 = sLine.rfind(" ");
     if(pos1 == string::npos || pos1 <= pos)
     {
-        throw TC_HttpRequest_Exception("[TC_HttpRequest::parseRequestHeader] http request format error: " + sLine);
+        throw XC_HttpRequest_Exception("[XC_HttpRequest::parseRequestHeader] http request format error: " + sLine);
     }
 
     //URL地址
-    string sURL = TC_Common::trim(sLine.substr(pos+1, pos1 - pos));
+    string sURL = XC_Common::trim(sLine.substr(pos+1, pos1 - pos));
     
     //HTTP协议版本
-    string sVersion = TC_Common::upper(TC_Common::trim(sLine.substr(pos1+1)));
+    string sVersion = XC_Common::upper(XC_Common::trim(sLine.substr(pos1+1)));
 
     if(sVersion != "HTTP/1.1" || sVersion != "HTTP/1.0")
     {
@@ -1804,14 +1804,14 @@ size_t TC_HttpRequest::parseRequestHeader(const char* szBuffer)
     return n;
 }
 
-void TC_HttpRequest::getHostPort(string &sDomain, uint32_t &iPort)
+void XC_HttpRequest::getHostPort(string &sDomain, uint32_t &iPort)
 {
     sDomain = _httpURL.getDomain();
 
-    iPort   = TC_Common::strto<uint32_t>(_httpURL.getPort());
+    iPort   = XC_Common::strto<uint32_t>(_httpURL.getPort());
 }
 
-int TC_HttpRequest::doRequest(TC_HttpResponse &stHttpRsp, int iTimeout)
+int XC_HttpRequest::doRequest(XC_HttpResponse &stHttpRsp, int iTimeout)
 {
     //只支持短连接模式
     setConnection("close");
@@ -1823,11 +1823,11 @@ int TC_HttpRequest::doRequest(TC_HttpResponse &stHttpRsp, int iTimeout)
 
     getHostPort(sHost, iPort);
 
-    TC_TCPClient tcpClient;
+    XC_TCPClient tcpClient;
     tcpClient.init(sHost, iPort, iTimeout);
 
     int iRet = tcpClient.send(sSendBuffer.c_str(), sSendBuffer.length());
-    if(iRet != TC_ClientSocket::EM_SUCCESS)
+    if(iRet != XC_ClientSocket::EM_SUCCESS)
     {
         return iRet;
     }
@@ -1845,22 +1845,22 @@ int TC_HttpRequest::doRequest(TC_HttpResponse &stHttpRsp, int iTimeout)
 
         iRet = tcpClient.recv(sTmpBuffer, iRecvLen);
 
-        if(iRet == TC_ClientSocket::EM_SUCCESS)
+        if(iRet == XC_ClientSocket::EM_SUCCESS)
             sBuffer.append(sTmpBuffer, iRecvLen);
 
         switch(iRet)
         {
-        case TC_ClientSocket::EM_SUCCESS:
+        case XC_ClientSocket::EM_SUCCESS:
             if(stHttpRsp.incrementDecode(sBuffer)) 
             {
                 delete []sTmpBuffer;
-                return TC_ClientSocket::EM_SUCCESS;
+                return XC_ClientSocket::EM_SUCCESS;
             }
             continue;
-        case TC_ClientSocket::EM_CLOSE:
+        case XC_ClientSocket::EM_CLOSE:
             delete []sTmpBuffer;
             stHttpRsp.incrementDecode(sBuffer);
-            return TC_ClientSocket::EM_SUCCESS;
+            return XC_ClientSocket::EM_SUCCESS;
         default:
             delete []sTmpBuffer;
             return iRet;

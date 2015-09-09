@@ -4,12 +4,12 @@
 #include <string.h>
 #include <iostream>
 
-namespace taf
+namespace xutil
 {
 
-const int TC_BitMap::BitMap::_magic_bits[8]={0x80,0x40,0x20,0x10,0x8,0x4,0x2,0x1};
+const int XC_BitMap::BitMap::_magic_bits[8]={0x80,0x40,0x20,0x10,0x8,0x4,0x2,0x1};
 
-size_t TC_BitMap::BitMap::calcMemSize(size_t iElementCount)
+size_t XC_BitMap::BitMap::calcMemSize(size_t iElementCount)
 {
     assert(iElementCount > 0);
 
@@ -20,7 +20,7 @@ size_t TC_BitMap::BitMap::calcMemSize(size_t iElementCount)
     return iMemSize;
 }
 
-void TC_BitMap::BitMap::create(void *pAddr, size_t iSize)
+void XC_BitMap::BitMap::create(void *pAddr, size_t iSize)
 {
     memset((char*)pAddr, 0, iSize);
 
@@ -31,7 +31,7 @@ void TC_BitMap::BitMap::create(void *pAddr, size_t iSize)
     _pData = (unsigned char*)pAddr + sizeof(tagBitMapHead);
 }
 
-int TC_BitMap::BitMap::connect(void *pAddr, size_t iSize)
+int XC_BitMap::BitMap::connect(void *pAddr, size_t iSize)
 {
     _pHead = static_cast<tagBitMapHead*>(pAddr);
     if(_pHead->_cVersion != BM_VERSION)
@@ -47,7 +47,7 @@ int TC_BitMap::BitMap::connect(void *pAddr, size_t iSize)
     return 0;
 }
 
-int TC_BitMap::BitMap::get(size_t i)
+int XC_BitMap::BitMap::get(size_t i)
 {
     if(i/8 >= (_pHead->_iMemSize-sizeof(tagBitMapHead)))
     {
@@ -57,7 +57,7 @@ int TC_BitMap::BitMap::get(size_t i)
     return _get_bit(*p, i%8)>0?1:0;
 }
 
-int TC_BitMap::BitMap::set(size_t i)
+int XC_BitMap::BitMap::set(size_t i)
 {
     if(i/8 >= (_pHead->_iMemSize-sizeof(tagBitMapHead)))
     {
@@ -69,7 +69,7 @@ int TC_BitMap::BitMap::set(size_t i)
     return (int)(*p)>0?1:0;
 }
 
-int TC_BitMap::BitMap::clear(size_t i)
+int XC_BitMap::BitMap::clear(size_t i)
 {
     if(i/8 >= (_pHead->_iMemSize-sizeof(tagBitMapHead)))
     {
@@ -81,14 +81,14 @@ int TC_BitMap::BitMap::clear(size_t i)
     return (int)(*p)>0?1:0;
 }
 
-int TC_BitMap::BitMap::clear4all()
+int XC_BitMap::BitMap::clear4all()
 {
     memset(_pData, 0, _pHead->_iMemSize-sizeof(tagBitMapHead));
 
     return 0;
 }
 
-int TC_BitMap::BitMap::dump2file(const string &sFile)
+int XC_BitMap::BitMap::dump2file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "wb");
     if(fp == NULL)
@@ -106,7 +106,7 @@ int TC_BitMap::BitMap::dump2file(const string &sFile)
    return -1;
 }
 
-int TC_BitMap::BitMap::load5file(const string &sFile)
+int XC_BitMap::BitMap::load5file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "rb");
     if(fp == NULL)
@@ -165,17 +165,17 @@ int TC_BitMap::BitMap::load5file(const string &sFile)
 ////////////////////////////////////////////////////////////////////////////
 
 
-size_t TC_BitMap::calcMemSize(size_t iElementCount, unsigned iBitCount)
+size_t XC_BitMap::calcMemSize(size_t iElementCount, unsigned iBitCount)
 {
     size_t n = BitMap::calcMemSize(iElementCount);
     if(n * iBitCount < n)
     {
-        throw TC_BitMap_Exception("[TC_BitMap::calcMemSize] memory to much error"); 
+        throw XC_BitMap_Exception("[XC_BitMap::calcMemSize] memory to much error"); 
     }
     return n * iBitCount;
 }
 
-void TC_BitMap::create(void *pAddr, size_t iSize, unsigned iBitCount)
+void XC_BitMap::create(void *pAddr, size_t iSize, unsigned iBitCount)
 {
     assert(iBitCount != 0);
     assert(iSize % iBitCount == 0);
@@ -189,7 +189,7 @@ void TC_BitMap::create(void *pAddr, size_t iSize, unsigned iBitCount)
     }
 }
 
-int TC_BitMap::connect(void *pAddr, size_t iSize, unsigned iBitCount)
+int XC_BitMap::connect(void *pAddr, size_t iSize, unsigned iBitCount)
 {
     assert(iBitCount != 0);
     assert(iSize % iBitCount == 0);
@@ -209,49 +209,49 @@ int TC_BitMap::connect(void *pAddr, size_t iSize, unsigned iBitCount)
     return 0;
 }
 
-int TC_BitMap::get(size_t i, unsigned iBit)
+int XC_BitMap::get(size_t i, unsigned iBit)
 {
     assert(iBit != 0);
 
     if(iBit > _bitmaps.size())
     {
-        throw TC_BitMap_Exception("[TC_BitMap::get] bit beyond range:"+TC_Common::tostr(iBit)+">"+TC_Common::tostr(_bitmaps.size())); 
+        throw XC_BitMap_Exception("[XC_BitMap::get] bit beyond range:"+XC_Common::tostr(iBit)+">"+XC_Common::tostr(_bitmaps.size())); 
     }
 
     return _bitmaps[iBit-1].get(i);
 }
 
-int TC_BitMap::set(size_t i, unsigned iBit)
+int XC_BitMap::set(size_t i, unsigned iBit)
 {
     assert(iBit != 0);
 
     if(iBit > _bitmaps.size())
     {
-        throw TC_BitMap_Exception("[TC_BitMap::get] bit beyond range:"+TC_Common::tostr(iBit)+">"+TC_Common::tostr(_bitmaps.size())); 
+        throw XC_BitMap_Exception("[XC_BitMap::get] bit beyond range:"+XC_Common::tostr(iBit)+">"+XC_Common::tostr(_bitmaps.size())); 
     }
 
     return _bitmaps[iBit-1].set(i);
 }
 
-int TC_BitMap::clear(size_t i, unsigned iBit)
+int XC_BitMap::clear(size_t i, unsigned iBit)
 {
     assert(iBit != 0);
 
     if(iBit > _bitmaps.size())
     {
-        throw TC_BitMap_Exception("[TC_BitMap::get] bit beyond range:"+TC_Common::tostr(iBit)+">"+TC_Common::tostr(_bitmaps.size())); 
+        throw XC_BitMap_Exception("[XC_BitMap::get] bit beyond range:"+XC_Common::tostr(iBit)+">"+XC_Common::tostr(_bitmaps.size())); 
     }
 
     return _bitmaps[iBit-1].clear(i);
 }
 
-int TC_BitMap::clear4all(unsigned iBit)
+int XC_BitMap::clear4all(unsigned iBit)
 {
     assert(iBit != 0);
 
     if (iBit != (unsigned)(-1) && iBit > _bitmaps.size())
     {
-        throw TC_BitMap_Exception("[TC_BitMap::get] bit beyond range:"+TC_Common::tostr(iBit)+">"+TC_Common::tostr(_bitmaps.size())); 
+        throw XC_BitMap_Exception("[XC_BitMap::get] bit beyond range:"+XC_Common::tostr(iBit)+">"+XC_Common::tostr(_bitmaps.size())); 
     }
 
     for (vector<BitMap>::size_type i = 0; i < _bitmaps.size(); i++)
@@ -265,7 +265,7 @@ int TC_BitMap::clear4all(unsigned iBit)
     return 0;
 }
 
-int TC_BitMap::dump2file(const string &sFile)
+int XC_BitMap::dump2file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "wb");
     if(fp == NULL)
@@ -286,7 +286,7 @@ int TC_BitMap::dump2file(const string &sFile)
     return 0;
 }
 
-int TC_BitMap::load5file(const string &sFile)
+int XC_BitMap::load5file(const string &sFile)
 {
     FILE *fp = fopen(sFile.c_str(), "rb");
     if(fp == NULL)

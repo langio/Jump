@@ -1,5 +1,5 @@
-#ifndef __TC_EPOLL_SERVER_H_
-#define __TC_EPOLL_SERVER_H_
+#ifndef __XC_EPOLL_SERVER_H_
+#define __XC_EPOLL_SERVER_H_
 
 #include <string>
 #include <memory>
@@ -18,14 +18,13 @@
 #include "util/tc_mmap.h"
 #include "util/tc_fifo.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /**
  * @file  tc_epoll_server.h
  * @brief  EpollServer类
  *
- * @author  jarodruan@tencent.com,
  *  		coonzhang@tencent.com,
  *  		skingfan@tencent.com,
  *  	    kevintian@tencent.com
@@ -37,29 +36,29 @@ namespace taf
  * 注册逻辑处理器
  * 注册管理端口处理器
  */
-class TC_EpollServer : public TC_ThreadLock, public TC_HandleBase
+class XC_EpollServer : public XC_ThreadLock, public XC_HandleBase
 {
 public:
     //////////////////////////////////////////////////////////////
     class BindAdapter;
-    typedef TC_AutoPtr<BindAdapter> BindAdapterPtr;
+    typedef XC_AutoPtr<BindAdapter> BindAdapterPtr;
 
     class Handle;
-    typedef TC_AutoPtr<Handle> HandlePtr;
+    typedef XC_AutoPtr<Handle> HandlePtr;
 
     class HandleGroup;
-    typedef TC_AutoPtr<HandleGroup> HandleGroupPtr;
+    typedef XC_AutoPtr<HandleGroup> HandleGroupPtr;
 
     /**
      * 定义协议解析接口的操作对象
      * 注意必须是线程安全的或是可以重入的
      */
-    typedef TC_Functor<int, TL::TLMaker<string &, string&>::Result> protocol_functor;
-    typedef TC_Functor<int, TL::TLMaker<int, string&>::Result>      header_filter_functor;
+    typedef XC_Functor<int, TL::TLMaker<string &, string&>::Result> protocol_functor;
+    typedef XC_Functor<int, TL::TLMaker<int, string&>::Result>      header_filter_functor;
     //////////////////////////////////////////////////////////////
     /**定义数据队列中的结构*/
 
-    struct tagRecvData: public TC_HandleBase
+    struct tagRecvData: public XC_HandleBase
     {
         uint32_t        uid;            /**连接标示*/
         string          buffer;         /**需要发送的内容*/
@@ -71,9 +70,9 @@ public:
         BindAdapterPtr  adapter;        /**标识哪一个adapter的消息*/
     };
 
-    //typedef TC_AutoPtr<tagRecvData> tagRecvDataPtr;
+    //typedef XC_AutoPtr<tagRecvData> tagRecvDataPtr;
 
-    struct tagSendData: public TC_HandleBase
+    struct tagSendData: public XC_HandleBase
     {
         char            cmd;            /**命令:'c',关闭fd; 's',有数据需要发送*/
         uint32_t        uid;            /**连接标示*/
@@ -82,14 +81,14 @@ public:
         uint16_t        port;           /**远程连接的端口*/
     };
 
-    //typedef TC_AutoPtr<tagSendData> tagSendDataPtr;
+    //typedef XC_AutoPtr<tagSendData> tagSendDataPtr;
 
-    typedef TC_ThreadQueue<tagRecvData*, deque<tagRecvData*> > recv_queue;
-    typedef TC_ThreadQueue<tagSendData*, deque<tagSendData*> > send_queue;
+    typedef XC_ThreadQueue<tagRecvData*, deque<tagRecvData*> > recv_queue;
+    typedef XC_ThreadQueue<tagSendData*, deque<tagSendData*> > send_queue;
     typedef recv_queue::queue_type recv_queue_type;
 
 
-    class Adapter_ShmQueue : public TC_ThreadLock
+    class Adapter_ShmQueue : public XC_ThreadLock
     {
     public:
         Adapter_ShmQueue();
@@ -130,8 +129,8 @@ public:
 
         size_t                  _shmSize;
 
-        TC_Shm                  _shm;
-        TC_MemQueue             _shmQueue;
+        XC_Shm                  _shm;
+        XC_MemQueue             _shmQueue;
         list<tagRecvData*>    _memQueue;
     };
 
@@ -154,10 +153,10 @@ public:
      * 每组handle处理一个或多个Adapter消息
      * 每个handle对象一个线程
      */
-    struct HandleGroup : public TC_HandleBase
+    struct HandleGroup : public XC_HandleBase
     {
         string                      name;
-        TC_ThreadLock               monitor;
+        XC_ThreadLock               monitor;
         vector<HandlePtr>           handles;
         map<string, BindAdapterPtr> adapters;
     };
@@ -169,7 +168,7 @@ public:
     /**
      * 服务的逻辑处理代码
      */
-    class Handle : public TC_Thread, public TC_ThreadLock, public TC_HandleBase
+    class Handle : public XC_Thread, public XC_ThreadLock, public XC_HandleBase
     {
     public:
         /**
@@ -186,13 +185,13 @@ public:
          * 设置服务
          * @param pEpollServer
          */
-        void setEpollServer(TC_EpollServer *pEpollServer);
+        void setEpollServer(XC_EpollServer *pEpollServer);
 
         /**
          * 获取服务
-         * @return TC_EpollServer*
+         * @return XC_EpollServer*
          */
-        TC_EpollServer* getEpollServer();
+        XC_EpollServer* getEpollServer();
 
         /**
          * 设置所属的Group
@@ -325,7 +324,7 @@ public:
         /**
          * 服务
          */
-        TC_EpollServer  *_pEpollServer;
+        XC_EpollServer  *_pEpollServer;
 
         /**
          * 所属handle组
@@ -340,7 +339,7 @@ public:
     };
     //////////////////////////////////////////////////////////////////////////////////
     // 服务端口管理,监听socket信息
-    class BindAdapter : public TC_ThreadLock, public TC_HandleBase
+    class BindAdapter : public XC_ThreadLock, public XC_HandleBase
     {
     public:
         /**
@@ -377,19 +376,19 @@ public:
             std::string s2cMmapName;
             uint32_t    s2cMmapSize;
 
-            TC_SQueue c2sMemQueue;
-            TC_Mmap     c2sMmap;
-            TC_Fifo     c2sFifo;
+            XC_SQueue c2sMemQueue;
+            XC_Mmap     c2sMmap;
+            XC_Fifo     c2sFifo;
             
-            TC_SQueue s2cMemQueue;
-            TC_Mmap     s2cMmap;
-            TC_Fifo     s2cFifo;
+            XC_SQueue s2cMemQueue;
+            XC_Mmap     s2cMmap;
+            XC_Fifo     s2cFifo;
         };
         /**
          * 构造函数
          * @param ppPtr, 协议解析类
          */
-        BindAdapter(TC_EpollServer *pEpollServer);
+        BindAdapter(XC_EpollServer *pEpollServer);
 
         /**
          * 析够函数
@@ -467,13 +466,13 @@ public:
          * 获取ip
          * @return const string&
          */
-        TC_Endpoint getEndpoint() const;
+        XC_Endpoint getEndpoint() const;
 
         /**
          * 监听socket
-         * @return TC_Socket
+         * @return XC_Socket
          */
-        TC_Socket &getSocket();
+        XC_Socket &getSocket();
 
         /**
          * 设置最大连接数
@@ -572,9 +571,9 @@ public:
 
         /**
          * 获取EpollServer
-         * @return TC_EpollServer*
+         * @return XC_EpollServer*
          */
-        TC_EpollServer* getEpollServer();
+        XC_EpollServer* getEpollServer();
 
         /**
          * 注册协议解析器
@@ -758,11 +757,11 @@ public:
 		BusCommu * connectBusCommu(const string & sCommuKey);
 
     protected:
-        friend class TC_EpollServer;
+        friend class XC_EpollServer;
         /**
          * 服务
          */
-        TC_EpollServer  *_pEpollServer;
+        XC_EpollServer  *_pEpollServer;
 
         /**
          * Adapter所用的HandleGroup
@@ -792,12 +791,12 @@ public:
         /**
          * 监听fd
          */
-        TC_Socket       _s;
+        XC_Socket       _s;
 
         /**
          * 绑定的IP
          */
-        TC_Endpoint     _ep;
+        XC_Endpoint     _ep;
 
         /**
          * 最大连接数
@@ -807,7 +806,7 @@ public:
         /**
          * 当前连接数
          */
-        TC_Atomic      _iCurConns;
+        XC_Atomic      _iCurConns;
 
         /**
          * Handle个数
@@ -1032,7 +1031,7 @@ public:
 
         void insertRecvQueue(recv_queue::queue_type &vRecvData);
 
-        friend class TC_EpollServer;
+        friend class XC_EpollServer;
 
     public:
         /**
@@ -1048,9 +1047,9 @@ public:
         BindAdapter         *_pBindAdapter;
 
         /**
-         * TC_Socket
+         * XC_Socket
          */
-        TC_Socket           _sock;
+        XC_Socket           _sock;
 
         /**
          * 连接的唯一编号
@@ -1147,14 +1146,14 @@ public:
     /**
      * 带有时间链表的map
      */
-    class ConnectionList : public TC_ThreadLock
+    class ConnectionList : public XC_ThreadLock
     {
     public:
 
         /**
          * 构造函数
          */
-        ConnectionList(TC_EpollServer *pEpollServer) : _pEpollServer(pEpollServer), _vConn(NULL) {}
+        ConnectionList(XC_EpollServer *pEpollServer) : _pEpollServer(pEpollServer), _vConn(NULL) {}
 
         /**
          * 析够函数
@@ -1196,9 +1195,9 @@ public:
         /**
          * 获取某个监听端口的连接
          * @param lfd
-         * @return vector<TC_EpollServer::ConnStatus>
+         * @return vector<XC_EpollServer::ConnStatus>
          */
-        vector<TC_EpollServer::ConnStatus> getConnStatus(int lfd);
+        vector<XC_EpollServer::ConnStatus> getConnStatus(int lfd);
 
         /**
          * 获取某一个连接
@@ -1232,7 +1231,7 @@ public:
         /**
          * 服务
          */
-        TC_EpollServer                  *_pEpollServer;
+        XC_EpollServer                  *_pEpollServer;
 
         /**
          * 总计连接数
@@ -1274,12 +1273,12 @@ public:
     /**
      * 构造函数
      */
-    TC_EpollServer();
+    XC_EpollServer();
 
     /**
      * 析构函数
      */
-    virtual ~TC_EpollServer();
+    virtual ~XC_EpollServer();
 
     /**
      * 定义协议解析的返回值
@@ -1380,9 +1379,9 @@ public:
 
     /**
      * 获取Epoller对象
-     * @return TC_Epoller*
+     * @return XC_Epoller*
      */
-    TC_Epoller* getEpoller()    { return &_epoller; }
+    XC_Epoller* getEpoller()    { return &_epoller; }
 
     /**
      * 获取监听socket信息
@@ -1415,9 +1414,9 @@ public:
      * 获取某一监听端口的连接数
      * @param lfd
      *
-     * @return vector<TC_EpollServer::ConnStatus>
+     * @return vector<XC_EpollServer::ConnStatus>
      */
-    vector<TC_EpollServer::ConnStatus> getConnStatus(int lfd);
+    vector<XC_EpollServer::ConnStatus> getConnStatus(int lfd);
 
     /**
      * 获取连接数
@@ -1534,7 +1533,7 @@ protected:
      * @param ep
      * @param s
      */
-    void bind(const TC_Endpoint &ep, TC_Socket &s);
+    void bind(const XC_Endpoint &ep, XC_Socket &s);
 
     //定义事件类型
     enum
@@ -1562,7 +1561,7 @@ protected:
     /**
      * epoll
      */
-    TC_Epoller                  _epoller;
+    XC_Epoller                  _epoller;
 
     /**
      * 停止
@@ -1582,10 +1581,10 @@ protected:
     /**
      * 管道(用于关闭服务)
      */
-    TC_Socket                   _shutdown;
+    XC_Socket                   _shutdown;
 
     //管道(用于通知有数据需要发送就)
-    TC_Socket                   _notify;
+    XC_Socket                   _notify;
 
     /**
      * 管理的连接链表
@@ -1603,7 +1602,7 @@ protected:
     RollWrapperInterface          *_pLocalLogger;
 };
 
-typedef TC_AutoPtr<TC_EpollServer> TC_EpollServerPtr;
+typedef XC_AutoPtr<XC_EpollServer> XC_EpollServerPtr;
 ////////////////////////////////////////////////////////////////////////////////
 }
 

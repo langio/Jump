@@ -1,27 +1,26 @@
-#ifndef __TC_AUTOPTR_H
-#define __TC_AUTOPTR_H
+#ifndef __XC_AUTOPTR_H
+#define __XC_AUTOPTR_H
 
 #include "util/tc_atomic.h"
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 ///////////////////////////////////////////////////////
 /** 
 * @file tc_autoptr.h 
 * @brief 智能指针类(修改至ICE源码, 智能指针不能相互引用, 否则内存泄漏). 
 *  
-* @author jarodruan@tencent.com 
 */              
 //////////////////////////////////////////////////////
 
 /**
 * @brief 空指针异常
 */
-struct TC_AutoPtrNull_Exception : public TC_Exception
+struct XC_AutoPtrNull_Exception : public XC_Exception
 {
-    TC_AutoPtrNull_Exception(const string &buffer) : TC_Exception(buffer){};
-    ~TC_AutoPtrNull_Exception() throw(){};
+    XC_AutoPtrNull_Exception(const string &buffer) : XC_Exception(buffer){};
+    ~XC_AutoPtrNull_Exception() throw(){};
 };
 
 /**
@@ -29,10 +28,10 @@ struct TC_AutoPtrNull_Exception : public TC_Exception
  *  
  *  所有需要智能指针支持的类都需要从该对象继承，
  *  
- *  内部采用引用计数TC_Atomic实现，对象可以放在容器中；
+ *  内部采用引用计数XC_Atomic实现，对象可以放在容器中；
  */
 template<class  T>
-class TC_HandleBaseT
+class XC_HandleBaseT
 {
 public:
 
@@ -42,9 +41,9 @@ public:
     /**
      * @brief 复制.
      *
-     * @return TC_HandleBase&
+     * @return XC_HandleBase&
      */
-    TC_HandleBaseT& operator=(const TC_HandleBaseT&)
+    XC_HandleBaseT& operator=(const XC_HandleBaseT&)
     {
         return *this;
     }
@@ -85,21 +84,21 @@ protected:
     /**
      * @brief 构造函数
      */
-    TC_HandleBaseT() : _atomic(0), _bNoDelete(false)
+    XC_HandleBaseT() : _atomic(0), _bNoDelete(false)
     {
     }
 
     /**
      * @brief 拷贝构造
      */
-    TC_HandleBaseT(const TC_HandleBaseT&) : _atomic(0), _bNoDelete(false)
+    XC_HandleBaseT(const XC_HandleBaseT&) : _atomic(0), _bNoDelete(false)
     {
     }
 
     /**
      * @brief 析够
      */
-    virtual ~TC_HandleBaseT()
+    virtual ~XC_HandleBaseT()
     {
     }
 
@@ -117,14 +116,14 @@ protected:
 };
 
 template<>
-inline void TC_HandleBaseT<int>::incRef() 
+inline void XC_HandleBaseT<int>::incRef() 
 { 
     //__sync_fetch_and_add(&_atomic,1);
     ++_atomic; 
 }
 
 template<> 
-inline void TC_HandleBaseT<int>::decRef()
+inline void XC_HandleBaseT<int>::decRef()
 {
     //int c = __sync_fetch_and_sub(&_atomic, 1);
     //if(c == 1 && !_bNoDelete)
@@ -136,13 +135,13 @@ inline void TC_HandleBaseT<int>::decRef()
 }
 
 template<> 
-inline int TC_HandleBaseT<int>::getRef() const        
+inline int XC_HandleBaseT<int>::getRef() const        
 { 
     //return __sync_fetch_and_sub(const_cast<volatile int*>(&_atomic), 0);
     return _atomic; 
 } 
 
-typedef TC_HandleBaseT<TC_Atomic> TC_HandleBase;
+typedef XC_HandleBaseT<XC_Atomic> XC_HandleBase;
 
 /**
  * @brief 智能指针模板类. 
@@ -153,10 +152,10 @@ typedef TC_HandleBaseT<TC_Atomic> TC_HandleBase;
  *  
  * 可以放在容器中传递. 
  *  
- * template<typename T> T必须继承于TC_HandleBase 
+ * template<typename T> T必须继承于XC_HandleBase 
  */
 template<typename T>
-class TC_AutoPtr
+class XC_AutoPtr
 {
 public:
 
@@ -170,7 +169,7 @@ public:
 	 *  
      * @param p
      */
-    TC_AutoPtr(T* p = 0)
+    XC_AutoPtr(T* p = 0)
     {
         _ptr = p;
 
@@ -187,7 +186,7 @@ public:
      * @param r
      */
     template<typename Y>
-    TC_AutoPtr(const TC_AutoPtr<Y>& r)
+    XC_AutoPtr(const XC_AutoPtr<Y>& r)
     {
         _ptr = r._ptr;
 
@@ -202,7 +201,7 @@ public:
 	 *  
      * @param r
      */
-    TC_AutoPtr(const TC_AutoPtr& r)
+    XC_AutoPtr(const XC_AutoPtr& r)
     {
         _ptr = r._ptr;
 
@@ -215,7 +214,7 @@ public:
     /**
      * @brief 析构
      */
-    ~TC_AutoPtr()
+    ~XC_AutoPtr()
     {
         if(_ptr)
         {
@@ -227,9 +226,9 @@ public:
 	 * @brief 赋值, 普通指针. 
 	 *  
 	 * @param p 
-     * @return TC_AutoPtr&
+     * @return XC_AutoPtr&
      */
-    TC_AutoPtr& operator=(T* p)
+    XC_AutoPtr& operator=(T* p)
     {
         if(_ptr != p)
         {
@@ -254,10 +253,10 @@ public:
 	 *  
      * @param Y
 	 * @param r 
-     * @return TC_AutoPtr&
+     * @return XC_AutoPtr&
      */
     template<typename Y>
-    TC_AutoPtr& operator=(const TC_AutoPtr<Y>& r)
+    XC_AutoPtr& operator=(const XC_AutoPtr<Y>& r)
     {
         if(_ptr != r._ptr)
         {
@@ -281,9 +280,9 @@ public:
 	 * @brief 赋值, 该类型其他执政指针. 
 	 *  
 	 * @param r 
-     * @return TC_AutoPtr&
+     * @return XC_AutoPtr&
      */
-    TC_AutoPtr& operator=(const TC_AutoPtr& r)
+    XC_AutoPtr& operator=(const XC_AutoPtr& r)
     {
         if(_ptr != r._ptr)
         {
@@ -308,12 +307,12 @@ public:
 	 *  
      * @param Y
 	 * @param r 
-     * @return TC_AutoPtr
+     * @return XC_AutoPtr
      */
     template<class Y>
-    static TC_AutoPtr dynamicCast(const TC_AutoPtr<Y>& r)
+    static XC_AutoPtr dynamicCast(const XC_AutoPtr<Y>& r)
     {
-        return TC_AutoPtr(dynamic_cast<T*>(r._ptr));
+        return XC_AutoPtr(dynamic_cast<T*>(r._ptr));
     }
 
     /**
@@ -321,12 +320,12 @@ public:
 	 *  
      * @param Y
 	 * @param p 
-     * @return TC_AutoPtr
+     * @return XC_AutoPtr
      */
     template<class Y>
-    static TC_AutoPtr dynamicCast(Y* p)
+    static XC_AutoPtr dynamicCast(Y* p)
     {
-        return TC_AutoPtr(dynamic_cast<T*>(p));
+        return XC_AutoPtr(dynamic_cast<T*>(p));
     }
 
     /**
@@ -384,7 +383,7 @@ public:
 	 *  
      * @param other
      */
-    void swap(TC_AutoPtr& other)
+    void swap(XC_AutoPtr& other)
     {
         std::swap(_ptr, other._ptr);
     }
@@ -409,9 +408,9 @@ public:
  * @param line
  */
 template<typename T> inline void
-TC_AutoPtr<T>::throwNullHandleException() const
+XC_AutoPtr<T>::throwNullHandleException() const
 {
-    throw TC_AutoPtrNull_Exception("autoptr null handle error");
+    throw XC_AutoPtrNull_Exception("autoptr null handle error");
 }
 
 /**
@@ -425,7 +424,7 @@ TC_AutoPtr<T>::throwNullHandleException() const
  * @return bool
  */
 template<typename T, typename U>
-inline bool operator==(const TC_AutoPtr<T>& lhs, const TC_AutoPtr<U>& rhs)
+inline bool operator==(const XC_AutoPtr<T>& lhs, const XC_AutoPtr<U>& rhs)
 {
     T* l = lhs.get();
     U* r = rhs.get();
@@ -450,7 +449,7 @@ inline bool operator==(const TC_AutoPtr<T>& lhs, const TC_AutoPtr<U>& rhs)
  * @return bool
  */
 template<typename T, typename U>
-inline bool operator!=(const TC_AutoPtr<T>& lhs, const TC_AutoPtr<U>& rhs)
+inline bool operator!=(const XC_AutoPtr<T>& lhs, const XC_AutoPtr<U>& rhs)
 {
     T* l = lhs.get();
     U* r = rhs.get();
@@ -475,7 +474,7 @@ inline bool operator!=(const TC_AutoPtr<T>& lhs, const TC_AutoPtr<U>& rhs)
  * @return bool
  */
 template<typename T, typename U>
-inline bool operator<(const TC_AutoPtr<T>& lhs, const TC_AutoPtr<U>& rhs)
+inline bool operator<(const XC_AutoPtr<T>& lhs, const XC_AutoPtr<U>& rhs)
 {
     T* l = lhs.get();
     U* r = rhs.get();

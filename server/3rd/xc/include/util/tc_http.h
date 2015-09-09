@@ -1,5 +1,5 @@
-#ifndef __TC_HTTP_H_
-#define __TC_HTTP_H_
+#ifndef __XC_HTTP_H_
+#define __XC_HTTP_H_
 
 #include "util/tc_ex.h"
 #include "util/tc_common.h"
@@ -13,20 +13,20 @@
 #include <cassert>
 #include <vector>
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_http.h 
  * @brief  http类.  
  *  
- * 包括TC_HttpRequest、TC_HttpResponse两个类； 
+ * 包括XC_HttpRequest、XC_HttpResponse两个类； 
  *  
  * 支持GET和POST，其他HTTP方法不支持； 
  *  
- * 通过TC_HttpRequest::checkRequest判断http请求是否收完； 
+ * 通过XC_HttpRequest::checkRequest判断http请求是否收完； 
  *  
- * 与TC_ClientSocket配合，支持同步发送http请求，且支持http的chunk编码； 
+ * 与XC_ClientSocket配合，支持同步发送http请求，且支持http的chunk编码； 
  *  
  * 发送http请求时，非线程安全 
  *  
@@ -40,7 +40,6 @@ namespace taf
  *  
  * 5 增加Cookie管理类 
  *  
- * @author  jarodruan@tencent.com,markzhang@tencent.com
  */             
 /////////////////////////////////////////////////
 
@@ -48,28 +47,28 @@ namespace taf
 /**
 * @brief  http协议解析异常类
 */
-struct TC_Http_Exception : public TC_Exception
+struct XC_Http_Exception : public XC_Exception
 {
-    TC_Http_Exception(const string &sBuffer) : TC_Exception(sBuffer){};
-    ~TC_Http_Exception() throw(){};
+    XC_Http_Exception(const string &sBuffer) : XC_Exception(sBuffer){};
+    ~XC_Http_Exception() throw(){};
 };
 
 /**
  * @brief  http应答协议解析异常类
  */
-struct TC_HttpResponse_Exception : public TC_Http_Exception
+struct XC_HttpResponse_Exception : public XC_Http_Exception
 {
-    TC_HttpResponse_Exception(const string &sBuffer) : TC_Http_Exception(sBuffer){};
-    ~TC_HttpResponse_Exception() throw(){};
+    XC_HttpResponse_Exception(const string &sBuffer) : XC_Http_Exception(sBuffer){};
+    ~XC_HttpResponse_Exception() throw(){};
 };
 
 /**
  * @brief  http请求协议解析异常类
  */
-struct TC_HttpRequest_Exception : public TC_Http_Exception
+struct XC_HttpRequest_Exception : public XC_Http_Exception
 {
-    TC_HttpRequest_Exception(const string &sBuffer) : TC_Http_Exception(sBuffer){};
-    ~TC_HttpRequest_Exception() throw(){};
+    XC_HttpRequest_Exception(const string &sBuffer) : XC_Http_Exception(sBuffer){};
+    ~XC_HttpRequest_Exception() throw(){};
 };
 
 /**   
@@ -101,7 +100,7 @@ struct TC_HttpRequest_Exception : public TC_Http_Exception
  * rootPath:ftp://user:password@www.qq.com:8080/.
  */
 
-class TC_URL
+class XC_URL
 {
 public:
 
@@ -118,14 +117,14 @@ public:
     /**
      *  @brief  构造函数
      */
-    TC_URL() : _iURLType(HTTP)
+    XC_URL() : _iURLType(HTTP)
     {
     }
 
     /**
 	 * @brief  解析URL, url必须是绝对路径. 
 	 *  
-     * @throws       TC_URL_Exception
+     * @throws       XC_URL_Exception
 	 * @param sURL  具体的URL串 
 	 * @return      解析成功返回true，否则返回false 
      */
@@ -255,7 +254,7 @@ public:
 	 * @param  sRelativeURL: 相对当前URL的地址 
 	 * @return 返回调整后的URL 
      */
-    TC_URL buildWithRelativePath(const string &sRelativeURL) const;
+    XC_URL buildWithRelativePath(const string &sRelativeURL) const;
 
     /**
      * @brief 规整化.
@@ -320,15 +319,15 @@ protected:
 /**
  * @brief  http协议解析类, 请求和响应都在该类中解析
  */
-class TC_Http
+class XC_Http
 {
 public:
     /**
      * @brief  构造函数
      */
-    TC_Http()
+    XC_Http()
     {
-        TC_Http::reset();
+        XC_Http::reset();
         setConnection("close");     //默认就用短连接
     }
 
@@ -339,7 +338,7 @@ public:
     {
         bool operator()(const string &s1, const string &s2) const
         {
-            return TC_Common::upper(s1) < TC_Common::upper(s2);
+            return XC_Common::upper(s1) < XC_Common::upper(s2);
         }
     };
 
@@ -380,7 +379,7 @@ public:
      */
     void setContentLength(size_t iContentLength)
     {
-        setHeader("Content-Length", TC_Common::tostr(iContentLength));
+        setHeader("Content-Length", XC_Common::tostr(iContentLength));
     }
 
     /**
@@ -435,7 +434,7 @@ public:
     void setHeader(const string &sHeadName, const string &sHeadValue) 
     {
         //Set-Cookie和Cookie可以有多个头
-        if(TC_Common::upper(sHeadName) != "SET-COOKIE" && TC_Common::upper(sHeadName) != "COOKIE")
+        if(XC_Common::upper(sHeadName) != "SET-COOKIE" && XC_Common::upper(sHeadName) != "COOKIE")
         {
             _headers.erase(sHeadName);
         }
@@ -596,15 +595,15 @@ protected:
     bool                _bIsChunked;
 };
 
-/********************* TC_HttpCookie***********************/
+/********************* XC_HttpCookie***********************/
 
 /**
  * @brief 简单的Cookie管理类.  
  */
-class TC_HttpCookie
+class XC_HttpCookie
 {
 public:
-    typedef map<string, string, TC_Http::CmpCase> http_cookie_data;
+    typedef map<string, string, XC_Http::CmpCase> http_cookie_data;
 
     struct Cookie
     {
@@ -707,7 +706,7 @@ protected:
 	 * @param tURL 
      * @return size_t
      */
-    size_t isCookieMatch(const Cookie &cookie, const TC_URL &tURL) const;
+    size_t isCookieMatch(const Cookie &cookie, const XC_URL &tURL) const;
 
     /**
 	 * @brief  检查Cookie是否过期，当前回话的不算过期(expires=0) 
@@ -742,18 +741,18 @@ protected:
     list<Cookie> _cookies;
 };
 
-/********************* TC_HttpResponse ***********************/
+/********************* XC_HttpResponse ***********************/
 
-class TC_HttpResponse : public TC_Http
+class XC_HttpResponse : public XC_Http
 {
 public:
 
     /**
      * @brief 构造
      */
-    TC_HttpResponse()
+    XC_HttpResponse()
     {
-        TC_HttpResponse::reset();
+        XC_HttpResponse::reset();
     }
 
     /**
@@ -765,9 +764,9 @@ public:
 	 * @brief 增量decode,输入的buffer会自动在解析过程中被清除掉， 
      * 增量decode之前必须reset，
      * (网络接收的buffer直接添加到sBuffer里面即可, 然后增量解析)
-     * (能够解析的数据TC_HttpResponse会自动从sBuffer里面消除，直到网络接收完毕或者解析返回true)
+     * (能够解析的数据XC_HttpResponse会自动从sBuffer里面消除，直到网络接收完毕或者解析返回true)
      * @param buffer
-     * @throws TC_HttpResponse_Exception, 不支持的http协议, 抛出异常
+     * @throws XC_HttpResponse_Exception, 不支持的http协议, 抛出异常
 	 * @return true:解析出一个完整的buffer 
 	 *  	  false:还需要继续解析，如果服务器主动关闭连接的模式下
 	 *  	  , 也可能不需要再解析了
@@ -941,17 +940,17 @@ protected:
     size_t  _iTmpContentLength;
 };
 
-/********************* TC_HttpRequest ***********************/
+/********************* XC_HttpRequest ***********************/
 
-class TC_HttpRequest : public TC_Http
+class XC_HttpRequest : public XC_Http
 {
 public:
 
     ///////////////////////////////////////////////////////////////////
-    TC_HttpRequest()
+    XC_HttpRequest()
     {
-        TC_HttpRequest::reset();
-        setUserAgent("TC_Http");
+        XC_HttpRequest::reset();
+        setUserAgent("XC_Http");
     }
 
     /**
@@ -967,7 +966,7 @@ public:
 	 * @brief 检查http请求是否收全. 
 	 *  
      * @param sBuffer http请求
-     * @throws TC_HttpRequest_Exception, 不支持的http协议, 抛出异常
+     * @throws XC_HttpRequest_Exception, 不支持的http协议, 抛出异常
      * @return  true: 收全, false:不全
      */
     static bool checkRequest(const char* sBuffer, size_t len);
@@ -1003,7 +1002,7 @@ public:
 	 *  
      * @param sBuffer 要解析的http请求
 	 * @return        sBuffer是否是完整的http请求 
-	 * @throw         TC_HttpRequest_Exception 
+	 * @throw         XC_HttpRequest_Exception 
      */
     bool decode(const string &sBuffer);
 
@@ -1013,7 +1012,7 @@ public:
 	 *  
      * @param sBuffer http请求
      * @param iLength 长度
-     * @throw         TC_HttpRequest_Exception
+     * @throw         XC_HttpRequest_Exception
      * @return        sBuffer是否是完整的http请求
      */
     bool decode(const char *sBuffer, size_t iLength);
@@ -1078,9 +1077,9 @@ public:
 	 *  
 	 * @param iTimeout 毫秒 
 	 * @return        0 成功； 
-	 *  			 <0失败, 具体值参见TC_ClientSocket声明
+	 *  			 <0失败, 具体值参见XC_ClientSocket声明
      */
-    int doRequest(TC_HttpResponse &stHttpRep, int iTimeout = 3000);
+    int doRequest(XC_HttpResponse &stHttpRep, int iTimeout = 3000);
 
     /**
      * @brief 是否是GET请求.
@@ -1099,9 +1098,9 @@ public:
     /**
      * @brief 获取请求的URL.
      * 
-     * @return const TC_URL&
+     * @return const XC_URL&
      */
-    const TC_URL &getURL() const { return _httpURL; }
+    const XC_URL &getURL() const { return _httpURL; }
 
     /**
      * @brief 获取完整的http请求.
@@ -1168,7 +1167,7 @@ protected:
     /**
      * 请求URL
      */
-    TC_URL             _httpURL;
+    XC_URL             _httpURL;
 
     /**
      * 请求类型

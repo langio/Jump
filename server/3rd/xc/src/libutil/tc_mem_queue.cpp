@@ -5,17 +5,17 @@
 #include <string>
 #include <iostream>
 
-namespace taf
+namespace xutil
 {
 
-TC_MemQueue::TC_MemQueue()
+XC_MemQueue::XC_MemQueue()
 :_pctrlBlock(NULL)
 ,_paddr(NULL)
 ,_size(0)
 {
 }
 
-void TC_MemQueue::create(void *pAddr, size_t iSize)
+void XC_MemQueue::create(void *pAddr, size_t iSize)
 {
     assert(pAddr);
     assert(iSize != 0);
@@ -32,7 +32,7 @@ void TC_MemQueue::create(void *pAddr, size_t iSize)
     _pctrlBlock->iPushCount = 0;
 }
 
-void TC_MemQueue::connect(void *pAddr, size_t iSize)
+void XC_MemQueue::connect(void *pAddr, size_t iSize)
 {
     assert(pAddr);
 
@@ -45,7 +45,7 @@ void TC_MemQueue::connect(void *pAddr, size_t iSize)
     _paddr          = (void *)((char *)_pctrlBlock + sizeof(CONTROL_BLOCK) + sizeof(tagModifyHead));
 }
 
-bool TC_MemQueue::isFull(size_t iSize)
+bool XC_MemQueue::isFull(size_t iSize)
 {
     doUpdate();
 
@@ -64,19 +64,19 @@ bool TC_MemQueue::isFull(size_t iSize)
     return false;
 }
 
-bool TC_MemQueue::isEmpty()
+bool XC_MemQueue::isEmpty()
 {
     doUpdate();
     return (_pctrlBlock->iTopIndex == _pctrlBlock->iBotIndex);
 }
 
-size_t TC_MemQueue::queueSize()
+size_t XC_MemQueue::queueSize()
 {
     doUpdate();
     return _size - sizeof(CONTROL_BLOCK) - sizeof(tagModifyHead);
 }
 
-size_t TC_MemQueue::elementCount()
+size_t XC_MemQueue::elementCount()
 {
     doUpdate();
     size_t iPushCount = _pctrlBlock->iPushCount;
@@ -90,7 +90,7 @@ size_t TC_MemQueue::elementCount()
     return numeric_limits<size_t>::max() - iPopCount + iPushCount;
 }
 
-bool TC_MemQueue::pop_front(string &sOut)
+bool XC_MemQueue::pop_front(string &sOut)
 {
     if(isEmpty())
     {
@@ -147,12 +147,12 @@ bool TC_MemQueue::pop_front(string &sOut)
     return true;
 }
 
-bool TC_MemQueue::push_back(const string &sIn)
+bool XC_MemQueue::push_back(const string &sIn)
 {
     return push_back(sIn.c_str(),sIn.length());
 }
 
-bool TC_MemQueue::push_back(const char *pvIn, size_t iSize)
+bool XC_MemQueue::push_back(const char *pvIn, size_t iSize)
 {
     if(isFull(iSize))
     {
@@ -215,7 +215,7 @@ bool TC_MemQueue::push_back(const char *pvIn, size_t iSize)
     return true;
 }
 
-void TC_MemQueue::doUpdate(bool bUpdate)
+void XC_MemQueue::doUpdate(bool bUpdate)
 {
 	if(bUpdate)
 	{
@@ -262,7 +262,7 @@ void TC_MemQueue::doUpdate(bool bUpdate)
 	}
 }
 
-void TC_MemQueue::update(void* iModifyAddr, size_t iModifyValue)
+void XC_MemQueue::update(void* iModifyAddr, size_t iModifyValue)
 {
 	_pstModifyHead->_cModifyStatus = 1;
 	_pstModifyHead->_stModifyData[_pstModifyHead->_iNowIndex]._iModifyAddr  = (char*)iModifyAddr - (char*)_pctrlBlock;
@@ -273,7 +273,7 @@ void TC_MemQueue::update(void* iModifyAddr, size_t iModifyValue)
 	assert(_pstModifyHead->_iNowIndex < sizeof(_pstModifyHead->_stModifyData) / sizeof(tagModifyData));
 }
 
-void TC_MemQueue::update(void* iModifyAddr, bool bModifyValue)
+void XC_MemQueue::update(void* iModifyAddr, bool bModifyValue)
 {
 	_pstModifyHead->_cModifyStatus = 1;
 	_pstModifyHead->_stModifyData[_pstModifyHead->_iNowIndex]._iModifyAddr  = (char*)iModifyAddr - (char*)_pctrlBlock;

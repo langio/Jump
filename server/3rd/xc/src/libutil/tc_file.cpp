@@ -1,17 +1,17 @@
 #include "util/tc_file.h"
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-ifstream::pos_type TC_File::getFileSize(const string &sFullFileName)
+ifstream::pos_type XC_File::getFileSize(const string &sFullFileName)
 {
     ifstream ifs(sFullFileName.c_str());
     ifs.seekg(0, ios_base::end);
     return ifs.tellg();
 }
 
-bool TC_File::isAbsolute(const string &sFullFileName)
+bool XC_File::isAbsolute(const string &sFullFileName)
 {
     if(sFullFileName.empty())
     {
@@ -27,7 +27,7 @@ bool TC_File::isAbsolute(const string &sFullFileName)
     return sFullFileName[i] == '/';
 }
 
-bool TC_File::isFileExist(const string &sFullFileName, mode_t iFileType)
+bool XC_File::isFileExist(const string &sFullFileName, mode_t iFileType)
 {
     struct stat f_stat;
 
@@ -44,7 +44,7 @@ bool TC_File::isFileExist(const string &sFullFileName, mode_t iFileType)
     return true;
 }
 
-bool TC_File::isFileExistEx(const string &sFullFileName, mode_t iFileType)
+bool XC_File::isFileExistEx(const string &sFullFileName, mode_t iFileType)
 {
     struct stat f_stat;
 
@@ -61,7 +61,7 @@ bool TC_File::isFileExistEx(const string &sFullFileName, mode_t iFileType)
     return true;
 }
 
-bool TC_File::makeDir(const string &sDirectoryPath, mode_t iFlag)
+bool XC_File::makeDir(const string &sDirectoryPath, mode_t iFlag)
 {
     int iRetCode = mkdir(sDirectoryPath.c_str(), iFlag);
     if(iRetCode < 0 && errno == EEXIST)
@@ -72,7 +72,7 @@ bool TC_File::makeDir(const string &sDirectoryPath, mode_t iFlag)
     return iRetCode == 0;
 }
 
-bool TC_File::makeDirRecursive(const string &sDirectoryPath, mode_t iFlag)
+bool XC_File::makeDirRecursive(const string &sDirectoryPath, mode_t iFlag)
 {
     string simple = simplifyDirectory(sDirectoryPath);
 
@@ -95,7 +95,7 @@ bool TC_File::makeDirRecursive(const string &sDirectoryPath, mode_t iFlag)
     return true;
 }
 
-int TC_File::setExecutable(const string &sFullFileName, bool canExecutable)
+int XC_File::setExecutable(const string &sFullFileName, bool canExecutable)
 {
     struct stat f_stat;
 
@@ -107,7 +107,7 @@ int TC_File::setExecutable(const string &sFullFileName, bool canExecutable)
     return chmod(sFullFileName.c_str(), canExecutable ? f_stat.st_mode | S_IXUSR : f_stat.st_mode & ~S_IXUSR);
 }
 
-bool TC_File::canExecutable(const string &sFullFileName)
+bool XC_File::canExecutable(const string &sFullFileName)
 {
     struct stat f_stat;
 
@@ -119,7 +119,7 @@ bool TC_File::canExecutable(const string &sFullFileName)
     return f_stat.st_mode & S_IXUSR;
 }
 
-int TC_File::removeFile(const string &sFullFileName, bool bRecursive)
+int XC_File::removeFile(const string &sFullFileName, bool bRecursive)
 {
     string path = simplifyDirectory(sFullFileName);
 
@@ -162,7 +162,7 @@ int TC_File::removeFile(const string &sFullFileName, bool bRecursive)
     return 0;
 }
 
-string TC_File::simplifyDirectory(const string& path)
+string XC_File::simplifyDirectory(const string& path)
 {
     string result = path;
 
@@ -213,21 +213,21 @@ string TC_File::simplifyDirectory(const string& path)
     return result;
 }
 
-string TC_File::load2str(const string &sFullFileName)
+string XC_File::load2str(const string &sFullFileName)
 {
     ifstream ifs(sFullFileName.c_str());
 
     return string(istreambuf_iterator<char>(ifs), istreambuf_iterator<char>());
 }
 
-void TC_File::save2file(const string &sFullFileName, const string &sFileData)
+void XC_File::save2file(const string &sFullFileName, const string &sFileData)
 {
     ofstream ofs((sFullFileName).c_str());
     ofs << sFileData;
     ofs.close();
 }
 
-int TC_File::save2file(const string &sFullFileName, const char *sFileData, size_t length)
+int XC_File::save2file(const string &sFullFileName, const char *sFileData, size_t length)
 {
 	FILE *fp = fopen(sFullFileName.c_str(), "wb");
 	if(fp == NULL)
@@ -245,7 +245,7 @@ int TC_File::save2file(const string &sFullFileName, const char *sFileData, size_
 	return -1;
 }
 
-string TC_File::getExePath()
+string XC_File::getExePath()
 {
     string proc = "/proc/self/exe";
     char buf[2048] = "\0";
@@ -253,14 +253,14 @@ string TC_File::getExePath()
 
     if ( count < 0 )
     {
-        throw TC_File_Exception("[TC_File::getExePath] could not get exe path error", errno);
+        throw XC_File_Exception("[XC_File::getExePath] could not get exe path error", errno);
     }
 
     buf[count] = '\0';
     return buf;
 }
 
-string TC_File::extractFileName(const string &sFullFileName)
+string XC_File::extractFileName(const string &sFullFileName)
 {
     if(sFullFileName.length() <= 0)
     {
@@ -276,7 +276,7 @@ string TC_File::extractFileName(const string &sFullFileName)
     return sFullFileName.substr(pos + 1);
 }
 
-string TC_File::extractFilePath(const string &sFullFileName)
+string XC_File::extractFilePath(const string &sFullFileName)
 {
     if(sFullFileName.length() <= 0)
     {
@@ -296,7 +296,7 @@ string TC_File::extractFilePath(const string &sFullFileName)
     return "./";
 }
 
-string TC_File::extractFileExt(const string &sFullFileName)
+string XC_File::extractFileExt(const string &sFullFileName)
 {
     string::size_type pos;
     if ((pos = sFullFileName.rfind('.')) == string::npos)
@@ -307,7 +307,7 @@ string TC_File::extractFileExt(const string &sFullFileName)
     return sFullFileName.substr(pos+1);
 }
 
-string TC_File::excludeFileExt(const string &sFullFileName)
+string XC_File::excludeFileExt(const string &sFullFileName)
 {
     string::size_type pos;
     if ((pos = sFullFileName.rfind('.')) == string::npos)
@@ -318,14 +318,14 @@ string TC_File::excludeFileExt(const string &sFullFileName)
     return sFullFileName.substr(0, pos);
 }
 
-string TC_File::replaceFileExt(const string &sFullFileName, const string &sExt)
+string XC_File::replaceFileExt(const string &sFullFileName, const string &sExt)
 {
     return excludeFileExt(sFullFileName) + "." + sExt;
 }
 
-string TC_File::extractUrlFilePath(const string &sUrl)
+string XC_File::extractUrlFilePath(const string &sUrl)
 {
-    string sLowerUrl = TC_Common::lower(sUrl);
+    string sLowerUrl = XC_Common::lower(sUrl);
     string::size_type pos = sLowerUrl.find("http://");
 
     if(pos == 0)
@@ -361,7 +361,7 @@ string TC_File::extractUrlFilePath(const string &sUrl)
     return sUrl.substr(pos);
 }
 
-size_t TC_File::scanDir(const string &sFilePath, vector<string> &vtMatchFiles, FILE_SELECT f, int iMaxSize )
+size_t XC_File::scanDir(const string &sFilePath, vector<string> &vtMatchFiles, FILE_SELECT f, int iMaxSize )
 {
     vtMatchFiles.clear();
 
@@ -393,7 +393,7 @@ size_t TC_File::scanDir(const string &sFilePath, vector<string> &vtMatchFiles, F
     return vtMatchFiles.size();
 }
 
-void TC_File::listDirectory(const string &path, vector<string> &files, bool bRecursive)
+void XC_File::listDirectory(const string &path, vector<string> &files, bool bRecursive)
 {
     vector<string> tf;
     scanDir(path, tf, 0, 0);
@@ -420,13 +420,13 @@ void TC_File::listDirectory(const string &path, vector<string> &files, bool bRec
     }
 }
 
-void TC_File::copyFile(const string &sExistFile, const string &sNewFile,bool bRemove)
+void XC_File::copyFile(const string &sExistFile, const string &sNewFile,bool bRemove)
 {
-    if(TC_File::isFileExist(sExistFile, S_IFDIR))
+    if(XC_File::isFileExist(sExistFile, S_IFDIR))
     {    
-        TC_File::makeDir(sNewFile);  
+        XC_File::makeDir(sNewFile);  
         vector<string> tf;
-        TC_File::scanDir(sExistFile,tf, 0, 0);
+        XC_File::scanDir(sExistFile,tf, 0, 0);
         for(size_t i = 0; i <tf.size(); i++)
         {
             if(tf[i] == "." || tf[i] == "..")
@@ -442,17 +442,17 @@ void TC_File::copyFile(const string &sExistFile, const string &sNewFile,bool bRe
         std::ifstream fin(sExistFile.c_str());
         if(!fin)
         {      
-            throw TC_File_Exception("[TC_File::copyFile] error", errno);
+            throw XC_File_Exception("[XC_File::copyFile] error", errno);
         }
         std::ofstream fout(sNewFile.c_str());
         if(!fout )
         {  
-             throw TC_File_Exception("[TC_File::copyFile] error", errno); 
+             throw XC_File_Exception("[XC_File::copyFile] error", errno); 
         }
         struct stat f_stat;
         if (stat(sExistFile.c_str(), &f_stat) == -1)
         {
-             throw TC_File_Exception("[TC_File::copyFile] error", errno);
+             throw XC_File_Exception("[XC_File::copyFile] error", errno);
         }
         chmod(sNewFile.c_str(),f_stat.st_mode);
         fout<<fin.rdbuf();

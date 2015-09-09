@@ -1,5 +1,5 @@
-#ifndef __TC_CGI_H
-#define __TC_CGI_H
+#ifndef __XC_CGI_H
+#define __XC_CGI_H
 
 #include <sstream>
 #include <istream>
@@ -7,48 +7,47 @@
 #include <vector>
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_cgi.h
 * @brief CGI处理类
 *  
-* @author jarodruan@tencent.com 
 */            
 /////////////////////////////////////////////////
-class TC_Cgi;
-class TC_Cgi_Upload;
-class TC_HttpRequest;
+class XC_Cgi;
+class XC_Cgi_Upload;
+class XC_HttpRequest;
 
 /**
 * @brief 配置文件异常类
 */
-struct TC_Cgi_Exception : public TC_Exception
+struct XC_Cgi_Exception : public XC_Exception
 {
-	TC_Cgi_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Cgi_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-	~TC_Cgi_Exception() throw(){};
+	XC_Cgi_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Cgi_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+	~XC_Cgi_Exception() throw(){};
 };
 
 /**
 * @brief 全局的友元函数，定义该函数, 
-*   	 则可以用TC_Common::tostr对 vector<TC_Cgi_Upload>进行输出操作
+*   	 则可以用XC_Common::tostr对 vector<XC_Cgi_Upload>进行输出操作
 */
-ostream &operator<<(ostream &os, const TC_Cgi_Upload &tcCgiUpload);
+ostream &operator<<(ostream &os, const XC_Cgi_Upload &tcCgiUpload);
 
 /**
 * @brief cgi上传文件操作，通过该类获取cgi上传的文件信息 
 */
-class TC_Cgi_Upload
+class XC_Cgi_Upload
 {
 public:
-    friend ostream &operator<<(ostream &os, const TC_Cgi_Upload &tcCgiUpload);
+    friend ostream &operator<<(ostream &os, const XC_Cgi_Upload &tcCgiUpload);
 
     /**
     * @brief 构造函数
     */
-    TC_Cgi_Upload()
+    XC_Cgi_Upload()
     :_sFileName("")
     , _sRealFileName("")
     , _sServerFileName("")
@@ -61,12 +60,12 @@ public:
 	* @brief 拷贝构造函数. 
     */
 
-    TC_Cgi_Upload(const TC_Cgi_Upload &tcCgiUpload);
+    XC_Cgi_Upload(const XC_Cgi_Upload &tcCgiUpload);
 
     /**
     * @brief 赋值构造函数
     */
-    TC_Cgi_Upload & operator=(const TC_Cgi_Upload &tcCgiUpload);
+    XC_Cgi_Upload & operator=(const XC_Cgi_Upload &tcCgiUpload);
 
     /**
 	* @brief 获取上传的信息. 
@@ -152,7 +151,7 @@ protected:
     */
     bool    _bOverSize;
 
-    friend class TC_Cgi;
+    friend class XC_Cgi;
 };
 
 /**
@@ -177,19 +176,19 @@ protected:
 * 如果有文件上传需要调用setUpload, 并且需要在parseCgi之前调用
 *
 */
-class TC_Cgi
+class XC_Cgi
 {
 public:
 
     /**
-    * @brief TC_Cgi构造函数
+    * @brief XC_Cgi构造函数
     */
-    TC_Cgi();
+    XC_Cgi();
 
     /**
     * @brief 析构函数
     */
-    virtual ~TC_Cgi();
+    virtual ~XC_Cgi();
 
     /**
     * @brief 定义环境变量
@@ -237,7 +236,7 @@ public:
 	 *  
      * @param request http请求
      */
-    void parseCgi(const TC_HttpRequest &request);
+    void parseCgi(const XC_HttpRequest &request);
 
     /**
 	* @brief 获取cgi的url参数multimap. 
@@ -343,7 +342,7 @@ public:
     * @param vtUploads 返回超过大小的文件名称(浏览器file控件的名称)
 	* @return          按照以上标准超过大小的返回true，否则返回false
     */
-    bool  isUploadOverSize(vector<TC_Cgi_Upload> &vtUploads) const;
+    bool  isUploadOverSize(vector<XC_Cgi_Upload> &vtUploads) const;
 
     /**
      * @brief 是否超过上传文件个数.
@@ -362,10 +361,10 @@ public:
     /**
 	* @brief 获取上传文件的相关信息
 	*  
-	* @return map<string,TC_Cgi_Upload>结构中， 
+	* @return map<string,XC_Cgi_Upload>结构中， 
 	*   	  保存文件名和文件相关信息的map
     */
-    const map<string, TC_Cgi_Upload> &getUploadFilesMap() const;
+    const map<string, XC_Cgi_Upload> &getUploadFilesMap() const;
 
     /**
 	* @brief 获取环境变量. 
@@ -437,7 +436,7 @@ protected:
     /**
     * @brief 申明,但是不定义,保证这个函数不会被使用
     */
-    TC_Cgi &operator=(const TC_Cgi &tcCgi);
+    XC_Cgi &operator=(const XC_Cgi &tcCgi);
 
     /**
 	* @brief GET method. 
@@ -573,7 +572,7 @@ protected:
     /**
     * 上传文件相关信息保存在该map中
     */
-    map<string, TC_Cgi_Upload>  _mpUpload;
+    map<string, XC_Cgi_Upload>  _mpUpload;
 };
 
 }

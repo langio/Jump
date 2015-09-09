@@ -1,28 +1,28 @@
 #include "util/tc_dyn_object.h"
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
-/**********************************TC_DYN_RuntimeClass定义***********************************/
+/**********************************XC_DYN_RuntimeClass定义***********************************/
 
-TC_DYN_RuntimeClass* TC_DYN_RuntimeClass::pFirstClass = NULL;
+XC_DYN_RuntimeClass* XC_DYN_RuntimeClass::pFirstClass = NULL;
 
-TC_DYN_Object* TC_DYN_RuntimeClass::createObject()
+XC_DYN_Object* XC_DYN_RuntimeClass::createObject()
 {
     if (m_pfnCreateObject == NULL)
     {
         return NULL;
     }
 
-    TC_DYN_Object* pObject = (*m_pfnCreateObject)();
+    XC_DYN_Object* pObject = (*m_pfnCreateObject)();
     {
         return pObject;
     }
 }
 
-TC_DYN_RuntimeClass* TC_DYN_RuntimeClass::load(const char *szClassName)
+XC_DYN_RuntimeClass* XC_DYN_RuntimeClass::load(const char *szClassName)
 {
-    TC_DYN_RuntimeClass* pClass;
+    XC_DYN_RuntimeClass* pClass;
 
     for (pClass = pFirstClass; pClass != NULL; pClass = pClass->m_pNextClass)
     {
@@ -33,27 +33,27 @@ TC_DYN_RuntimeClass* TC_DYN_RuntimeClass::load(const char *szClassName)
     return NULL;
 }
 
-/**********************************szTC_DYN_Object定义***********************************/
+/**********************************szXC_DYN_Object定义***********************************/
 
-TC_DYN_RuntimeClass TC_DYN_Object::classTC_DYN_Object =
+XC_DYN_RuntimeClass XC_DYN_Object::classXC_DYN_Object =
 {
-    (char*)"TC_DYN_Object", 
-    sizeof(TC_DYN_Object), 
+    (char*)"XC_DYN_Object", 
+    sizeof(XC_DYN_Object), 
     NULL, 
     NULL, 
     NULL 
 };
 
-static TC_DYN_Init _init_TC_DYN_Object(&TC_DYN_Object::classTC_DYN_Object);
+static XC_DYN_Init _init_XC_DYN_Object(&XC_DYN_Object::classXC_DYN_Object);
 
-TC_DYN_RuntimeClass* TC_DYN_Object::GetRuntimeClass() const
+XC_DYN_RuntimeClass* XC_DYN_Object::GetRuntimeClass() const
 {
-	return &TC_DYN_Object::classTC_DYN_Object;
+	return &XC_DYN_Object::classXC_DYN_Object;
 }
 
-bool TC_DYN_Object::isKindOf(const TC_DYN_RuntimeClass* pClass) const
+bool XC_DYN_Object::isKindOf(const XC_DYN_RuntimeClass* pClass) const
 {
-    TC_DYN_RuntimeClass* pClassThis = GetRuntimeClass();
+    XC_DYN_RuntimeClass* pClassThis = GetRuntimeClass();
     while (pClassThis != NULL)
     {
         if (pClassThis == pClass)

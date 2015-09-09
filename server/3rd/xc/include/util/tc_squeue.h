@@ -1,6 +1,6 @@
 
-#ifndef __TC_SQueue_H__
-#define __TC_SQueue_H__
+#ifndef __XC_SQueue_H__
+#define __XC_SQueue_H__
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -17,36 +17,36 @@
  * 代码从wbl的squeue迁移而来
 */
 
-namespace taf {
+namespace xutil {
 
-class TC_SQueue
+class XC_SQueue
 {
 public:
-	TC_SQueue() {_header = NULL;_data = NULL;}
-	~TC_SQueue() {_header = NULL;_data = NULL;}
+	XC_SQueue() {_header = NULL;_data = NULL;}
+	~XC_SQueue() {_header = NULL;_data = NULL;}
 
-	void attach(char* pBuf, unsigned long iBufSize) throw (TC_Exception)
+	void attach(char* pBuf, unsigned long iBufSize) throw (XC_Exception)
 	{
 		if(iBufSize <= sizeof(Header)+MarkLen+ReserveLen) {
-			throw TC_Exception("TC_SQueue::attach fail:iBufSize is too small");
+			throw XC_Exception("XC_SQueue::attach fail:iBufSize is too small");
 		}
 
 		_header = (Header *)pBuf;
 		_data = pBuf+sizeof(Header);
 		if(_header->iBufSize != iBufSize - sizeof(Header))
-			throw TC_Exception("TC_SQueue::attach fail: iBufSize != iBufSize - sizeof(Header);");
+			throw XC_Exception("XC_SQueue::attach fail: iBufSize != iBufSize - sizeof(Header);");
 		if(_header->iReserveLen != ReserveLen)
-			throw TC_Exception("TC_SQueue::attach fail: iReserveLen != ReserveLen");
+			throw XC_Exception("XC_SQueue::attach fail: iReserveLen != ReserveLen");
 		if(_header->iBegin >= _header->iBufSize)
-			throw TC_Exception("TC_SQueue::attach fail: iBegin > iBufSize - sizeof(Header);");
+			throw XC_Exception("XC_SQueue::attach fail: iBegin > iBufSize - sizeof(Header);");
 		if(_header->iEnd > iBufSize - sizeof(Header))
-			throw TC_Exception("TC_SQueue::attach fail: iEnd > iBufSize - sizeof(Header);");
+			throw XC_Exception("XC_SQueue::attach fail: iEnd > iBufSize - sizeof(Header);");
 	}
 
-	void create(char* pBuf, unsigned long iBufSize) throw (TC_Exception)
+	void create(char* pBuf, unsigned long iBufSize) throw (XC_Exception)
 	{
 		if(iBufSize <= sizeof(Header)+MarkLen+ReserveLen) {
-			throw TC_Exception("TC_SQueue::create fail:iBufSize is too small");
+			throw XC_Exception("XC_SQueue::create fail:iBufSize is too small");
 		}
 
 		_header = (Header *)pBuf;

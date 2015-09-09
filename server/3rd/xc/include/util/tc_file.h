@@ -1,5 +1,5 @@
-#ifndef __TC_FILE_H_
-#define __TC_FILE_H_
+#ifndef __XC_FILE_H_
+#define __XC_FILE_H_
 
 #include <iostream>
 #include <fstream>
@@ -11,14 +11,13 @@
 #include "util/tc_ex.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_file.h 
  * @brief  文件处理类. 
  *  
- * @author  jarodruan@tencent.com,skingfan@tencent.com          
  */
 /////////////////////////////////////////////////
 
@@ -27,18 +26,18 @@ namespace taf
 * @brief 文件异常类. 
 *  
 */
-struct TC_File_Exception : public TC_Exception
+struct XC_File_Exception : public XC_Exception
 {
-    TC_File_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_File_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_File_Exception() throw(){};
+    XC_File_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_File_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_File_Exception() throw(){};
 };
 
 /**
 * @brief 常用文件名处理函数. 
 *  
 */
-class TC_File
+class XC_File
 {
 public:
 
@@ -264,4 +263,4 @@ public:
 };
 
 }
-#endif // TC_FILE_H
+#endif // XC_FILE_H

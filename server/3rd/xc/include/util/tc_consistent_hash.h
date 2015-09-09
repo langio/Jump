@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 
 /////////////////////////////////////////////////
@@ -35,14 +35,14 @@ struct node_T
 /**
  *  @brief 一致性hash算法类
  */
-class  TC_ConsistentHash
+class  XC_ConsistentHash
 {
     public:
 
 		/**
 		 *  @brief 构造函数
 		 */
-        TC_ConsistentHash()
+        XC_ConsistentHash()
         {
         }
 
@@ -68,7 +68,7 @@ class  TC_ConsistentHash
         unsigned addNode(const string & node, unsigned int index)
         {
             node_T stItem;
-            stItem.iHashCode = hash_md5(TC_MD5::md5bin(node));
+            stItem.iHashCode = hash_md5(XC_MD5::md5bin(node));
             stItem.iIndex = index;
             vHashList.push_back(stItem);
 
@@ -85,7 +85,7 @@ class  TC_ConsistentHash
          */
         int removeNode(const string & node)
         {
-            unsigned iIndex = hash_md5(TC_MD5::md5bin(node));
+            unsigned iIndex = hash_md5(XC_MD5::md5bin(node));
             vector<node_T>::iterator it;
             for(it=vHashList.begin() ; it!=vHashList.end(); it++)
             {
@@ -107,7 +107,7 @@ class  TC_ConsistentHash
          */
         int getIndex(const string & key, unsigned int & iIndex)
         {
-            unsigned iCode = hash_md5(TC_MD5::md5bin(key));
+            unsigned iCode = hash_md5(XC_MD5::md5bin(key));
             if(vHashList.size() == 0)
             {
                 iIndex = 0;

@@ -4,9 +4,9 @@
 #include "util/tc_epoller.h"
 #include "util/tc_common.h"
 
-namespace taf
+namespace xutil
 {
-TC_Endpoint::TC_Endpoint()
+XC_Endpoint::XC_Endpoint()
 {
     _host = "0.0.0.0";
     _port = 0;
@@ -16,7 +16,7 @@ TC_Endpoint::TC_Endpoint()
     _qos = 0;
 }
 
-void TC_Endpoint::parse(const string &str)
+void XC_Endpoint::parse(const string &str)
 {
 	_grid = 0;
     _qos = 0;
@@ -29,7 +29,7 @@ void TC_Endpoint::parse(const string &str)
     beg = str.find_first_not_of(delim, end);
     if(beg == string::npos)
     {
-        throw TC_EndpointParse_Exception("TC_Endpoint::parse error : " + str);
+        throw XC_EndpointParse_Exception("XC_Endpoint::parse error : " + str);
     }
 
     end = str.find_first_of(delim, beg);
@@ -49,7 +49,7 @@ void TC_Endpoint::parse(const string &str)
 	}
 	else
 	{
-		throw TC_EndpointParse_Exception("TC_Endpoint::parse tcp or udp error : " + str);
+		throw XC_EndpointParse_Exception("XC_Endpoint::parse tcp or udp error : " + str);
 	}
 
     desc = str.substr(end);
@@ -71,7 +71,7 @@ void TC_Endpoint::parse(const string &str)
     	string option = desc.substr(beg, end - beg);
     	if(option.length() != 2 || option[0] != '-')
     	{
-    	    throw TC_EndpointParse_Exception("TC_Endpoint::parse error : " + str);
+    	    throw XC_EndpointParse_Exception("XC_Endpoint::parse error : " + str);
     	}
 
     	string argument;
@@ -93,7 +93,7 @@ void TC_Endpoint::parse(const string &str)
     	    {
         		if(argument.empty())
         		{
-                    throw TC_EndpointParse_Exception("TC_Endpoint::parse -h error : " + str);
+                    throw XC_EndpointParse_Exception("XC_Endpoint::parse -h error : " + str);
         		}
         		const_cast<string&>(_host) = argument;
         		break;
@@ -103,7 +103,7 @@ void TC_Endpoint::parse(const string &str)
         		istringstream p(argument);
         		if(!(p >> const_cast<int&>(_port)) || !p.eof() || _port < 0 || _port > 65535)
         		{
-                    throw TC_EndpointParse_Exception("TC_Endpoint::parse -p error : " + str);
+                    throw XC_EndpointParse_Exception("XC_Endpoint::parse -p error : " + str);
         		}
         		break;
     	    }
@@ -112,7 +112,7 @@ void TC_Endpoint::parse(const string &str)
         		istringstream t(argument);
         		if(!(t >> const_cast<int&>(_timeout)) || !t.eof())
         		{
-                    throw TC_EndpointParse_Exception("TC_Endpoint::parse -t error : " + str);
+                    throw XC_EndpointParse_Exception("XC_Endpoint::parse -t error : " + str);
         		}
         		break;
     	    }
@@ -121,7 +121,7 @@ void TC_Endpoint::parse(const string &str)
         		istringstream t(argument);
         		if(!(t >> const_cast<int&>(_grid)) || !t.eof())
         		{
-                    throw TC_EndpointParse_Exception("TC_Endpoint::parse -g error : " + str);
+                    throw XC_EndpointParse_Exception("XC_Endpoint::parse -g error : " + str);
         		}
         		break;
             }
@@ -130,20 +130,20 @@ void TC_Endpoint::parse(const string &str)
         		istringstream t(argument);
         		if(!(t >> const_cast<int&>(_qos)) || !t.eof())
         		{
-                    throw TC_EndpointParse_Exception("TC_Endpoint::parse -q error : " + str);
+                    throw XC_EndpointParse_Exception("XC_Endpoint::parse -q error : " + str);
         		}
         		break;
             }
             default:
     	    {
-                ///throw TC_EndpointParse_Exception("TC_Endpoint::parse error : " + str);
+                ///throw XC_EndpointParse_Exception("XC_Endpoint::parse error : " + str);
     	    }
     	}
     }
 
     if(_host.empty())
     {
-        throw TC_EndpointParse_Exception("TC_Endpoint::parse error : host must not be empty: " + str);
+        throw XC_EndpointParse_Exception("XC_Endpoint::parse error : host must not be empty: " + str);
     }
     else if(_host == "*")
     {
@@ -151,11 +151,11 @@ void TC_Endpoint::parse(const string &str)
     }
 }
 
-/*************************************TC_TCPClient**************************************/
+/*************************************XC_TCPClient**************************************/
 
 #define LEN_MAXRECV 8196
 
-int TC_TCPClient::checkSocket()
+int XC_TCPClient::checkSocket()
 {
     if(!_socket.isValid())
     {
@@ -185,7 +185,7 @@ int TC_TCPClient::checkSocket()
                     _socket.connect(_ip, _port);
                 }
             }
-            catch(TC_SocketConnect_Exception &ex)
+            catch(XC_SocketConnect_Exception &ex)
             {
                 if(errno != EINPROGRESS)
                 {
@@ -200,7 +200,7 @@ int TC_TCPClient::checkSocket()
                 return EM_CONNECT;
             }
 
-            TC_Epoller epoller(false);
+            XC_Epoller epoller(false);
             epoller.create(1);
             epoller.add(_socket.getfd(), 0, EPOLLOUT);
             int iRetCode = epoller.wait(_timeout);
@@ -218,7 +218,7 @@ int TC_TCPClient::checkSocket()
             //设置为阻塞模式
             _socket.setblock(true);
         }
-        catch(TC_Socket_Exception &ex)
+        catch(XC_Socket_Exception &ex)
         {
             _socket.close();
             return EM_SOCKET;
@@ -227,7 +227,7 @@ int TC_TCPClient::checkSocket()
     return EM_SUCCESS;
 }
 
-int TC_TCPClient::send(const char *sSendBuffer, size_t iSendLen)
+int XC_TCPClient::send(const char *sSendBuffer, size_t iSendLen)
 {
     int iRet = checkSocket();
     if(iRet < 0)
@@ -245,7 +245,7 @@ int TC_TCPClient::send(const char *sSendBuffer, size_t iSendLen)
     return EM_SUCCESS;
 }
 
-int TC_TCPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
+int XC_TCPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
 {
     int iRet = checkSocket();
     if(iRet < 0)
@@ -253,7 +253,7 @@ int TC_TCPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
         return iRet;
     }
 
-    TC_Epoller epoller(false);
+    XC_Epoller epoller(false);
     epoller.create(1);
     epoller.add(_socket.getfd(), 0, EPOLLIN);
 
@@ -295,7 +295,7 @@ int TC_TCPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
     return EM_SELECT;
 }
 
-int TC_TCPClient::recvBySep(string &sRecvBuffer, const string &sSep)
+int XC_TCPClient::recvBySep(string &sRecvBuffer, const string &sSep)
 {
     sRecvBuffer.clear();
 
@@ -305,7 +305,7 @@ int TC_TCPClient::recvBySep(string &sRecvBuffer, const string &sSep)
         return iRet;
     }
 
-    TC_Epoller epoller(false);
+    XC_Epoller epoller(false);
     epoller.create(1);
     epoller.add(_socket.getfd(), 0, EPOLLIN);
 
@@ -353,7 +353,7 @@ int TC_TCPClient::recvBySep(string &sRecvBuffer, const string &sSep)
     return EM_SUCCESS;
 }
 
-int TC_TCPClient::recvAll(string &sRecvBuffer)
+int XC_TCPClient::recvAll(string &sRecvBuffer)
 {
     sRecvBuffer.clear();
 
@@ -363,7 +363,7 @@ int TC_TCPClient::recvAll(string &sRecvBuffer)
         return iRet;
     }
 
-    TC_Epoller epoller(false);
+    XC_Epoller epoller(false);
     epoller.create(1);
     epoller.add(_socket.getfd(), 0, EPOLLIN);
 
@@ -410,7 +410,7 @@ int TC_TCPClient::recvAll(string &sRecvBuffer)
     return EM_SUCCESS;
 }
 
-int TC_TCPClient::recvLength(char *sRecvBuffer, size_t iRecvLen)
+int XC_TCPClient::recvLength(char *sRecvBuffer, size_t iRecvLen)
 {
     int iRet = checkSocket();
     if(iRet < 0)
@@ -421,7 +421,7 @@ int TC_TCPClient::recvLength(char *sRecvBuffer, size_t iRecvLen)
     size_t iRecvLeft = iRecvLen;
     iRecvLen = 0;
 
-    TC_Epoller epoller(false);
+    XC_Epoller epoller(false);
     epoller.create(1);
     epoller.add(_socket.getfd(), 0, EPOLLIN);
 
@@ -467,7 +467,7 @@ int TC_TCPClient::recvLength(char *sRecvBuffer, size_t iRecvLen)
     return EM_SUCCESS;
 }
 
-int TC_TCPClient::sendRecv(const char* sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen)
+int XC_TCPClient::sendRecv(const char* sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen)
 {
     int iRet = send(sSendBuffer, iSendLen);
     if(iRet != EM_SUCCESS)
@@ -478,7 +478,7 @@ int TC_TCPClient::sendRecv(const char* sSendBuffer, size_t iSendLen, char *sRecv
     return recv(sRecvBuffer, iRecvLen);
 }
 
-int TC_TCPClient::sendRecvBySep(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer, const string &sSep)
+int XC_TCPClient::sendRecvBySep(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer, const string &sSep)
 {
     int iRet = send(sSendBuffer, iSendLen);
     if(iRet != EM_SUCCESS)
@@ -489,13 +489,13 @@ int TC_TCPClient::sendRecvBySep(const char* sSendBuffer, size_t iSendLen, string
     return recvBySep(sRecvBuffer, sSep);
 }
 
-int TC_TCPClient::sendRecvLine(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer)
+int XC_TCPClient::sendRecvLine(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer)
 {
     return sendRecvBySep(sSendBuffer, iSendLen, sRecvBuffer, "\r\n");
 }
 
 
-int TC_TCPClient::sendRecvAll(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer)
+int XC_TCPClient::sendRecvAll(const char* sSendBuffer, size_t iSendLen, string &sRecvBuffer)
 {
     int iRet = send(sSendBuffer, iSendLen);
     if(iRet != EM_SUCCESS)
@@ -506,9 +506,9 @@ int TC_TCPClient::sendRecvAll(const char* sSendBuffer, size_t iSendLen, string &
     return recvAll(sRecvBuffer);
 }
 
-/*************************************TC_UDPClient**************************************/
+/*************************************XC_UDPClient**************************************/
 
-int TC_UDPClient::checkSocket()
+int XC_UDPClient::checkSocket()
 {
     if(!_socket.isValid())
     {
@@ -523,7 +523,7 @@ int TC_UDPClient::checkSocket()
                 _socket.createSocket(SOCK_DGRAM, AF_INET);
             }
         }
-        catch(TC_Socket_Exception &ex)
+        catch(XC_Socket_Exception &ex)
         {
             _socket.close();
             return EM_SOCKET;
@@ -544,12 +544,12 @@ int TC_UDPClient::checkSocket()
                 _socket.connect(_ip, _port);
             }
         }
-        catch(TC_SocketConnect_Exception &ex)
+        catch(XC_SocketConnect_Exception &ex)
         {
             _socket.close();
             return EM_CONNECT;
         }
-        catch(TC_Socket_Exception &ex)
+        catch(XC_Socket_Exception &ex)
         {
             _socket.close();
             return EM_SOCKET;
@@ -558,7 +558,7 @@ int TC_UDPClient::checkSocket()
     return EM_SUCCESS;
 }
 
-int TC_UDPClient::send(const char *sSendBuffer, size_t iSendLen)
+int XC_UDPClient::send(const char *sSendBuffer, size_t iSendLen)
 {
     int iRet = checkSocket();
     if(iRet < 0)
@@ -575,7 +575,7 @@ int TC_UDPClient::send(const char *sSendBuffer, size_t iSendLen)
     return EM_SUCCESS;
 }
 
-int TC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
+int XC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
 {
     string sTmpIp;
     uint16_t iTmpPort;
@@ -583,7 +583,7 @@ int TC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen)
     return recv(sRecvBuffer, iRecvLen, sTmpIp, iTmpPort);
 }
 
-int TC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, uint16_t &iRemotePort)
+int XC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, uint16_t &iRemotePort)
 {
     int iRet = checkSocket();
     if(iRet < 0)
@@ -591,7 +591,7 @@ int TC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, u
         return iRet;
     }
 
-    TC_Epoller epoller(false);
+    XC_Epoller epoller(false);
     epoller.create(1);
     epoller.add(_socket.getfd(), 0, EPOLLIN);
     int iRetCode = epoller.wait(_timeout);
@@ -620,7 +620,7 @@ int TC_UDPClient::recv(char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, u
     return EM_SELECT;
 }
 
-int TC_UDPClient::sendRecv(const char *sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen)
+int XC_UDPClient::sendRecv(const char *sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen)
 {
     int iRet = send(sSendBuffer, iSendLen);
     if(iRet != EM_SUCCESS)
@@ -631,7 +631,7 @@ int TC_UDPClient::sendRecv(const char *sSendBuffer, size_t iSendLen, char *sRecv
     return recv(sRecvBuffer, iRecvLen);
 }
 
-int TC_UDPClient::sendRecv(const char *sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, uint16_t &iRemotePort)
+int XC_UDPClient::sendRecv(const char *sSendBuffer, size_t iSendLen, char *sRecvBuffer, size_t &iRecvLen, string &sRemoteIp, uint16_t &iRemotePort)
 {
     int iRet = send(sSendBuffer, iSendLen);
     if(iRet != EM_SUCCESS)

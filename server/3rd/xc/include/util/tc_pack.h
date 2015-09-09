@@ -1,5 +1,5 @@
-#ifndef __TC_PACK_H_
-#define __TC_PACK_H_
+#ifndef __XC_PACK_H_
+#define __XC_PACK_H_
 
 #include <netinet/in.h>
 #include <vector>
@@ -7,7 +7,7 @@
 #include <string>
 #include "util/tc_ex.h"
 
-namespace taf
+namespace xutil
 {
 
 /////////////////////////////////////////////////
@@ -21,41 +21,40 @@ namespace taf
 *  
 * 所有整形/长度值都采用字节序, 非线程安全； 
 *  
-* @author  jarodruan@tencent.com
 */             
 /////////////////////////////////////////////////
 
 /**
 * @brief  组包异常类
 */
-struct TC_PackIn_Exception : public TC_Exception
+struct XC_PackIn_Exception : public XC_Exception
 {
-	TC_PackIn_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_PackIn_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_PackIn_Exception() throw(){};
+	XC_PackIn_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_PackIn_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_PackIn_Exception() throw(){};
 };
 
 /**
  * @brief  解包异常
  */
-struct TC_PackOut_Exception : public TC_Exception
+struct XC_PackOut_Exception : public XC_Exception
 {
-	TC_PackOut_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_PackOut_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_PackOut_Exception() throw(){};
+	XC_PackOut_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_PackOut_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_PackOut_Exception() throw(){};
 };
 
 /**
 * @brief  组包类, 用户组成一个二进制包
 */
-class TC_PackIn
+class XC_PackIn
 {
 public:
 
     /**
      * @brief  构造函数
      */
-    TC_PackIn() : _pii(this, true, string::npos)
+    XC_PackIn() : _pii(this, true, string::npos)
     {
 
     }
@@ -64,14 +63,14 @@ protected:
     /**
      *
      */
-    class TC_PackInInner
+    class XC_PackInInner
     {
     public:
         /**
          * @brief  
          * @param pi
          */
-        TC_PackInInner(TC_PackIn *ppi, bool bInsert, string::size_type nPos = string::npos)
+        XC_PackInInner(XC_PackIn *ppi, bool bInsert, string::size_type nPos = string::npos)
         : _ppi(ppi)
         , _bInsert(bInsert)
         , _nPos(nPos)
@@ -82,7 +81,7 @@ protected:
         /**
          * @brief  
          */
-        ~TC_PackInInner()
+        ~XC_PackInInner()
         {
             if(_nPos == string::npos)
             {
@@ -91,7 +90,7 @@ protected:
 
             if(_nPos > _buffer.length())
             {
-                throw TC_PackIn_Exception("TC_PackIn cur has beyond error.");
+                throw XC_PackIn_Exception("XC_PackIn cur has beyond error.");
             }
 
             if(_bInsert)
@@ -134,112 +133,112 @@ protected:
          *
          * @param b
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (bool t);
+        XC_PackInInner& operator << (bool t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (char t);
+        XC_PackInInner& operator << (char t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (unsigned char t);
+        XC_PackInInner& operator << (unsigned char t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (short t);
+        XC_PackInInner& operator << (short t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (unsigned short t);
+        XC_PackInInner& operator << (unsigned short t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (int t);
+        XC_PackInInner& operator << (int t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (unsigned int t);
+        XC_PackInInner& operator << (unsigned int t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (long t);
+        XC_PackInInner& operator << (long t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (unsigned long t);
+        XC_PackInInner& operator << (unsigned long t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (long long t);
+        XC_PackInInner& operator << (long long t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (unsigned long long t);
+        XC_PackInInner& operator << (unsigned long long t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (float t);
+        XC_PackInInner& operator << (float t);
 
         /**
          * @brief  
          * @param t
          *
-         * @return TC_PackIn&
+         * @return XC_PackIn&
          */
-        TC_PackInInner& operator << (double t);
+        XC_PackInInner& operator << (double t);
 
         /**
         * @brief  添加0结束字符串, 结束符'\0'也会copy进去
         * @param sBuffer
         * return void
         */
-        TC_PackInInner& operator << (const char *sBuffer);
+        XC_PackInInner& operator << (const char *sBuffer);
 
         /**
         * @brief  添加二进制字符串
@@ -249,18 +248,18 @@ protected:
         * @param iLen, 字节数
         * return void
         */
-        TC_PackInInner& operator << (const string& sBuffer);
+        XC_PackInInner& operator << (const string& sBuffer);
 
         /**
          * @brief  
          * @param pi
          *
-         * @return TC_PackInInner&
+         * @return XC_PackInInner&
          */
-        TC_PackInInner& operator << (const TC_PackIn& pi);
+        XC_PackInInner& operator << (const XC_PackIn& pi);
 
     protected:
-        TC_PackIn   *_ppi;
+        XC_PackIn   *_ppi;
         bool        _bInsert;
         string::size_type   _nPos;
         string      _buffer;
@@ -295,10 +294,10 @@ public:
      * @brief  
      * @param t
      *
-     * @return TC_PackIn&
+     * @return XC_PackIn&
      */
     template<typename T>
-    TC_PackIn& operator << (T t)
+    XC_PackIn& operator << (T t)
     {
         _pii << t;
         return *this;
@@ -307,22 +306,22 @@ public:
     /**
      * @brief  
      *
-     * @return TC_PackIn&
+     * @return XC_PackIn&
      */
-    TC_PackInInner insert(string::size_type nPos)
+    XC_PackInInner insert(string::size_type nPos)
     {
-        return TC_PackInInner(this, true, nPos);
+        return XC_PackInInner(this, true, nPos);
     }
 
     /**
      * @brief  替换
      * @param iCur
      *
-     * @return TC_PackIn&
+     * @return XC_PackIn&
      */
-    TC_PackInInner replace(string::size_type nPos)
+    XC_PackInInner replace(string::size_type nPos)
     {
-        return TC_PackInInner(this, false, nPos);
+        return XC_PackInInner(this, false, nPos);
     }
 
 protected:
@@ -330,13 +329,13 @@ protected:
     /**
      * @brief  
      */
-    TC_PackInInner  _pii;
+    XC_PackInInner  _pii;
 };
 
 /**
 * @brief  解包类, 用户解一个二进制包
 */
-class TC_PackOut
+class XC_PackOut
 {
 public:
 
@@ -345,7 +344,7 @@ public:
     * @param pBuffer : 需要解包的buffer, 该buffer需要在整个解包中有效
     * @param iLength : pBuffer长度
     */
-    TC_PackOut(const char *pBuffer, size_t iLength)
+    XC_PackOut(const char *pBuffer, size_t iLength)
     {
         init(pBuffer, iLength);
     }
@@ -353,7 +352,7 @@ public:
     /**
     * @brief  构造函数
     */
-    TC_PackOut(){};
+    XC_PackOut(){};
 
     /**
     * @brief  初始化, 用于解包
@@ -378,113 +377,113 @@ public:
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (bool &t);
+    XC_PackOut& operator >> (bool &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (char &t);
+    XC_PackOut& operator >> (char &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (unsigned char &t);
+    XC_PackOut& operator >> (unsigned char &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (short &t);
+    XC_PackOut& operator >> (short &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (unsigned short &t);
+    XC_PackOut& operator >> (unsigned short &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (int &t);
+    XC_PackOut& operator >> (int &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (unsigned int &t);
+    XC_PackOut& operator >> (unsigned int &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (long &t);
+    XC_PackOut& operator >> (long &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (unsigned long &t);
+    XC_PackOut& operator >> (unsigned long &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (long long &t);
+    XC_PackOut& operator >> (long long &t);
 
     /**
      * @brief  
      * @param t
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (unsigned long long &t);
+    XC_PackOut& operator >> (unsigned long long &t);
 
     /**
      * @brief  
      * @param f
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (float &f);
+    XC_PackOut& operator >> (float &f);
 
     /**
      * @brief  
      * @param f
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (double &f);
+    XC_PackOut& operator >> (double &f);
 
     /**
      * @brief  
      * @param sBuffer
      *
-     * @return TC_PackOut&
+     * @return XC_PackOut&
      */
-    TC_PackOut& operator >> (char *sBuffer);
+    XC_PackOut& operator >> (char *sBuffer);
 
     /**
     * @brief  添加二进制字符串(先记录长度
@@ -494,7 +493,7 @@ public:
     * @param iLen, 字节数
     * return void
     */
-    TC_PackOut& operator >> (string& sBuffer);
+    XC_PackOut& operator >> (string& sBuffer);
 
 protected:
 
@@ -520,9 +519,9 @@ protected:
  * @brief  bool编码
  * @param i
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, bool i)
+inline XC_PackIn& encode(XC_PackIn& pi, bool i)
 {
     pi << i;
 	return pi;
@@ -532,9 +531,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, bool i)
  * @brief  int编码
  * @param i
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi,int i)
+inline XC_PackIn& encode(XC_PackIn& pi,int i)
 {
     pi << i;
 	return pi;
@@ -544,9 +543,9 @@ inline TC_PackIn& encode(TC_PackIn& pi,int i)
  * @brief  byte编码
  * @param i
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, char i)
+inline XC_PackIn& encode(XC_PackIn& pi, char i)
 {
     pi << i;
 	return pi;
@@ -556,9 +555,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, char i)
  * @brief  short编码
  * @param i
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, short i)
+inline XC_PackIn& encode(XC_PackIn& pi, short i)
 {
     pi << i;
 	return pi;
@@ -568,9 +567,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, short i)
  * @brief  string编码
  * @param s
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, const string &i)
+inline XC_PackIn& encode(XC_PackIn& pi, const string &i)
 {
     pi << i;
 	return pi;
@@ -580,9 +579,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, const string &i)
  * @brief  float编码
  * @param f
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, float i)
+inline XC_PackIn& encode(XC_PackIn& pi, float i)
 {
     pi << i;
 	return pi;
@@ -592,9 +591,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, float i)
  * @brief  double编码
  * @param f
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, double i)
+inline XC_PackIn& encode(XC_PackIn& pi, double i)
 {
     pi << i;
 	return pi;
@@ -604,9 +603,9 @@ inline TC_PackIn& encode(TC_PackIn& pi, double i)
  * @brief  长整形编码
  * @param f
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
-inline TC_PackIn& encode(TC_PackIn& pi, long long i)
+inline XC_PackIn& encode(XC_PackIn& pi, long long i)
 {
     pi << i;
 	return pi;
@@ -617,10 +616,10 @@ inline TC_PackIn& encode(TC_PackIn& pi, long long i)
  * @param T
  * @param t
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
 template<typename T>
-inline TC_PackIn& encode(TC_PackIn& pi, const T &i)
+inline XC_PackIn& encode(XC_PackIn& pi, const T &i)
 {
     return i.encode(pi);
 }
@@ -630,10 +629,10 @@ inline TC_PackIn& encode(TC_PackIn& pi, const T &i)
  * @param T
  * @param t
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
 template<typename T>
-inline TC_PackIn& encode(TC_PackIn& pi, const vector<T> &t)
+inline XC_PackIn& encode(XC_PackIn& pi, const vector<T> &t)
 {
 	encode(pi, (int)t.size());
     for(size_t i = 0; i < t.size(); i++)
@@ -649,10 +648,10 @@ inline TC_PackIn& encode(TC_PackIn& pi, const vector<T> &t)
  * @param V
  * @param t
  *
- * @return TC_PackIn&
+ * @return XC_PackIn&
  */
 template<typename K, typename V>
-inline TC_PackIn& encode(TC_PackIn& pi, const map<K, V> &t)
+inline XC_PackIn& encode(XC_PackIn& pi, const map<K, V> &t)
 {
 	encode(pi, (int)t.size());
     typename map<K, V>::const_iterator it = t.begin();
@@ -673,7 +672,7 @@ inline TC_PackIn& encode(TC_PackIn& pi, const map<K, V> &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, bool &t)
+inline void decode(XC_PackOut &po, bool &t)
 {
 	po >> t;
 }
@@ -683,7 +682,7 @@ inline void decode(TC_PackOut &po, bool &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, short &t)
+inline void decode(XC_PackOut &po, short &t)
 {
 	po >> t;
 }
@@ -693,7 +692,7 @@ inline void decode(TC_PackOut &po, short &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, int &t)
+inline void decode(XC_PackOut &po, int &t)
 {
 	po >> t;
 }
@@ -703,7 +702,7 @@ inline void decode(TC_PackOut &po, int &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, char &t)
+inline void decode(XC_PackOut &po, char &t)
 {
 	po >> t;
 }
@@ -713,7 +712,7 @@ inline void decode(TC_PackOut &po, char &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, string &t)
+inline void decode(XC_PackOut &po, string &t)
 {
 	po >> t;
 }
@@ -723,7 +722,7 @@ inline void decode(TC_PackOut &po, string &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, float &t)
+inline void decode(XC_PackOut &po, float &t)
 {
 	po >> t;
 }
@@ -733,7 +732,7 @@ inline void decode(TC_PackOut &po, float &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, double &t)
+inline void decode(XC_PackOut &po, double &t)
 {
 	po >> t;
 }
@@ -743,7 +742,7 @@ inline void decode(TC_PackOut &po, double &t)
  * @param oPtr
  * @param t
  */
-inline void decode(TC_PackOut &po, long long &t)
+inline void decode(XC_PackOut &po, long long &t)
 {
 	po >> t;
 }
@@ -755,7 +754,7 @@ inline void decode(TC_PackOut &po, long long &t)
  * @param t
  */
 template<typename T>
-inline void decode(TC_PackOut &po, T &t)
+inline void decode(XC_PackOut &po, T &t)
 {
 	t.decode(po);
 }
@@ -767,7 +766,7 @@ inline void decode(TC_PackOut &po, T &t)
  * @param t
  */
 template<typename T>
-inline void decode(TC_PackOut &po, vector<T> &t)
+inline void decode(XC_PackOut &po, vector<T> &t)
 {
 	int n;
 	po >> n;
@@ -788,7 +787,7 @@ inline void decode(TC_PackOut &po, vector<T> &t)
  * @param t
  */
 template<typename K, typename V>
-inline void decode(TC_PackOut &po, map<K, V> &t)
+inline void decode(XC_PackOut &po, map<K, V> &t)
 {
 	int n;
 	po >> n;

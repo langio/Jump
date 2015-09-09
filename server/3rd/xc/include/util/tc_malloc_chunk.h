@@ -1,5 +1,5 @@
-#ifndef __TC_MALLOC_CHUNK_H
-#define __TC_MALLOC_CHUNK_H
+#ifndef __XC_MALLOC_CHUNK_H
+#define __XC_MALLOC_CHUNK_H
 
 #include <iostream>
 #include <cassert>
@@ -9,7 +9,7 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 	static const size_t kPageShift  = 15;
 	static const size_t kNumClasses = 78;
@@ -110,14 +110,14 @@ namespace taf
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	* TC_Span内存分配器
+	* XC_Span内存分配器
 	*
-	* 用于分配sizeof(TC_Span)大小的内存块
+	* 用于分配sizeof(XC_Span)大小的内存块
 	*/
-	class TC_SpanAllocator
+	class XC_SpanAllocator
 	{
 	public:
-		TC_SpanAllocator() : _pHead(NULL), _pData(NULL) {}
+		XC_SpanAllocator() : _pHead(NULL), _pData(NULL) {}
 
 		void* getHead() const { return _pHead; }
 
@@ -176,10 +176,10 @@ namespace taf
 		void init(void *pAddr);
 
 		//禁止copy构造
-		TC_SpanAllocator(const TC_SpanAllocator &mcm);
+		XC_SpanAllocator(const XC_SpanAllocator &mcm);
 
 		//禁止复制
-		TC_SpanAllocator &operator=(const TC_SpanAllocator &mcm);
+		XC_SpanAllocator &operator=(const XC_SpanAllocator &mcm);
 
 	private:
 		/**
@@ -198,9 +198,9 @@ namespace taf
 	* 内存分配器
 	*
 	* 将连续的内存按32K大小分页
-	* 并通过TC_Span和PageMap进行管理
+	* 并通过XC_Span和PageMap进行管理
 	*/
-	class TC_Page
+	class XC_Page
 	{
 	public:
 		struct tagShmFlag
@@ -208,10 +208,10 @@ namespace taf
 			bool         _bShmProtectedArea;	/*是否设置保护区*/
 			int          _iShmFlag;				/*内存空间标识，内存未使用前为0，使用后为1*/
 			size_t       _iShmMemSize;			/*内存空间大小*/
-			size_t       _iShmSpanAddr;			/*TC_Span内存区的起始地址，相对地址*/
+			size_t       _iShmSpanAddr;			/*XC_Span内存区的起始地址，相对地址*/
 			size_t       _iShmPageMapAddr;		/*PageMap内存区的起始地址，相对地址*/
 			size_t       _iShmPageAddr;			/*Data区的内存区的其实地址，相对地址*/
-			size_t       _iShmSpanNum;			/*TC_Span内存区中span的个数*/
+			size_t       _iShmSpanNum;			/*XC_Span内存区中span的个数*/
 			size_t       _iShmPageMapNum;		/*PageMap内存区中map的个数*/
 			size_t       _iShmPageNum;			/*Data内存区中页的个数*/
 		}__attribute__((packed));
@@ -230,7 +230,7 @@ namespace taf
 			tagModifyData  _stModifyData[32];	/*一次最多32次修改*/
 		}__attribute__((packed));
 
-		struct TC_Span
+		struct XC_Span
 		{
 			size_t       start;					/*span所管理的页内存的起始页号*/
 			size_t       length;				/*页的个数*/
@@ -244,15 +244,15 @@ namespace taf
 			enum { IN_USE, ON_FREELIST };
 		}__attribute__((packed));	
 
-		struct TC_CenterList
+		struct XC_CenterList
 		{
 			size_t       size_class;			/*内存大小的类别*/
-			TC_Span      empty;					/*空闲链表*/
-			TC_Span      nonempty;				/*非空闲链表*/
+			XC_Span      empty;					/*空闲链表*/
+			XC_Span      nonempty;				/*非空闲链表*/
 		}__attribute__((packed));
 
 	public:
-		TC_Page() : _pShmFlagHead(NULL),_pCenterCache(NULL),_pLarge(NULL),_pFree(NULL),_pSpanMemHead(NULL),_pPageMap(NULL),_pData(NULL) {}
+		XC_Page() : _pShmFlagHead(NULL),_pCenterCache(NULL),_pLarge(NULL),_pFree(NULL),_pSpanMemHead(NULL),_pPageMap(NULL),_pData(NULL) {}
 
 		/**
 		 * 初始化
@@ -277,16 +277,16 @@ namespace taf
 		 * 分配一个区块
 		 * @param iClassSize,需要分配的内存大小类别
 		 * @param iAllocSize, 分配的数据块大小
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 * @return void *
 		 */
 		void* fetchFromSpansSafe(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex);
 
 		/**
-		 * 释放内存, 根据该内存所属TC_Span的起始页和该TC_Span按大小类别划分后的第iIndex个
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * 释放内存, 根据该内存所属XC_Span的起始页和该XC_Span按大小类别划分后的第iIndex个
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 */
 		void  releaseToSpans(size_t iPageId, size_t iIndex);
 
@@ -297,9 +297,9 @@ namespace taf
 		void  releaseToSpans(void* pObject);
 
 		/**
-		 * 根据该内存所属TC_Span的起始页和该TC_Span按大小类别划分后的第iIndex个得到该内存块的起始绝对地址
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * 根据该内存所属XC_Span的起始页和该XC_Span按大小类别划分后的第iIndex个得到该内存块的起始绝对地址
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 */
 		void* getAbsolute(size_t iPageId, size_t iIndex);
 
@@ -319,25 +319,25 @@ namespace taf
 		inline size_t getPageMemSize();
 
 		/**
-		 * 获得TC_Page所管理内存的结束位置
+		 * 获得XC_Page所管理内存的结束位置
 		 */
 		inline size_t getPageMemEnd();
 
 		/**
-		 * 传给TC_Page的内存的最小大小
+		 * 传给XC_Page的内存的最小大小
 		 */
 		static size_t getMinMemSize() 
 		{ 
-			return sizeof(tagShmFlag) + sizeof(tagModifyHead) + sizeof(TC_CenterList) * kNumClasses + sizeof(TC_Span) + sizeof(TC_Span) * kMaxPages + TC_SpanAllocator::getHeadSize() + sizeof(TC_Span) + sizeof(size_t) + kPageSize; 
+			return sizeof(tagShmFlag) + sizeof(tagModifyHead) + sizeof(XC_CenterList) * kNumClasses + sizeof(XC_Span) + sizeof(XC_Span) * kMaxPages + XC_SpanAllocator::getHeadSize() + sizeof(XC_Span) + sizeof(size_t) + kPageSize; 
 		}
 
 	protected:
 
 		//禁止copy构造
-		TC_Page(const TC_Page &mcm);
+		XC_Page(const XC_Page &mcm);
 
 		//禁止复制
-		TC_Page &operator=(const TC_Page &mcm);
+		XC_Page &operator=(const XC_Page &mcm);
 
 		/**
 		 * 初始化
@@ -354,29 +354,29 @@ namespace taf
 		/**
 		 * 初始化list双向链表
 		 */
-		inline void DLL_Init(TC_Span* list, size_t iIndex);
+		inline void DLL_Init(XC_Span* list, size_t iIndex);
 
 		/**
 		 * 从双向链表中删除span指向的节点
 		 */
-		inline void DLL_Remove(TC_Span* span);
+		inline void DLL_Remove(XC_Span* span);
 
 		/**
 		 * 将span指向的节点加入到双向链表list中
 		 */
-		inline void DLL_Prepend(TC_Span* list, TC_Span* span);
+		inline void DLL_Prepend(XC_Span* list, XC_Span* span);
 
 		/**
 		 * 双向链表list是否为空
 		 */
-		inline bool DLL_IsEmpty(TC_Span* list, size_t iIndex) 
+		inline bool DLL_IsEmpty(XC_Span* list, size_t iIndex) 
 		{
 		  return list->next == iIndex;
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////
 		/**
-		 * 得到PageMap中第k个元素存放的指针值，其实际意义就是看Data内存区中第k块内存页属于哪个TC_Span管理
+		 * 得到PageMap中第k个元素存放的指针值，其实际意义就是看Data内存区中第k块内存页属于哪个XC_Span管理
 		 */
 		size_t Get(size_t k) const
 		{
@@ -384,7 +384,7 @@ namespace taf
 		}
 
 		/**
-		 * 设置PageMap中第k个元素存放的指针值，其实际意义就是看Data内存区中第k块内存页属于哪个TC_Span管理
+		 * 设置PageMap中第k个元素存放的指针值，其实际意义就是看Data内存区中第k块内存页属于哪个XC_Span管理
 		 */
 		void Set(size_t k, size_t v)
 		{
@@ -405,54 +405,54 @@ namespace taf
 		bool UseShmMem();
 
 		/**
-		 * 得到内存页pPageId属于哪个TC_Span管理
+		 * 得到内存页pPageId属于哪个XC_Span管理
 		 */
-		TC_Span* GetDescriptor(size_t pPageId);
+		XC_Span* GetDescriptor(size_t pPageId);
 
 		/**
-		 * 在_pFree或_pLarge链表中查找n块连续的内存页，通过TC_Span返回
+		 * 在_pFree或_pLarge链表中查找n块连续的内存页，通过XC_Span返回
 		 */
-		TC_Span* SearchFreeAndLargeLists(size_t n);
+		XC_Span* SearchFreeAndLargeLists(size_t n);
 
 		/**
-		 * 分配n块连续的内存页，通过TC_Span返回，里面会调用SearchFreeAndLargeLists函数
+		 * 分配n块连续的内存页，通过XC_Span返回，里面会调用SearchFreeAndLargeLists函数
 		 */
-		TC_Span* New(size_t n);
+		XC_Span* New(size_t n);
 
 		/**
-		 * 在_pLarge链表中分配n块连续的内存页，通过TC_Span返回
+		 * 在_pLarge链表中分配n块连续的内存页，通过XC_Span返回
 		 */
-		TC_Span* AllocLarge(size_t n);
+		XC_Span* AllocLarge(size_t n);
 
 		/**
 		 * 在span所管理的内存页中，分配出n块连续内存
 		 */
-		TC_Span* Carve(TC_Span* span, size_t n);
+		XC_Span* Carve(XC_Span* span, size_t n);
 
 		/**
 		 * 根据span所管理的内存页的数目，将该span插入到_pLarge或_pFree链表中
 		 */
-		void PrependToFreeList(TC_Span* span);
+		void PrependToFreeList(XC_Span* span);
 
 		/**
 		 * 将span从它所属的链表中删除，里面调用MergeIntoFreeList
 		 */
-		void Delete(TC_Span* span);
+		void Delete(XC_Span* span);
 
 		/**
 		 * 将span从它所属的链表中删除，并且查看该span所管理的内存页前后连续的内存页是否空闲，若是，则进行合并操作
 		 */
-		void MergeIntoFreeList(TC_Span* span);
+		void MergeIntoFreeList(XC_Span* span);
 
 		/**
 		 * 设置span所管理的内存页将要进行分割的内存大小类别
 		 */
-		void RegisterSizeClass(TC_Span* span, size_t sc);
+		void RegisterSizeClass(XC_Span* span, size_t sc);
 
 		/**
 		 * 将span所属的内存页，映射到_pPageMap中
 		 */
-		void RecordSpan(TC_Span* span);
+		void RecordSpan(XC_Span* span);
 
 		//////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -460,8 +460,8 @@ namespace taf
 		 * 分配一个区块
 		 * @param iClassSize,需要分配的内存大小类别
 		 * @param iAllocSize, 分配的数据块大小
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 * @return void *
 		 */
 		void* FetchFromSpans(size_t iClassSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex);
@@ -501,19 +501,19 @@ namespace taf
 		/**
 		 * 中央自由链表头指针
 		 */
-		TC_CenterList             *_pCenterCache;
+		XC_CenterList             *_pCenterCache;
 		/**
 		 * 大块内存页的链表指针（大于等于1MB内存块的链表）
 		 */
-		TC_Span                   *_pLarge;
+		XC_Span                   *_pLarge;
 		/**
 		 * 小块内存页的链表头指针（小于1MB的内存块）
 		 */
-		TC_Span                   *_pFree;
+		XC_Span                   *_pFree;
 		/**
-		 * 用于分配TC_Span的内存区域的头指针
+		 * 用于分配XC_Span的内存区域的头指针
 		 */
-		TC_SpanAllocator		  *_pSpanMemHead;
+		XC_SpanAllocator		  *_pSpanMemHead;
 		/**
 		 * 与数据区内存相映射的内存区头指针
 		 */
@@ -525,18 +525,18 @@ namespace taf
 		void                      *_pData;
 
 		/**
-		 * 用于分配TC_Span的内存分配器
+		 * 用于分配XC_Span的内存分配器
 		 */
-		TC_SpanAllocator		  _spanAlloc;
+		XC_SpanAllocator		  _spanAlloc;
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	class TC_MallocChunkAllocator
+	class XC_MallocChunkAllocator
 	{
 	public:
-		TC_MallocChunkAllocator():_pHead(NULL),_pChunk(NULL),_nallocator(NULL) {}
+		XC_MallocChunkAllocator():_pHead(NULL),_pChunk(NULL),_nallocator(NULL) {}
 
-		~TC_MallocChunkAllocator()
+		~XC_MallocChunkAllocator()
 		{
 			clear();
 		}
@@ -598,7 +598,7 @@ namespace taf
 		void   getSingleCapacity(vector<size_t> &vec_capacity);
 
 		/**
-		 * 根据该内存所属TC_Span的起始页和该TC_Span按大小类别划分后的第iIndex个，换算成绝对地址
+		 * 根据该内存所属XC_Span的起始页和该XC_Span按大小类别划分后的第iIndex个，换算成绝对地址
 		 * @param iPageId
 		 * @param iIndex
 		 * @return void*
@@ -624,16 +624,16 @@ namespace taf
 		 * 分配一个区块
 		 * @param iNeedSize,需要分配的大小
 		 * @param iAllocSize, 分配的数据块大小
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 * @return void *
 		 */
 		void* allocate(size_t iNeedSize, size_t &iAllocSize, size_t &iPageId, size_t &iIndex);
 
 		/**
-		 * 释放内存, 根据该内存所属TC_Span的起始页和该TC_Span按大小类别划分后的第iIndex个
-		 * @param iPageId, 该内存所属的TC_Span的起始页号
-		 * @param iIndex, 该内存所属的TC_Span的按iAllocSize大小划分后的第iIndex个
+		 * 释放内存, 根据该内存所属XC_Span的起始页和该XC_Span按大小类别划分后的第iIndex个
+		 * @param iPageId, 该内存所属的XC_Span的起始页号
+		 * @param iIndex, 该内存所属的XC_Span的按iAllocSize大小划分后的第iIndex个
 		 */
 		void  deallocate(size_t iPageId, size_t iIndex);
 
@@ -666,19 +666,19 @@ namespace taf
 		/**
 		 * 传递给此内存分配器的内存块大小要不小于函数的返回值
 		 */
-		static size_t getNeedMinSize() { return sizeof(tagChunkAllocatorHead) + TC_Page::getMinMemSize(); }
+		static size_t getNeedMinSize() { return sizeof(tagChunkAllocatorHead) + XC_Page::getMinMemSize(); }
 	protected:
 		void init(void *pAddr);
 
 		void _connect(void *pAddr);
 
-		TC_MallocChunkAllocator *lastAlloc();
+		XC_MallocChunkAllocator *lastAlloc();
 
 		//禁止copy构造
-		TC_MallocChunkAllocator(const TC_MallocChunkAllocator &);
+		XC_MallocChunkAllocator(const XC_MallocChunkAllocator &);
 
 		//禁止复制
-		TC_MallocChunkAllocator& operator=(const TC_MallocChunkAllocator &);
+		XC_MallocChunkAllocator& operator=(const XC_MallocChunkAllocator &);
 
 	private:
 		/**
@@ -692,11 +692,11 @@ namespace taf
 		/**
 		 *  chunk分配类
 		 */
-		TC_Page                 _page;
+		XC_Page                 _page;
 		/**
 		 * 后续的多块分配器
 		 */
-		TC_MallocChunkAllocator *_nallocator;
+		XC_MallocChunkAllocator *_nallocator;
 	};
 	
 }

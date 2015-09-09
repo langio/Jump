@@ -1,29 +1,28 @@
-#ifndef __TC_THREAD_MUTEX_H
-#define __TC_THREAD_MUTEX_H
+#ifndef __XC_THREAD_MUTEX_H
+#define __XC_THREAD_MUTEX_H
 
 #include "util/tc_lock.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
  * @file tc_thread_mutex.h 
  * @brief 线程锁互斥类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com  
  */
              
 /////////////////////////////////////////////////
-class TC_ThreadCond;
+class XC_ThreadCond;
 
 /**
  * @brief 线程互斥对象
  */
-struct TC_ThreadMutex_Exception : public TC_Lock_Exception
+struct XC_ThreadMutex_Exception : public XC_Lock_Exception
 {
-    TC_ThreadMutex_Exception(const string &buffer) : TC_Lock_Exception(buffer){};
-    TC_ThreadMutex_Exception(const string &buffer, int err) : TC_Lock_Exception(buffer, err){};
-    ~TC_ThreadMutex_Exception() throw() {};
+    XC_ThreadMutex_Exception(const string &buffer) : XC_Lock_Exception(buffer){};
+    XC_ThreadMutex_Exception(const string &buffer, int err) : XC_Lock_Exception(buffer, err){};
+    ~XC_ThreadMutex_Exception() throw() {};
 };
 
 /**
@@ -31,14 +30,14 @@ struct TC_ThreadMutex_Exception : public TC_Lock_Exception
 *  
 * 不可重复加锁，即同一个线程不可以重复加锁 
 *  
-* 通常不直接使用，和TC_Monitor配合使用，即TC_ThreadLock; 
+* 通常不直接使用，和XC_Monitor配合使用，即XC_ThreadLock; 
 */
-class TC_ThreadMutex
+class XC_ThreadMutex
 {
 public:
 
-    TC_ThreadMutex();
-    virtual ~TC_ThreadMutex();
+    XC_ThreadMutex();
+    virtual ~XC_ThreadMutex();
 
     /**
      * @brief 加锁
@@ -59,7 +58,7 @@ public:
 
     /**
 	 * @brief 加锁后调用unlock是否会解锁， 
-	 *  	  给TC_Monitor使用的 永远返回true
+	 *  	  给XC_Monitor使用的 永远返回true
      * @return bool
      */
     bool willUnlock() const { return true;}
@@ -67,8 +66,8 @@ public:
 protected:
 
     // noncopyable
-    TC_ThreadMutex(const TC_ThreadMutex&);
-    void operator=(const TC_ThreadMutex&);
+    XC_ThreadMutex(const XC_ThreadMutex&);
+    void operator=(const XC_ThreadMutex&);
 
 	/**
      * @brief 计数
@@ -80,7 +79,7 @@ protected:
 	 */
     void count(int c) const;
 
-    friend class TC_ThreadCond;
+    friend class XC_ThreadCond;
 
 protected:
     mutable pthread_mutex_t _mutex;
@@ -92,19 +91,19 @@ protected:
 *  
 * 采用线程库实现
 **/
-class TC_ThreadRecMutex
+class XC_ThreadRecMutex
 {
 public:
 
     /**
     * @brief 构造函数
     */
-    TC_ThreadRecMutex();
+    XC_ThreadRecMutex();
 
     /**
     * @brief 析够函数
     */
-    virtual ~TC_ThreadRecMutex();
+    virtual ~XC_ThreadRecMutex();
 
     /**
 	* @brief 锁, 调用pthread_mutex_lock. 
@@ -128,7 +127,7 @@ public:
     bool tryLock() const;
 
     /**
-     * @brief 加锁后调用unlock是否会解锁, 给TC_Monitor使用的
+     * @brief 加锁后调用unlock是否会解锁, 给XC_Monitor使用的
      * 
      * @return bool
      */
@@ -138,7 +137,7 @@ protected:
 	/**
      * @brief 友元类
      */
-    friend class TC_ThreadCond;
+    friend class XC_ThreadCond;
 
 	/**
      * @brief 计数

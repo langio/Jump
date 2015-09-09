@@ -1,9 +1,9 @@
-#ifndef __TC_ATOMIC_H
-#define __TC_ATOMIC_H
+#ifndef __XC_ATOMIC_H
+#define __XC_ATOMIC_H
 
 #include <stdint.h>
 
-namespace taf
+namespace xutil
 {
 
 #include "util/atomic_asm.h"
@@ -13,14 +13,13 @@ namespace taf
  * @file  tc_atomic.h 
  * @brief  原子计数类. 
  *  
- * @author  jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 
 /**
  * @brief 原子操作类,对int做原子操作
  */
-class TC_Atomic
+class XC_Atomic
 {
 public:
 
@@ -32,18 +31,18 @@ public:
     /**
 	 * @brief 构造函数,初始化为0 
      */
-    TC_Atomic(atomic_type at = 0)
+    XC_Atomic(atomic_type at = 0)
     {
         set(at);
     }
 
-    TC_Atomic& operator++()
+    XC_Atomic& operator++()
     {
         inc();
         return *this;
     }
 
-    TC_Atomic& operator--()
+    XC_Atomic& operator--()
     {
         dec();
         return *this;
@@ -54,19 +53,19 @@ public:
         return get();
     }
 
-    TC_Atomic& operator+=(atomic_type n)
+    XC_Atomic& operator+=(atomic_type n)
     {
         add(n);
         return *this;
     }
 
-    TC_Atomic& operator-=(atomic_type n)
+    XC_Atomic& operator-=(atomic_type n)
     {
         sub(n);
         return *this;
     }
 
-    TC_Atomic& operator=(atomic_type n)
+    XC_Atomic& operator=(atomic_type n)
     {
         set(n);
         return *this;

@@ -3,24 +3,24 @@
 #include "util/tc_file_mutex.h"
 #include "util/tc_lock.h"
 
-namespace taf
+namespace xutil
 {
 	
-TC_FileMutex::TC_FileMutex() 
+XC_FileMutex::XC_FileMutex() 
 {
 	_fd = -1;
 }
 
-TC_FileMutex::~TC_FileMutex()
+XC_FileMutex::~XC_FileMutex()
 {
 	unlock();
 }
 
-void TC_FileMutex::init(const std::string& filename)
+void XC_FileMutex::init(const std::string& filename)
 {
 	if (filename.empty())
 	{
-		 throw TC_FileMutex_Exception("[TC_FileMutex::init] filename is empty");
+		 throw XC_FileMutex_Exception("[XC_FileMutex::init] filename is empty");
 	}
 
 	if(_fd > 0)
@@ -30,50 +30,50 @@ void TC_FileMutex::init(const std::string& filename)
 	_fd = open(filename.c_str(), O_RDWR|O_CREAT, 0660);
 	if (_fd < 0) 
 	{
-		throw TC_FileMutex_Exception("[TC_FileMutex::init] open '" + filename + "' error", errno);
+		throw XC_FileMutex_Exception("[XC_FileMutex::init] open '" + filename + "' error", errno);
 	}
 }
 
-int TC_FileMutex::rlock()
+int XC_FileMutex::rlock()
 {
 	assert(_fd > 0);
 
 	return lock(_fd, F_SETLKW, F_RDLCK, 0, 0, 0);
 }
 
-int TC_FileMutex::unrlock() 
+int XC_FileMutex::unrlock() 
 {
 	return unlock();
 }
 
-bool TC_FileMutex::tryrlock()
+bool XC_FileMutex::tryrlock()
 {
 	return hasLock(_fd, F_RDLCK, 0, 0, 0);
 }
 
-int TC_FileMutex::wlock()
+int XC_FileMutex::wlock()
 {
 	assert(_fd > 0);
 
 	return lock(_fd, F_SETLKW, F_WRLCK, 0, 0, 0);
 }
 
-int TC_FileMutex::unwlock() 
+int XC_FileMutex::unwlock() 
 {
 	return unlock();
 }
 
-bool TC_FileMutex::trywlock()
+bool XC_FileMutex::trywlock()
 {
 	return hasLock(_fd, F_WRLCK, 0, 0, 0);
 }
 
-int TC_FileMutex::unlock()
+int XC_FileMutex::unlock()
 {
 	return lock(_fd, F_SETLK, F_UNLCK, 0, 0, 0);
 }
 
-int TC_FileMutex::lock(int fd, int cmd, int type, off_t offset, int whence, off_t len)
+int XC_FileMutex::lock(int fd, int cmd, int type, off_t offset, int whence, off_t len)
 {
 	struct flock lock;
 	lock.l_type 	= type;
@@ -84,7 +84,7 @@ int TC_FileMutex::lock(int fd, int cmd, int type, off_t offset, int whence, off_
 	return fcntl(fd, cmd, &lock);
 }
 
-bool TC_FileMutex::hasLock(int fd, int type, off_t offset, int whence, off_t len)
+bool XC_FileMutex::hasLock(int fd, int type, off_t offset, int whence, off_t len)
 {
 	struct flock lock;
 	lock.l_type 	= type;
@@ -94,7 +94,7 @@ bool TC_FileMutex::hasLock(int fd, int type, off_t offset, int whence, off_t len
 
 	if(fcntl(fd, F_GETLK, &lock)  == -1)
 	{
-		throw TC_FileMutex_Exception("[TC_FileMutex::hasLock] fcntl error", errno);
+		throw XC_FileMutex_Exception("[XC_FileMutex::hasLock] fcntl error", errno);
     }
 
 	if(lock.l_type == F_UNLCK)

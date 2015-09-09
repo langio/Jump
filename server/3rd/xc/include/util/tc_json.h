@@ -1,5 +1,5 @@
-#ifndef __TC_JSON_H
-#define __TC_JSON_H
+#ifndef __XC_JSON_H
+#define __XC_JSON_H
 
 #include <string>
 #include <map>
@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 // 说明: json编解码的公共库
@@ -21,11 +21,11 @@ namespace taf
 /**
 * 编解码抛出的异常
 */
-struct TC_Json_Exception : public TC_Exception
+struct XC_Json_Exception : public XC_Exception
 {
-    TC_Json_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Json_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Json_Exception() throw(){};
+    XC_Json_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Json_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Json_Exception() throw(){};
 };
 
 enum eJsonType
@@ -40,13 +40,13 @@ enum eJsonType
 /*
  * json类型的基类。没有任何意义
  */
-class JsonValue : public taf::TC_HandleBase
+class JsonValue : public xutil::XC_HandleBase
 {
 public:
     virtual eJsonType getType()=0;
     virtual ~JsonValue(){}
 };
-typedef taf::TC_AutoPtr<JsonValue> JsonValuePtr;
+typedef xutil::XC_AutoPtr<JsonValue> JsonValuePtr;
 
 /*
  * json类型 string类型 例如"dd\ndfd"
@@ -66,7 +66,7 @@ public:
     virtual ~JsonValueString(){}
     string value;
 };
-typedef taf::TC_AutoPtr<JsonValueString> JsonValueStringPtr;
+typedef xutil::XC_AutoPtr<JsonValueString> JsonValueStringPtr;
 
 /*
  * json类型 number类型 例如 1.5e8
@@ -90,7 +90,7 @@ public:
     double value;
     bool isInt;
 };
-typedef taf::TC_AutoPtr<JsonValueNum> JsonValueNumPtr;
+typedef xutil::XC_AutoPtr<JsonValueNum> JsonValueNumPtr;
 
 /*
  * json类型 object类型 例如 {"aa","bb"} 
@@ -106,7 +106,7 @@ public:
 public:
     map<string,JsonValuePtr> value;
 };
-typedef taf::TC_AutoPtr<JsonValueObj> JsonValueObjPtr;
+typedef xutil::XC_AutoPtr<JsonValueObj> JsonValueObjPtr;
 
 /*
  * json类型 array类型 例如 ["aa","bb"] 
@@ -126,7 +126,7 @@ public:
 public:
     vector<JsonValuePtr> value;
 };
-typedef taf::TC_AutoPtr<JsonValueArray> JsonValueArrayPtr;
+typedef xutil::XC_AutoPtr<JsonValueArray> JsonValueArrayPtr;
 
 /*
  * json类型 boolean类型 例如 true 
@@ -146,7 +146,7 @@ public:
 public:
     bool value;
 };
-typedef taf::TC_AutoPtr<JsonValueBoolean> JsonValueBooleanPtr;
+typedef xutil::XC_AutoPtr<JsonValueBoolean> JsonValueBooleanPtr;
 
 /*
  * 分析json字符串用到的 读字符的类
@@ -218,7 +218,7 @@ public:
         {
             char s[64];
             snprintf(s, sizeof(s), "buffer overflow when peekBuf, over %u.", (uint32_t)_buf_len);
-            throw TC_Json_Exception(s);
+            throw XC_Json_Exception(s);
         }
     }
 
@@ -231,7 +231,7 @@ public:
 /*
  * 分析json的类。都是static
  */
-class TC_Json
+class XC_Json
 {
 public:
     //json类型到字符串的转换

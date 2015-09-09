@@ -5,10 +5,10 @@
 #include <cerrno>
 #include <cassert>
 
-namespace taf
+namespace xutil
 {
 
-TC_Mmap::TC_Mmap(bool bOwner)
+XC_Mmap::XC_Mmap(bool bOwner)
 : _bOwner(bOwner)
 , _pAddr(NULL)
 , _iLength(0)
@@ -16,7 +16,7 @@ TC_Mmap::TC_Mmap(bool bOwner)
 {
 }
 
-TC_Mmap::~TC_Mmap()
+XC_Mmap::~XC_Mmap()
 {
     if(_bOwner)
     {
@@ -24,7 +24,7 @@ TC_Mmap::~TC_Mmap()
     }
 }
 
-void TC_Mmap::mmap(size_t length, int prot, int flags, int fd, off_t offset)
+void XC_Mmap::mmap(size_t length, int prot, int flags, int fd, off_t offset)
 {
     if(_bOwner)
     {
@@ -34,13 +34,13 @@ void TC_Mmap::mmap(size_t length, int prot, int flags, int fd, off_t offset)
     if(_pAddr == (void*)-1)
     {
         _pAddr = NULL;
-        throw TC_Mmap_Exception("[TC_Mmap::mmap] mmap error", errno);
+        throw XC_Mmap_Exception("[XC_Mmap::mmap] mmap error", errno);
     }
     _iLength    = length;
     _bCreate   = false;
 }
 
-void TC_Mmap::mmap(const char *file, size_t length)
+void XC_Mmap::mmap(const char *file, size_t length)
 {
     assert(length > 0);
     if(_bOwner)
@@ -53,14 +53,14 @@ void TC_Mmap::mmap(const char *file, size_t length)
     {
         if(errno != EEXIST)
         {
-            throw TC_Mmap_Exception("[TC_Mmap::mmap] fopen file '" + string(file) + "' error", errno);
+            throw XC_Mmap_Exception("[XC_Mmap::mmap] fopen file '" + string(file) + "' error", errno);
         }
         else
         {
             fd = open(file, O_CREAT|O_RDWR, 0666);
             if(fd == -1)
             {
-                throw TC_Mmap_Exception("[TC_Mmap::mmap] fopen file '" + string(file) + "' error", errno);
+                throw XC_Mmap_Exception("[XC_Mmap::mmap] fopen file '" + string(file) + "' error", errno);
             }
             _bCreate = false;
         }
@@ -78,7 +78,7 @@ void TC_Mmap::mmap(const char *file, size_t length)
     {
         _pAddr = NULL;
         close(fd);
-        throw TC_Mmap_Exception("[TC_Mmap::mmap] mmap file '" + string(file) + "' error", errno);
+        throw XC_Mmap_Exception("[XC_Mmap::mmap] mmap file '" + string(file) + "' error", errno);
     }
     _iLength    = length;
     if(fd != -1)
@@ -87,7 +87,7 @@ void TC_Mmap::mmap(const char *file, size_t length)
     }
 }
 
-void TC_Mmap::munmap()
+void XC_Mmap::munmap()
 {
     if(_pAddr == NULL)
     {
@@ -97,7 +97,7 @@ void TC_Mmap::munmap()
     int ret = ::munmap(_pAddr, _iLength);
     if(ret == -1)
     {
-        throw TC_Mmap_Exception("[TC_Mmap::munmap] munmap error", errno);
+        throw XC_Mmap_Exception("[XC_Mmap::munmap] munmap error", errno);
     }
 
     _pAddr      = NULL;
@@ -105,7 +105,7 @@ void TC_Mmap::munmap()
     _bCreate   = false;
 }
 
-void TC_Mmap::msync(bool bSync)
+void XC_Mmap::msync(bool bSync)
 {
     int ret = 0;
     if(bSync)
@@ -118,7 +118,7 @@ void TC_Mmap::msync(bool bSync)
     }
     if(ret != 0)
     {
-        throw TC_Mmap_Exception("[TC_Mmap::msync] msync error", errno);
+        throw XC_Mmap_Exception("[XC_Mmap::msync] msync error", errno);
     }
 }
 

@@ -1,5 +1,5 @@
-#ifndef __TC_RBTREE_H
-#define __TC_RDTREE_H
+#ifndef __XC_RBTREE_H
+#define __XC_RDTREE_H
 
 #include <iostream>
 #include <string>
@@ -11,29 +11,28 @@
 
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_rbtree.h 
 * @brief rbtree map类
 *  
-* @author  jarodruan@tencent.com
 */           
 /////////////////////////////////////////////////
 /**
 * @brief RBTree map异常类
 */
-struct TC_RBTree_Exception : public TC_Exception
+struct XC_RBTree_Exception : public XC_Exception
 {
-    TC_RBTree_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_RBTree_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_RBTree_Exception() throw(){};
+    XC_RBTree_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_RBTree_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_RBTree_Exception() throw(){};
 };
  /**
  * @brief 内存rbtree，不要直接使用该类，通过jmem组件来使用 
  *  
- *  该红黑树通过TC_MemMutilChunkAllocator来分配空间，支持不同大小的内存块的分配,
+ *  该红黑树通过XC_MemMutilChunkAllocator来分配空间，支持不同大小的内存块的分配,
  *  
  *  分配器分配的是内存索引，减少自身消耗的空间（尤其是64位OS下面）；
  *  
@@ -47,7 +46,7 @@ struct TC_RBTree_Exception : public TC_Exception
  *  
  *  支持dump到文件，或从文件load；
  */
-class TC_RBTree
+class XC_RBTree
 {
 public:
     struct RBTreeLockIterator;
@@ -124,7 +123,7 @@ public:
          * @param 当前MemBlock的地址
          * @param pAdd
          */
-        Block(TC_RBTree *pMap, uint32_t iAddr)
+        Block(XC_RBTree *pMap, uint32_t iAddr)
         : _pMap(pMap)
         , _iHead(iAddr)
         {
@@ -223,18 +222,18 @@ public:
          * 获取Block中的数据
          *
          * @return int
-         *          TC_RBTree::RT_OK, 正常, 其他异常
-         *          TC_RBTree::RT_ONLY_KEY, 只有Key
+         *          XC_RBTree::RT_OK, 正常, 其他异常
+         *          XC_RBTree::RT_ONLY_KEY, 只有Key
          *          其他异常
          */
-        int getBlockData(TC_RBTree::BlockData &data);
+        int getBlockData(XC_RBTree::BlockData &data);
 
         /**
          * 获取数据
          * @param pData
          * @param iDatalen
          * @return int,
-         *          TC_RBTree::RT_OK, 正常
+         *          XC_RBTree::RT_OK, 正常
          *          其他异常
          */
         int get(void *pData, uint32_t &iDataLen);
@@ -243,7 +242,7 @@ public:
          * 获取数据
          * @param s
          * @return int
-         *          TC_RBTree::RT_OK, 正常
+         *          XC_RBTree::RT_OK, 正常
          *          其他异常
          */
         int get(string &s);
@@ -254,7 +253,7 @@ public:
          * @param iDatalen
          * @param vtData, 淘汰的数据
          */
-        int set(const string& k, const string& v, bool bNewBlock, bool bOnlyKey, vector<TC_RBTree::BlockData> &vtData);
+        int set(const string& k, const string& v, bool bNewBlock, bool bOnlyKey, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 是否是脏数据
@@ -348,7 +347,7 @@ public:
          *
          * @return int,
          */
-        int allocate(uint32_t iDataLen, vector<TC_RBTree::BlockData> &vtData);
+        int allocate(uint32_t iDataLen, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 挂接chunk, 如果core则挂接失败, 保证内存块还可以用
@@ -366,7 +365,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<TC_RBTree::BlockData> &vtData);
+        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 获取数据长度
@@ -413,14 +412,14 @@ public:
         /**
          * 插入到get/set链表中
          */
-        void insertGetSetList(TC_RBTree::Block::tagBlockHead *i);
+        void insertGetSetList(XC_RBTree::Block::tagBlockHead *i);
 
     private:
 
         /**
          * Map
          */
-        TC_RBTree         *_pMap;
+        XC_RBTree         *_pMap;
 
         /**
          * block区块首地址, 相对地址
@@ -445,9 +444,9 @@ public:
         /**
          * 构造函数
          */
-        BlockAllocator(TC_RBTree *pMap)
+        BlockAllocator(XC_RBTree *pMap)
         : _pMap(pMap)
-        , _pChunkAllocator(new TC_MemMultiChunkAllocator())
+        , _pChunkAllocator(new XC_MemMultiChunkAllocator())
         {
         }
 
@@ -506,9 +505,9 @@ public:
         /**
          * 获取每种数据块头部信息
          *
-         * @return TC_MemChunk::tagChunkHead
+         * @return XC_MemChunk::tagChunkHead
          */
-        vector<TC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
+        vector<XC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
 
         /**
          * 内存大小
@@ -545,7 +544,7 @@ public:
          * @param vtData, 返回释放的内存块数据
          * @return uint32_t, 相对地址,0表示没有空间可以分配
          */
-        uint32_t allocateMemBlock(uint32_t &iAllocSize, vector<TC_RBTree::BlockData> &vtData);
+        uint32_t allocateMemBlock(uint32_t &iAllocSize, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 为地址为iAddr的Block分配一个chunk
@@ -555,7 +554,7 @@ public:
          * @param vtData 返回释放的内存块数据
          * @return uint32_t, 相对地址,0表示没有空间可以分配
          */
-        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<TC_RBTree::BlockData> &vtData);
+        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 释放Block
@@ -581,12 +580,12 @@ public:
         /**
          * map
          */
-        TC_RBTree                  *_pMap;
+        XC_RBTree                  *_pMap;
 
         /**
          * chunk分配器
          */
-        TC_MemMultiChunkAllocator   *_pChunkAllocator;
+        XC_MemMultiChunkAllocator   *_pChunkAllocator;
     };
 
     ////////////////////////////////////////////////////////////////
@@ -600,7 +599,7 @@ public:
          * @param pMap
          * @param iAddr
          */
-        RBTreeLockItem(TC_RBTree *pMap, uint32_t iAddr);
+        RBTreeLockItem(XC_RBTree *pMap, uint32_t iAddr);
 
         /**
          *
@@ -692,7 +691,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int set(const string& k, const string& v, bool bNewBlock, vector<TC_RBTree::BlockData> &vtData);
+        int set(const string& k, const string& v, bool bNewBlock, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          * 设置Key, 无数据
@@ -701,7 +700,7 @@ public:
          *
          * @return int
          */
-        int set(const string& k, bool bNewBlock, vector<TC_RBTree::BlockData> &vtData);
+        int set(const string& k, bool bNewBlock, vector<XC_RBTree::BlockData> &vtData);
 
         /**
          *
@@ -734,14 +733,14 @@ public:
          */
         void prevItem(int iType);
 
-        friend class TC_RBTree;
-        friend struct TC_RBTree::RBTreeLockIterator;
+        friend class XC_RBTree;
+        friend struct XC_RBTree::RBTreeLockIterator;
 
     private:
         /**
          * map
          */
-        TC_RBTree *_pMap;
+        XC_RBTree *_pMap;
 
         /**
          * block的地址
@@ -780,7 +779,7 @@ public:
          * @param iAddr, 地址
          * @param type
          */
-        RBTreeLockIterator(TC_RBTree *pMap, uint32_t iAddr, int iType, int iOrder);
+        RBTreeLockIterator(XC_RBTree *pMap, uint32_t iAddr, int iType, int iOrder);
 
         /**
          * copy
@@ -850,7 +849,7 @@ public:
         /**
          *
          */
-        TC_RBTree  *_pMap;
+        XC_RBTree  *_pMap;
 
         /**
          *
@@ -879,7 +878,7 @@ public:
          * @param pMap
          * @param key
          */
-        RBTreeItem(TC_RBTree *pMap, const string &key, bool bEnd);
+        RBTreeItem(XC_RBTree *pMap, const string &key, bool bEnd);
 
         /**
          *
@@ -926,7 +925,7 @@ public:
          *         RT_NO_DATA, 无数据
          *         RT_EXCEPTION_ERR, 异常
          */
-        int get(TC_RBTree::BlockData &stData);
+        int get(XC_RBTree::BlockData &stData);
 
     protected:
 
@@ -956,14 +955,14 @@ public:
          */
         void prevItem();
 
-        friend class TC_RBTree;
-        friend struct TC_RBTree::RBTreeIterator;
+        friend class XC_RBTree;
+        friend struct XC_RBTree::RBTreeIterator;
 
     private:
         /**
          * map
          */
-        TC_RBTree *_pMap;
+        XC_RBTree *_pMap;
 
         /**
          * block的地址
@@ -999,7 +998,7 @@ public:
          * @param iAddr, 地址
          * @param type
          */
-        RBTreeIterator(TC_RBTree *pMap, const string &key, bool bEnd, int iOrder);
+        RBTreeIterator(XC_RBTree *pMap, const string &key, bool bEnd, int iOrder);
 
         /**
          * copy
@@ -1063,7 +1062,7 @@ public:
         /**
          *
          */
-        TC_RBTree   *_pMap;
+        XC_RBTree   *_pMap;
 
         /**
          *
@@ -1194,7 +1193,7 @@ public:
     typedef RBTreeIterator nolock_iterator;
 
     //定义key比较处理器
-    typedef TC_Functor<bool, TL::TLMaker<const string &, const string &>::Result> less_functor;
+    typedef XC_Functor<bool, TL::TLMaker<const string &, const string &>::Result> less_functor;
 
     /**
      * 缺省的小写比较符号
@@ -1212,7 +1211,7 @@ public:
     /**
      * 构造函数
      */
-    TC_RBTree()
+    XC_RBTree()
     : _iMinDataSize(0)
     , _iMaxDataSize(0)
     , _fFactor(1.0)
@@ -1262,9 +1261,9 @@ public:
     /**
      * 获取每种大小内存块的头部信息
      *
-     * @return vector<TC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
+     * @return vector<XC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
      */
-    vector<TC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
+    vector<XC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
 
     /**
      * 所有block中chunk的个数
@@ -1342,8 +1341,8 @@ public:
 
     /**
      * 设置淘汰方式
-     * TC_RBTree::ERASEBYGET
-     * TC_RBTree::ERASEBYSET
+     * XC_RBTree::ERASEBYGET
+     * XC_RBTree::ERASEBYSET
      * @param cEraseMode
      */
     void setEraseMode(char cEraseMode)              { _pHead->_cEraseMode = cEraseMode; }
@@ -1732,13 +1731,13 @@ protected:
     friend class RBTreeLockItem;
 
     //禁止copy构造
-    TC_RBTree(const TC_RBTree &mcm);
+    XC_RBTree(const XC_RBTree &mcm);
     //禁止复制
-    TC_RBTree &operator=(const TC_RBTree &mcm);
+    XC_RBTree &operator=(const XC_RBTree &mcm);
 
     struct FailureRecover
     {
-        FailureRecover(TC_RBTree *pMap) : _pMap(pMap)
+        FailureRecover(XC_RBTree *pMap) : _pMap(pMap)
         {
             _pMap->doRecover();
         }
@@ -1749,7 +1748,7 @@ protected:
         }
        
     protected:
-        TC_RBTree   *_pMap;
+        XC_RBTree   *_pMap;
     };
 
     /**

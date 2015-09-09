@@ -5,21 +5,21 @@
 #include <iostream>
 #include <string.h>
 
-namespace taf
+namespace xutil
 {
 
-TC_MemChunk::TC_MemChunk()
+XC_MemChunk::XC_MemChunk()
 : _pHead(NULL)
 , _pData(NULL)
 {
 }
 
-size_t TC_MemChunk::calcMemSize(size_t iBlockSize, size_t iBlockCount)
+size_t XC_MemChunk::calcMemSize(size_t iBlockSize, size_t iBlockCount)
 {
     return iBlockSize * iBlockCount + sizeof(tagChunkHead);
 }
 
-size_t TC_MemChunk::calcBlockCount(size_t iMemSize, size_t iBlockSize)
+size_t XC_MemChunk::calcBlockCount(size_t iMemSize, size_t iBlockSize)
 {
     if(iMemSize <= sizeof(tagChunkHead))
     {
@@ -29,7 +29,7 @@ size_t TC_MemChunk::calcBlockCount(size_t iMemSize, size_t iBlockSize)
     return min(((iMemSize - sizeof(tagChunkHead)) / iBlockSize), (size_t)(-1));
 }
 
-void TC_MemChunk::create(void *pAddr, size_t iBlockSize, size_t iBlockCount)
+void XC_MemChunk::create(void *pAddr, size_t iBlockSize, size_t iBlockCount)
 {
     assert(iBlockSize > sizeof(size_t));
 
@@ -50,18 +50,18 @@ void TC_MemChunk::create(void *pAddr, size_t iBlockSize, size_t iBlockCount)
     }
 }
 
-void TC_MemChunk::connect(void *pAddr)
+void XC_MemChunk::connect(void *pAddr)
 {
     init(pAddr);
 }
 
-void TC_MemChunk::init(void *pAddr)
+void XC_MemChunk::init(void *pAddr)
 {
     _pHead = static_cast<tagChunkHead*>(pAddr);
     _pData = (unsigned char*)((char*)_pHead + sizeof(tagChunkHead));
 }
 
-void* TC_MemChunk::allocate()
+void* XC_MemChunk::allocate()
 {
     if(!isBlockAvailable()) return NULL;
 
@@ -76,7 +76,7 @@ void* TC_MemChunk::allocate()
     return result;
 }
 
-void* TC_MemChunk::allocate2(size_t &iIndex)
+void* XC_MemChunk::allocate2(size_t &iIndex)
 {
 	iIndex = _pHead->_firstAvailableBlock + 1;
 
@@ -91,7 +91,7 @@ void* TC_MemChunk::allocate2(size_t &iIndex)
 	return pAddr;
 }
 
-void TC_MemChunk::deallocate(void *pAddr)
+void XC_MemChunk::deallocate(void *pAddr)
 {
     assert(pAddr >= _pData);
 
@@ -110,7 +110,7 @@ void TC_MemChunk::deallocate(void *pAddr)
     ++_pHead->_blockAvailable;
 }
 
-void TC_MemChunk::deallocate2(size_t iIndex)
+void XC_MemChunk::deallocate2(size_t iIndex)
 {
     assert(iIndex > 0 && iIndex <= _pHead->_iBlockCount);
 
@@ -119,7 +119,7 @@ void TC_MemChunk::deallocate2(size_t iIndex)
 	deallocate(pAddr);
 }
 
-void* TC_MemChunk::getAbsolute(size_t iIndex)
+void* XC_MemChunk::getAbsolute(size_t iIndex)
 {
 	assert(iIndex > 0 && iIndex <= _pHead->_iBlockCount);
 
@@ -128,7 +128,7 @@ void* TC_MemChunk::getAbsolute(size_t iIndex)
 	return pAddr;
 }
 
-size_t TC_MemChunk::getRelative(void *pAddr)
+size_t XC_MemChunk::getRelative(void *pAddr)
 {
     assert((char*)pAddr >= (char*)_pData && ((char*)pAddr <= (char*)_pData + _pHead->_iBlockSize * _pHead->_iBlockCount));
     assert(((char*)pAddr - (char*)_pData) % _pHead->_iBlockSize == 0);
@@ -136,7 +136,7 @@ size_t TC_MemChunk::getRelative(void *pAddr)
     return 1 + ((char*)pAddr - (char*)_pData) / _pHead->_iBlockSize;
 }
 
-void TC_MemChunk::rebuild()
+void XC_MemChunk::rebuild()
 {
     assert(_pHead);
 
@@ -153,7 +153,7 @@ void TC_MemChunk::rebuild()
     }
 }
 
-TC_MemChunk::tagChunkHead TC_MemChunk::getChunkHead() const
+XC_MemChunk::tagChunkHead XC_MemChunk::getChunkHead() const
 {
     return *_pHead;
 }
@@ -161,33 +161,33 @@ TC_MemChunk::tagChunkHead TC_MemChunk::getChunkHead() const
 ////////////////////////////////////////////////////////////////////
 //
 
-TC_MemChunkAllocator::TC_MemChunkAllocator()
+XC_MemChunkAllocator::XC_MemChunkAllocator()
 : _pHead(NULL)
 {
 }
 
-void TC_MemChunkAllocator::init(void *pAddr)
+void XC_MemChunkAllocator::init(void *pAddr)
 {
     _pHead  = static_cast<tagChunkAllocatorHead*>(pAddr);
     _pChunk = (char*)_pHead + sizeof(tagChunkAllocatorHead);
 }
 
-void TC_MemChunkAllocator::initChunk()
+void XC_MemChunkAllocator::initChunk()
 {
     assert(_pHead->_iSize > sizeof(tagChunkAllocatorHead));
 
     size_t iChunkCapacity = _pHead->_iSize - sizeof(tagChunkAllocatorHead);
 
-    assert(iChunkCapacity > TC_MemChunk::getHeadSize());
+    assert(iChunkCapacity > XC_MemChunk::getHeadSize());
 
-    size_t  iBlockCount   = (iChunkCapacity - TC_MemChunk::getHeadSize()) / _pHead->_iBlockSize;
+    size_t  iBlockCount   = (iChunkCapacity - XC_MemChunk::getHeadSize()) / _pHead->_iBlockSize;
 
     assert(iBlockCount > 0);
 
     _chunk.create((void*)((char *)_pChunk), _pHead->_iBlockSize, iBlockCount);
 }
 
-void TC_MemChunkAllocator::create(void *pAddr, size_t iSize, size_t iBlockSize)
+void XC_MemChunkAllocator::create(void *pAddr, size_t iSize, size_t iBlockSize)
 {
     init(pAddr);
 
@@ -197,69 +197,69 @@ void TC_MemChunkAllocator::create(void *pAddr, size_t iSize, size_t iBlockSize)
     initChunk();
 }
 
-void TC_MemChunkAllocator::connectChunk()
+void XC_MemChunkAllocator::connectChunk()
 {
     assert(_pHead->_iSize > sizeof(tagChunkAllocatorHead));
 
     size_t iChunkCapacity = _pHead->_iSize - sizeof(tagChunkAllocatorHead);
 
-    assert(iChunkCapacity > TC_MemChunk::getHeadSize());
+    assert(iChunkCapacity > XC_MemChunk::getHeadSize());
 
     _chunk.connect((void*)((char *)_pChunk));
 }
 
-void TC_MemChunkAllocator::connect(void *pAddr)
+void XC_MemChunkAllocator::connect(void *pAddr)
 {
     init(pAddr);
 
     connectChunk();
 }
 
-void TC_MemChunkAllocator::rebuild()
+void XC_MemChunkAllocator::rebuild()
 {
     _chunk.rebuild();
 }
 
-void* TC_MemChunkAllocator::allocate()
+void* XC_MemChunkAllocator::allocate()
 {
     return _chunk.allocate();
 }
 
-void* TC_MemChunkAllocator::allocate2(size_t &iIndex)
+void* XC_MemChunkAllocator::allocate2(size_t &iIndex)
 {
 	return _chunk.allocate2(iIndex);
 }
 
-void TC_MemChunkAllocator::deallocate(void *pAddr)
+void XC_MemChunkAllocator::deallocate(void *pAddr)
 {
     assert(pAddr >= _pChunk);
 
     _chunk.deallocate(pAddr);
 }
 
-void TC_MemChunkAllocator::deallocate2(size_t iIndex)
+void XC_MemChunkAllocator::deallocate2(size_t iIndex)
 {
 	_chunk.deallocate2(iIndex);
 }
 
-TC_MemChunk::tagChunkHead TC_MemChunkAllocator::getBlockDetail() const
+XC_MemChunk::tagChunkHead XC_MemChunkAllocator::getBlockDetail() const
 {
     return _chunk.getChunkHead();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-TC_MemMultiChunkAllocator::TC_MemMultiChunkAllocator()
+XC_MemMultiChunkAllocator::XC_MemMultiChunkAllocator()
 : _pHead(NULL), _pChunk(NULL), _nallocator(NULL)
 {
 }
 
-TC_MemMultiChunkAllocator::~TC_MemMultiChunkAllocator()
+XC_MemMultiChunkAllocator::~XC_MemMultiChunkAllocator()
 {
     clear();
 }
 
-void TC_MemMultiChunkAllocator::clear()
+void XC_MemMultiChunkAllocator::clear()
 {
     for(size_t i = 0; i < _allocator.size(); i++)
     {
@@ -281,7 +281,7 @@ void TC_MemMultiChunkAllocator::clear()
     _iBlockCount = 0;
 }
 
-vector<size_t> TC_MemMultiChunkAllocator::getBlockSize()  const    
+vector<size_t> XC_MemMultiChunkAllocator::getBlockSize()  const    
 { 
     vector<size_t> v = _vBlockSize;
     if(_nallocator)
@@ -293,7 +293,7 @@ vector<size_t> TC_MemMultiChunkAllocator::getBlockSize()  const
     return v; 
 }
 
-size_t TC_MemMultiChunkAllocator::getCapacity() const
+size_t XC_MemMultiChunkAllocator::getCapacity() const
 {
     size_t iCapacity = 0;
     for(size_t i = 0; i < _allocator.size(); i++)
@@ -309,9 +309,9 @@ size_t TC_MemMultiChunkAllocator::getCapacity() const
     return iCapacity;
 }
 
-vector<TC_MemChunk::tagChunkHead> TC_MemMultiChunkAllocator::getBlockDetail() const
+vector<XC_MemChunk::tagChunkHead> XC_MemMultiChunkAllocator::getBlockDetail() const
 {
-    vector<TC_MemChunk::tagChunkHead> vt;
+    vector<XC_MemChunk::tagChunkHead> vt;
     for(size_t i = 0; i < _allocator.size(); i++)
     {
         vt.push_back(_allocator[i]->getBlockDetail());
@@ -319,7 +319,7 @@ vector<TC_MemChunk::tagChunkHead> TC_MemMultiChunkAllocator::getBlockDetail() co
 
     if(_nallocator)
     {
-        vector<TC_MemChunk::tagChunkHead> v = _nallocator->getBlockDetail();
+        vector<XC_MemChunk::tagChunkHead> v = _nallocator->getBlockDetail();
 
         copy(v.begin(), v.end(), inserter(vt, vt.end()));
     }
@@ -327,7 +327,7 @@ vector<TC_MemChunk::tagChunkHead> TC_MemMultiChunkAllocator::getBlockDetail() co
     return vt;
 }
 
-vector<size_t> TC_MemMultiChunkAllocator::singleBlockChunkCount() const                
+vector<size_t> XC_MemMultiChunkAllocator::singleBlockChunkCount() const                
 { 
     vector<size_t> vv;
     vv.push_back(_iBlockCount);
@@ -341,7 +341,7 @@ vector<size_t> TC_MemMultiChunkAllocator::singleBlockChunkCount() const
     return vv;
 }
 
-size_t TC_MemMultiChunkAllocator::allBlockChunkCount() const                   
+size_t XC_MemMultiChunkAllocator::allBlockChunkCount() const                   
 { 
     size_t n = _iBlockCount * _vBlockSize.size(); 
 
@@ -353,13 +353,13 @@ size_t TC_MemMultiChunkAllocator::allBlockChunkCount() const
     return n;
 }
 
-void TC_MemMultiChunkAllocator::init(void *pAddr)
+void XC_MemMultiChunkAllocator::init(void *pAddr)
 {
     _pHead  = static_cast<tagChunkAllocatorHead*>(pAddr);
     _pChunk = (char*)_pHead + sizeof(tagChunkAllocatorHead);
 }
 
-void TC_MemMultiChunkAllocator::calc()
+void XC_MemMultiChunkAllocator::calc()
 {
     _vBlockSize.clear();
 
@@ -379,18 +379,18 @@ void TC_MemMultiChunkAllocator::calc()
     sum += _pHead->_iMaxBlockSize;
     _vBlockSize.push_back(_pHead->_iMaxBlockSize);
 
-    assert(_pHead->_iSize > (TC_MemMultiChunkAllocator::getHeadSize() + TC_MemChunkAllocator::getHeadSize()*_vBlockSize.size() + TC_MemChunk::getHeadSize()*_vBlockSize.size()));
+    assert(_pHead->_iSize > (XC_MemMultiChunkAllocator::getHeadSize() + XC_MemChunkAllocator::getHeadSize()*_vBlockSize.size() + XC_MemChunk::getHeadSize()*_vBlockSize.size()));
 
     //计算块的个数
     _iBlockCount = (_pHead->_iSize
-                    - TC_MemMultiChunkAllocator::getHeadSize()
-                    - TC_MemChunkAllocator::getHeadSize() * _vBlockSize.size()
-                    - TC_MemChunk::getHeadSize() * _vBlockSize.size())/sum;
+                    - XC_MemMultiChunkAllocator::getHeadSize()
+                    - XC_MemChunkAllocator::getHeadSize() * _vBlockSize.size()
+                    - XC_MemChunk::getHeadSize() * _vBlockSize.size())/sum;
 
     assert(_iBlockCount >= 1);
 }
 
-void TC_MemMultiChunkAllocator::create(void *pAddr, size_t iSize, size_t iMinBlockSize, size_t iMaxBlockSize, float fFactor)
+void XC_MemMultiChunkAllocator::create(void *pAddr, size_t iSize, size_t iMinBlockSize, size_t iMaxBlockSize, float fFactor)
 {
     assert(iMaxBlockSize >= iMinBlockSize);
     assert(fFactor >= 1.0);
@@ -410,8 +410,8 @@ void TC_MemMultiChunkAllocator::create(void *pAddr, size_t iSize, size_t iMinBlo
     char *pChunkBegin = (char*)_pChunk;
     for(size_t i = 0; i < _vBlockSize.size(); i++)
     {
-        TC_MemChunkAllocator *p = new TC_MemChunkAllocator;
-        size_t iAllocSize = TC_MemChunkAllocator::getHeadSize() + TC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
+        XC_MemChunkAllocator *p = new XC_MemChunkAllocator;
+        size_t iAllocSize = XC_MemChunkAllocator::getHeadSize() + XC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
         p->create(pChunkBegin, iAllocSize, _vBlockSize[i]);
         pChunkBegin += iAllocSize;
         _allocator.push_back(p);
@@ -420,7 +420,7 @@ void TC_MemMultiChunkAllocator::create(void *pAddr, size_t iSize, size_t iMinBlo
     _iAllIndex = _allocator.size() * getBlockCount();
 }
 
-void TC_MemMultiChunkAllocator::connect(void *pAddr)
+void XC_MemMultiChunkAllocator::connect(void *pAddr)
 {
     clear();
 
@@ -432,10 +432,10 @@ void TC_MemMultiChunkAllocator::connect(void *pAddr)
     char *pChunkBegin = (char*)_pChunk;
     for(size_t i = 0; i < _vBlockSize.size(); i++)
     {
-        TC_MemChunkAllocator *p = new TC_MemChunkAllocator;
+        XC_MemChunkAllocator *p = new XC_MemChunkAllocator;
 
         p->connect(pChunkBegin);
-        pChunkBegin += TC_MemChunkAllocator::getHeadSize() + TC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
+        pChunkBegin += XC_MemChunkAllocator::getHeadSize() + XC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
         _allocator.push_back(p);
     }
 
@@ -452,11 +452,11 @@ void TC_MemMultiChunkAllocator::connect(void *pAddr)
 
     //下一块地址, 注意这里是嵌套的, 扩展分配空间的时候注意 
     tagChunkAllocatorHead   *pNextHead = (tagChunkAllocatorHead   *)((char*)_pHead + _pHead->_iNext);
-    _nallocator = new TC_MemMultiChunkAllocator();
+    _nallocator = new XC_MemMultiChunkAllocator();
     _nallocator->connect(pNextHead);
 }
 
-void TC_MemMultiChunkAllocator::rebuild()
+void XC_MemMultiChunkAllocator::rebuild()
 {
     for(size_t i = 0; i < _allocator.size(); i++)
     {
@@ -469,12 +469,12 @@ void TC_MemMultiChunkAllocator::rebuild()
     }
 }
 
-TC_MemMultiChunkAllocator *TC_MemMultiChunkAllocator::lastAlloc()
+XC_MemMultiChunkAllocator *XC_MemMultiChunkAllocator::lastAlloc()
 {
     if(_nallocator == NULL)
         return NULL;
 
-    TC_MemMultiChunkAllocator *p = _nallocator;
+    XC_MemMultiChunkAllocator *p = _nallocator;
 
     while(p && p->_nallocator)
     {
@@ -484,7 +484,7 @@ TC_MemMultiChunkAllocator *TC_MemMultiChunkAllocator::lastAlloc()
     return p;
 }
 
-void TC_MemMultiChunkAllocator::append(void *pAddr, size_t iSize)
+void XC_MemMultiChunkAllocator::append(void *pAddr, size_t iSize)
 {
     connect(pAddr);
 
@@ -495,11 +495,11 @@ void TC_MemMultiChunkAllocator::append(void *pAddr, size_t iSize)
     void *pAppendAddr = (char*)pAddr + _pHead->_iTotalSize;
 
     //扩展的部分初始化, 注意这里p不用delete, 最后系统的时候会循环delete所有分配器
-    TC_MemMultiChunkAllocator *p = new TC_MemMultiChunkAllocator();
+    XC_MemMultiChunkAllocator *p = new XC_MemMultiChunkAllocator();
     p->create(pAppendAddr, iSize - _pHead->_iTotalSize, _pHead->_iMinBlockSize, _pHead->_iMaxBlockSize, _pHead->_fFactor);
 
     //扩展部分连接到最后一个分配块最后
-    TC_MemMultiChunkAllocator *palloc = lastAlloc();
+    XC_MemMultiChunkAllocator *palloc = lastAlloc();
     if(palloc)
     {
         palloc->_pHead->_iNext  = (char*)pAppendAddr - (char*)palloc->_pHead;
@@ -517,13 +517,13 @@ void TC_MemMultiChunkAllocator::append(void *pAddr, size_t iSize)
     _pHead->_iTotalSize = iSize;
 }
 
-void* TC_MemMultiChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize)
+void* XC_MemMultiChunkAllocator::allocate(size_t iNeedSize, size_t &iAllocSize)
 {
     size_t iIndex;
     return allocate2(iNeedSize, iAllocSize, iIndex);
 }
 
-void *TC_MemMultiChunkAllocator::allocate2(size_t iNeedSize, size_t &iAllocSize, size_t &iIndex)
+void *XC_MemMultiChunkAllocator::allocate2(size_t iNeedSize, size_t &iAllocSize, size_t &iIndex)
 {
     void *p = NULL;
     iIndex  = 0;
@@ -575,7 +575,7 @@ void *TC_MemMultiChunkAllocator::allocate2(size_t iNeedSize, size_t &iAllocSize,
     return NULL;
 }
 
-void TC_MemMultiChunkAllocator::deallocate(void *pAddr)
+void XC_MemMultiChunkAllocator::deallocate(void *pAddr)
 {
     if(pAddr < (void*)((char*)_pHead + _pHead->_iSize))
     {
@@ -584,7 +584,7 @@ void TC_MemMultiChunkAllocator::deallocate(void *pAddr)
         for(size_t i = 0; i < _vBlockSize.size(); i++)
         {
             pChunkBegin += _allocator[i]->getMemSize();
-//            pChunkBegin += TC_MemChunkAllocator::getHeadSize() + TC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
+//            pChunkBegin += XC_MemChunkAllocator::getHeadSize() + XC_MemChunk::calcMemSize(_vBlockSize[i], _iBlockCount);
 
             if((char*)pAddr < pChunkBegin)
             {
@@ -607,7 +607,7 @@ void TC_MemMultiChunkAllocator::deallocate(void *pAddr)
     assert(false);
 }
 
-void TC_MemMultiChunkAllocator::deallocate2(size_t iIndex)
+void XC_MemMultiChunkAllocator::deallocate2(size_t iIndex)
 {
 	for(size_t i = 0; i < _allocator.size(); i++)
 	{
@@ -628,7 +628,7 @@ void TC_MemMultiChunkAllocator::deallocate2(size_t iIndex)
     assert(false);
 }
 
-void* TC_MemMultiChunkAllocator::getAbsolute(size_t iIndex)
+void* XC_MemMultiChunkAllocator::getAbsolute(size_t iIndex)
 {
 	if(iIndex == 0)
 	{
@@ -657,7 +657,7 @@ void* TC_MemMultiChunkAllocator::getAbsolute(size_t iIndex)
 	return NULL;
 }
 
-size_t TC_MemMultiChunkAllocator::getRelative(void *pAddr)
+size_t XC_MemMultiChunkAllocator::getRelative(void *pAddr)
 {
 	if(pAddr == NULL)
 	{

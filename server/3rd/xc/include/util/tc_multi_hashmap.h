@@ -1,5 +1,5 @@
-#ifndef	__TC_MULTI_HASHMAP_H__
-#define __TC_MULTI_HASHMAP_H__
+#ifndef	__XC_MULTI_HASHMAP_H__
+#define __XC_MULTI_HASHMAP_H__
 
 #include <vector>
 #include <memory>
@@ -12,7 +12,7 @@
 #include "util/tc_functor.h"
 #include "util/tc_hash_fun.h"
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
@@ -26,11 +26,11 @@ namespace taf
 /**
 *  @brief Multi Hash map异常类
 */
-struct TC_Multi_HashMap_Exception : public TC_Exception
+struct XC_Multi_HashMap_Exception : public XC_Exception
 {
-	TC_Multi_HashMap_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Multi_HashMap_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Multi_HashMap_Exception() throw(){};
+	XC_Multi_HashMap_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Multi_HashMap_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Multi_HashMap_Exception() throw(){};
 };
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@ struct TC_Multi_HashMap_Exception : public TC_Exception
  *  
  * 所有存储的地址均采用32位保存，为内存块的索引，要求总内存块数不能超过32位范围
  */
-class TC_Multi_HashMap
+class XC_Multi_HashMap
 {
 public:
     struct HashMapIterator;
@@ -178,7 +178,7 @@ public:
          * @param pMap
          * @param iAddr, 主key的地址
          */
-        MainKey(TC_Multi_HashMap *pMap, uint32_t iAddr)
+        MainKey(XC_Multi_HashMap *pMap, uint32_t iAddr)
         : _pMap(pMap)
         , _iHead(iAddr)
         {
@@ -253,7 +253,7 @@ public:
          * @brief 获取主key
          * @param mk, 主key
          * @return int
-         *          TC_Multi_HashMap::RT_OK, 正常
+         *          XC_Multi_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(string &mk);
@@ -264,7 +264,7 @@ public:
          * @param iDatalen
          * @param vtData, 淘汰的数据
          */
-        int set(const void *pData, uint32_t iDataLen, vector<TC_Multi_HashMap::Value> &vtData);
+        int set(const void *pData, uint32_t iDataLen, vector<XC_Multi_HashMap::Value> &vtData);
 
 		/**
          * @brief 将当前主key移动到主key链上的下一个主key
@@ -295,7 +295,7 @@ public:
         /**
          * @brief 从主key链表中删除当前主key
          * 返回被删除的主key下的所有数据
-         * @return int, TC_Multi_HashMap::RT_OK成功，其它失败
+         * @return int, XC_Multi_HashMap::RT_OK成功，其它失败
          */
         int erase(vector<Value> &vtData);
 
@@ -323,7 +323,7 @@ public:
          *
          * @return int
          */
-        int allocate(uint32_t iDataLen, vector<TC_Multi_HashMap::Value> &vtData);
+        int allocate(uint32_t iDataLen, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 挂接chunk, 如果core则挂接失败, 保证内存块还可以用
@@ -341,7 +341,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<TC_Multi_HashMap::Value> &vtData);
+        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<XC_Multi_HashMap::Value> &vtData);
 
 		/**
          * @brief 释放指定chunk之后的所有chunk
@@ -361,27 +361,27 @@ public:
          * @param pData
          * @param iDatalen
          * @return int,
-         *          TC_Multi_HashMap::RT_OK, 正常
+         *          XC_Multi_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(void *pData, uint32_t &iDataLen);
 
 	public:
-		bool ISFULLDATA()						{ return TC_Multi_HashMap::ISSET(getHeadPtr()->_iBitset, INTEGRITY_BIT); }
+		bool ISFULLDATA()						{ return XC_Multi_HashMap::ISSET(getHeadPtr()->_iBitset, INTEGRITY_BIT); }
 	protected:
-		bool HASNEXTCHUNK()						{ return TC_Multi_HashMap::ISSET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); }
+		bool HASNEXTCHUNK()						{ return XC_Multi_HashMap::ISSET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); }
 		
 	public:
-		void SETFULLDATA(bool b)				{ if(b) TC_Multi_HashMap::SET(getHeadPtr()->_iBitset, INTEGRITY_BIT); else TC_Multi_HashMap::UNSET(getHeadPtr()->_iBitset, INTEGRITY_BIT); }
+		void SETFULLDATA(bool b)				{ if(b) XC_Multi_HashMap::SET(getHeadPtr()->_iBitset, INTEGRITY_BIT); else XC_Multi_HashMap::UNSET(getHeadPtr()->_iBitset, INTEGRITY_BIT); }
 	protected:
-		void SETNEXTCHUNK(bool b)				{ if(b) TC_Multi_HashMap::SET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); else TC_Multi_HashMap::UNSET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); }
+		void SETNEXTCHUNK(bool b)				{ if(b) XC_Multi_HashMap::SET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); else XC_Multi_HashMap::UNSET(getHeadPtr()->_iBitset, NEXTCHUNK_BIT); }
 
     private:
 
         /**
          * Map
          */
-        TC_Multi_HashMap         *_pMap;
+        XC_Multi_HashMap         *_pMap;
 
         /**
          * 主key头首地址, 相对地址，内存块索引
@@ -488,7 +488,7 @@ public:
          * @param Block的地址
          * @param pAdd
          */
-        Block(TC_Multi_HashMap *pMap, uint32_t iAddr)
+        Block(XC_Multi_HashMap *pMap, uint32_t iAddr)
         : _pMap(pMap)
         , _iHead(iAddr)
         {
@@ -592,18 +592,18 @@ public:
          * @brief 获取Block中的数据
          * @param data 要获取数据的Block
          * @return int
-         *          TC_Multi_HashMap::RT_OK, 正常, 其他异常
-         *          TC_Multi_HashMap::RT_ONLY_KEY, 只有Key
+         *          XC_Multi_HashMap::RT_OK, 正常, 其他异常
+         *          XC_Multi_HashMap::RT_ONLY_KEY, 只有Key
          *          其他异常
          */
-        int getBlockData(TC_Multi_HashMap::BlockData &data);
+        int getBlockData(XC_Multi_HashMap::BlockData &data);
 
         /**
          * @brief 获取原始数据
          * @param pData
          * @param iDatalen
          * @return int,
-         *          TC_Multi_HashMap::RT_OK, 正常
+         *          XC_Multi_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(void *pData, uint32_t &iDataLen);
@@ -612,7 +612,7 @@ public:
          * @brief 获取原始数据
          * @param s
          * @return int
-         *          TC_Multi_HashMap::RT_OK, 正常
+         *          XC_Multi_HashMap::RT_OK, 正常
          *          其他异常
          */
         int get(string &s);
@@ -629,7 +629,7 @@ public:
 		 *				RT_DATA_VER_MISMATCH, 要设置的数据版本与当前版本不符，应该重新get后再set
 		 *				其它为失败
          */
-        int set(const void *pData, uint32_t iDataLen, bool bOnlyKey, uint8_t iVersion, vector<TC_Multi_HashMap::Value> &vtData);
+        int set(const void *pData, uint32_t iDataLen, bool bOnlyKey, uint8_t iVersion, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 是否是脏数据
@@ -709,7 +709,7 @@ public:
          *
          * @return int,
          */
-        int allocate(uint32_t iDataLen, vector<TC_Multi_HashMap::Value> &vtData);
+        int allocate(uint32_t iDataLen, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 挂接chunk, 如果core则挂接失败, 保证内存块还可以用
@@ -727,7 +727,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<TC_Multi_HashMap::Value> &vtData);
+        int allocateChunk(uint32_t fn, vector<uint32_t> &chunks, vector<XC_Multi_HashMap::Value> &vtData);
 
 		/**
          * @brief 释放指定chunk之后的所有chunk
@@ -742,20 +742,20 @@ public:
          */
         uint32_t getDataLen();
 
-		bool HASNEXTCHUNK()						{ return TC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); }
-		bool ISDIRTY()							{ return TC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, DIRTY_BIT); }
-		bool ISONLYKEY()						{ return TC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, ONLYKEY_BIT); }
+		bool HASNEXTCHUNK()						{ return XC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); }
+		bool ISDIRTY()							{ return XC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, DIRTY_BIT); }
+		bool ISONLYKEY()						{ return XC_Multi_HashMap::ISSET(getBlockHead()->_iBitset, ONLYKEY_BIT); }
 
-		void SETNEXTCHUNK(bool b)				{ if(b) TC_Multi_HashMap::SET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); else TC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); }
-		void SETDIRTY(bool b)					{ if(b) TC_Multi_HashMap::SET(getBlockHead()->_iBitset, DIRTY_BIT); else TC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, DIRTY_BIT); }
-		void SETONLYKEY(bool b)					{ if(b) TC_Multi_HashMap::SET(getBlockHead()->_iBitset, ONLYKEY_BIT); else TC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, ONLYKEY_BIT); }
+		void SETNEXTCHUNK(bool b)				{ if(b) XC_Multi_HashMap::SET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); else XC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, NEXTCHUNK_BIT); }
+		void SETDIRTY(bool b)					{ if(b) XC_Multi_HashMap::SET(getBlockHead()->_iBitset, DIRTY_BIT); else XC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, DIRTY_BIT); }
+		void SETONLYKEY(bool b)					{ if(b) XC_Multi_HashMap::SET(getBlockHead()->_iBitset, ONLYKEY_BIT); else XC_Multi_HashMap::UNSET(getBlockHead()->_iBitset, ONLYKEY_BIT); }
 
     private:
 
         /**
          * Map
          */
-        TC_Multi_HashMap         *_pMap;
+        XC_Multi_HashMap         *_pMap;
 
         /**
          * block区块首地址, 相对地址，内存块索引
@@ -781,9 +781,9 @@ public:
         /**
          * @brief 构造函数
          */
-        BlockAllocator(TC_Multi_HashMap *pMap)
+        BlockAllocator(XC_Multi_HashMap *pMap)
         : _pMap(pMap)
-        , _pChunkAllocator(new TC_MemMultiChunkAllocator())
+        , _pChunkAllocator(new XC_MemMultiChunkAllocator())
         {
         }
 
@@ -843,9 +843,9 @@ public:
         /**
          * @brief 获取每种数据块头部信息
          *
-         * @return vector<TC_MemChunk::tagChunkHead>
+         * @return vector<XC_MemChunk::tagChunkHead>
          */
-        vector<TC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
+        vector<XC_MemChunk::tagChunkHead> getBlockDetail() const  { return _pChunkAllocator->getBlockDetail(); }
 
         /**
          * @brief 总内存大小
@@ -885,7 +885,7 @@ public:
          * @param vtData, 返回淘汰的数据
          * @return size_t, 内存块地址索引, 0表示没有空间可以分配
          */
-        uint32_t allocateMemBlock(uint32_t iMainKeyAddr, uint32_t index, bool bHead, uint32_t &iAllocSize, vector<TC_Multi_HashMap::Value> &vtData);
+        uint32_t allocateMemBlock(uint32_t iMainKeyAddr, uint32_t index, bool bHead, uint32_t &iAllocSize, vector<XC_Multi_HashMap::Value> &vtData);
 
 		/**
 		* @brief 在内存中分配一个主key头，只需要一个chunk即可
@@ -894,7 +894,7 @@ public:
 		* @param vtData, 返回释放的内存块数据
 		* @return size_t, 主key头首地址,0表示没有空间可以分配
 		*/
-		uint32_t allocateMainKeyHead(uint32_t index, vector<TC_Multi_HashMap::Value> &vtData);
+		uint32_t allocateMainKeyHead(uint32_t index, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 为地址为iAddr的Block分配一个chunk         *
@@ -903,7 +903,7 @@ public:
          * @param vtData 返回释放的内存块数据
          * @return size_t, 相对地址,0表示没有空间可以分配
          */
-        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<TC_Multi_HashMap::Value> &vtData);
+        uint32_t allocateChunk(uint32_t iAddr, uint32_t &iAllocSize, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 释放Block
@@ -933,12 +933,12 @@ public:
         /**
          * map
          */
-    	TC_Multi_HashMap                *_pMap;
+    	XC_Multi_HashMap                *_pMap;
 
         /**
          * chunk分配器
          */
-        TC_MemMultiChunkAllocator		*_pChunkAllocator;
+        XC_MemMultiChunkAllocator		*_pChunkAllocator;
     };
 
     ////////////////////////////////////////////////////////////////
@@ -954,7 +954,7 @@ public:
          * @param pMap, 
          * @param iAddr, 与LockItem对应的Block首地址
     	 */
-    	HashMapLockItem(TC_Multi_HashMap *pMap, uint32_t iAddr);
+    	HashMapLockItem(XC_Multi_HashMap *pMap, uint32_t iAddr);
 
         /**
          *
@@ -1016,7 +1016,7 @@ public:
          *          其他值, 异常
          *
     	 */
-		int get(TC_Multi_HashMap::Value &v);
+		int get(XC_Multi_HashMap::Value &v);
 
     	/**
     	 * @brief 仅获取key
@@ -1046,7 +1046,7 @@ public:
          * @param vtData, 淘汰的数据
          * @return int
          */
-        int set(const string &mk, const string &uk, const string& v, uint8_t iVersion, vector<TC_Multi_HashMap::Value> &vtData);
+        int set(const string &mk, const string &uk, const string& v, uint8_t iVersion, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 设置Key, 无数据(Only Key)
@@ -1056,7 +1056,7 @@ public:
          *
          * @return int
          */
-        int set(const string &mk, const string &uk, vector<TC_Multi_HashMap::Value> &vtData);
+        int set(const string &mk, const string &uk, vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 判断当前item是否是指定key的item, 如果是还返回value
@@ -1065,7 +1065,7 @@ public:
          *
          * @return bool
          */
-        bool equal(const string &mk, const string &uk, TC_Multi_HashMap::Value &v, int &ret);
+        bool equal(const string &mk, const string &uk, XC_Multi_HashMap::Value &v, int &ret);
 
         /**
          * @brief 判断当前item是否是指定key的item
@@ -1089,14 +1089,14 @@ public:
          */
     	void prevItem(int iType);
 
-        friend class TC_Multi_HashMap;
-        friend struct TC_Multi_HashMap::HashMapLockIterator;
+        friend class XC_Multi_HashMap;
+        friend struct XC_Multi_HashMap::HashMapLockIterator;
 
     private:
         /**
          * map
          */
-    	TC_Multi_HashMap *_pMap;
+    	XC_Multi_HashMap *_pMap;
 
         /**
          * 对应的block的地址
@@ -1145,7 +1145,7 @@ public:
     	 * @param iType, 遍历类型
 		 * @param iOrder, 遍历的顺序
     	 */
-    	HashMapLockIterator(TC_Multi_HashMap *pMap, uint32_t iAddr, int iType, int iOrder);
+    	HashMapLockIterator(XC_Multi_HashMap *pMap, uint32_t iAddr, int iType, int iOrder);
 
         /**
          * @brief copy
@@ -1209,7 +1209,7 @@ public:
         /**
          *
          */
-        TC_Multi_HashMap  *_pMap;
+        XC_Multi_HashMap  *_pMap;
 
         /**
          *
@@ -1241,7 +1241,7 @@ public:
          * @param pMap
          * @param iIndex, Hash索引
          */
-        HashMapItem(TC_Multi_HashMap *pMap, uint32_t iIndex);
+        HashMapItem(XC_Multi_HashMap *pMap, uint32_t iIndex);
 
         /**
          *
@@ -1279,7 +1279,7 @@ public:
          * @param vtData
          * @return
          */
-        void get(vector<TC_Multi_HashMap::Value> &vtData);
+        void get(vector<XC_Multi_HashMap::Value> &vtData);
 
         /**
          * @brief 获取当前item的hash索引
@@ -1294,14 +1294,14 @@ public:
          */
         void nextItem();
 
-        friend class TC_Multi_HashMap;
-        friend struct TC_Multi_HashMap::HashMapIterator;
+        friend class XC_Multi_HashMap;
+        friend struct XC_Multi_HashMap::HashMapIterator;
 
     private:
         /**
          * map
          */
-        TC_Multi_HashMap *_pMap;
+        XC_Multi_HashMap *_pMap;
 
         /**
          * 对应的数据块索引
@@ -1327,7 +1327,7 @@ public:
          * @param iIndex, hash索引
     	 * @param type
     	 */
-    	HashMapIterator(TC_Multi_HashMap *pMap, uint32_t iIndex);
+    	HashMapIterator(XC_Multi_HashMap *pMap, uint32_t iIndex);
 
         /**
          * @brief copy
@@ -1391,7 +1391,7 @@ public:
         /**
          *
          */
-        TC_Multi_HashMap  *_pMap;
+        XC_Multi_HashMap  *_pMap;
 
         /**
          *
@@ -1550,7 +1550,7 @@ public:
     typedef HashMapLockIterator lock_iterator;
 
     /**定义hash处理器*/
-    typedef TC_Functor<uint32_t, TL::TLMaker<const string &>::Result> hash_functor;
+    typedef XC_Functor<uint32_t, TL::TLMaker<const string &>::Result> hash_functor;
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     //map的接口定义
@@ -1558,7 +1558,7 @@ public:
     /**
      * @brief 构造函数
      */
-    TC_Multi_HashMap()
+    XC_Multi_HashMap()
     : _iMinDataSize(0)
     , _iMaxDataSize(0)
     , _fFactor(1.0)
@@ -1626,9 +1626,9 @@ public:
     /**
      * @brief 获取每种大小内存块的头部信息
      *
-     * @return vector<TC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
+     * @return vector<XC_MemChunk::tagChunkHead>: 不同大小内存块头部信息
      */
-    vector<TC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
+    vector<XC_MemChunk::tagChunkHead> getBlockDetail() { return _pDataAllocator->getBlockDetail(); }
 
     /**
      * @brief 所有block中chunk的个数
@@ -1725,8 +1725,8 @@ public:
 
     /**
      * @brief 设置淘汰方式
-     * TC_Multi_HashMap::ERASEBYGET
-     * TC_Multi_HashMap::ERASEBYSET
+     * XC_Multi_HashMap::ERASEBYGET
+     * XC_Multi_HashMap::ERASEBYSET
      * @param cEraseMode
      */
     void setEraseMode(char cEraseMode)              { _pHead->_cEraseMode = cEraseMode; }
@@ -1824,10 +1824,10 @@ public:
 	* @param mk, 主key
 	*
 	* @return int
-	*		TC_Multi_HashMap::RT_OK, 主key存在，且有数据
-	*		TC_Multi_HashMap::RT_ONLY_KEY, 主key存在，没有数据
-	*		TC_Multi_HashMap::RT_PART_DATA, 主key存在，里面的数据可能不完整
-	*		TC_Multi_HashMap::RT_NO_DATA, 主key不存在
+	*		XC_Multi_HashMap::RT_OK, 主key存在，且有数据
+	*		XC_Multi_HashMap::RT_ONLY_KEY, 主key存在，没有数据
+	*		XC_Multi_HashMap::RT_PART_DATA, 主key存在，里面的数据可能不完整
+	*		XC_Multi_HashMap::RT_NO_DATA, 主key不存在
 	*/
 	int checkMainKey(const string &mk);
 
@@ -2241,11 +2241,11 @@ protected:
 	/**
 	*  @brief 禁止copy构造
 	*/
-    TC_Multi_HashMap(const TC_Multi_HashMap &mcm);
+    XC_Multi_HashMap(const XC_Multi_HashMap &mcm);
    	/**
 	*  @brief 禁止复制
 	*/
-    TC_Multi_HashMap &operator=(const TC_Multi_HashMap &mcm);
+    XC_Multi_HashMap &operator=(const XC_Multi_HashMap &mcm);
 
 	/** 					 
 	*  @brief 用于数据更新过程失败的自动恢复，
@@ -2253,7 +2253,7 @@ protected:
 	*/
 	struct FailureRecover
     {
-        FailureRecover(TC_Multi_HashMap *pMap) : _pMap(pMap)
+        FailureRecover(XC_Multi_HashMap *pMap) : _pMap(pMap)
         {
 			// 构造时恢复可能损坏的数据
             _pMap->doRecover();
@@ -2268,7 +2268,7 @@ protected:
         }
 		
     protected:
-        TC_Multi_HashMap   *_pMap;
+        XC_Multi_HashMap   *_pMap;
 		// 避免嵌套调用
 		static int			_iRefCount;
     };
@@ -2569,12 +2569,12 @@ protected:
     /**
      * 联合主键hash索引区
      */
-    TC_MemVector<tagHashItem>   _hash;
+    XC_MemVector<tagHashItem>   _hash;
 
 	/**
 	* 主key hash索引区
 	*/
-	TC_MemVector<tagMainKeyHashItem>	_hashMainKey;
+	XC_MemVector<tagMainKeyHashItem>	_hashMainKey;
 
     /**
      * 修改数据块

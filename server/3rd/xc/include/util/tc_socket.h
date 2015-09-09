@@ -1,5 +1,5 @@
-#ifndef __TC_SOCKET_H
-#define __TC_SOCKET_H
+#ifndef __XC_SOCKET_H
+#define __XC_SOCKET_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,53 +10,52 @@
 #include "util/tc_ex.h"
 using namespace std;
 
-namespace taf
+namespace xutil
 {
 /////////////////////////////////////////////////
 /** 
 * @file tc_socket.h 
 * @brief  socket封装类. 
 *  
-* @author  jarodruan@tencent.com
 */
 /////////////////////////////////////////////////
 
 /**
 * @brief socket异常类
 */
-struct TC_Socket_Exception : public TC_Exception
+struct XC_Socket_Exception : public XC_Exception
 {
-    TC_Socket_Exception(const string &buffer) : TC_Exception(buffer){};
-    TC_Socket_Exception(const string &buffer, int err) : TC_Exception(buffer, err){};
-    ~TC_Socket_Exception() throw() {};
+    XC_Socket_Exception(const string &buffer) : XC_Exception(buffer){};
+    XC_Socket_Exception(const string &buffer, int err) : XC_Exception(buffer, err){};
+    ~XC_Socket_Exception() throw() {};
 };
 
 /**
  * @brief 建立链接异常
  */
-struct TC_SocketConnect_Exception : public TC_Socket_Exception
+struct XC_SocketConnect_Exception : public XC_Socket_Exception
 {
-    TC_SocketConnect_Exception(const string &buffer) : TC_Socket_Exception(buffer){};
-    TC_SocketConnect_Exception(const string &buffer, int err) : TC_Socket_Exception(buffer, err){};
-    ~TC_SocketConnect_Exception() throw() {};
+    XC_SocketConnect_Exception(const string &buffer) : XC_Socket_Exception(buffer){};
+    XC_SocketConnect_Exception(const string &buffer, int err) : XC_Socket_Exception(buffer, err){};
+    ~XC_SocketConnect_Exception() throw() {};
 };
 
 
 /**
 * @brief  Socket类, 封装了socket的基本方法
 */
-class TC_Socket
+class XC_Socket
 {
 public:
 	/**
      * @brief  构造函数
 	 */
-	TC_Socket();
+	XC_Socket();
 
     /**
      * @brief  析够
      */
-    virtual ~TC_Socket();
+    virtual ~XC_Socket();
 
     /**
 	 * @brief  初始化. 
@@ -89,7 +88,7 @@ public:
 	*  
     * @param iDomain      socket方式SOCK_STREAM|SOCK_DGRAM
     * @param iSocketType  socket类型，缺省AF_INET，TCP/IP族
-    * @throws             TC_Socket_Exception
+    * @throws             XC_Socket_Exception
     * @return
     */
 	void createSocket(int iSocketType = SOCK_STREAM, int iDomain = AF_INET);
@@ -120,7 +119,7 @@ public:
 	*  
     * @param sPeerAddress  对点的ip地址
     * @param iPeerPort     对点的端口地址
-    * @throws              TC_Socket_Exception
+    * @throws              XC_Socket_Exception
     * @return
     */
     void getPeerName(string &sPeerAddress, uint16_t &iPeerPort);
@@ -129,7 +128,7 @@ public:
 	* @brief  获取对点的ip和端口,对AF_LOCAL的socket有效. 
 	*  
     * @param sPathName  文件路径
-    * @throws           TC_Socket_Exception
+    * @throws           XC_Socket_Exception
     * @return
     */
     void getPeerName(string &sPathName);
@@ -139,7 +138,7 @@ public:
 	*  
     * @param sSockAddress  ip地址
     * @param iSockPort     端口地址
-    * @throws              TC_Socket_Exception
+    * @throws              XC_Socket_Exception
     * @return
     */
     void getSockName(string &sSockAddress, uint16_t &iSockPort);
@@ -148,7 +147,7 @@ public:
 	 * @brief  获取socket文件路径,对AF_LOCAL的socket有效. 
 	 *  
      * @param sPathName
-     * @param TC_Socket_Exception
+     * @param XC_Socket_Exception
      */
     void getSockName(string &sPathName);
 
@@ -182,14 +181,14 @@ public:
     * @param iSockLen     pstSockAddr长度
     * @return             int : > 0 ,客户端socket; <0, 出错
     */
-	int accept(TC_Socket &tcSock, struct sockaddr *pstSockAddr, socklen_t &iSockLen);
+	int accept(XC_Socket &tcSock, struct sockaddr *pstSockAddr, socklen_t &iSockLen);
 
     /**
 	* @brief 绑定,对AF_INET的socket有效. 
 	*  
     * @param port          端口
     * @param sServerAddr   服务器地址
-    * @throws              TC_Socket_Exception
+    * @throws              XC_Socket_Exception
     * @return 
     */
 	void bind(const string &sServerAddr, int port);
@@ -206,7 +205,7 @@ public:
 	*  
     * @param sServerAddr  ip地址
     * @param port         端口
-    * @throws             TC_Socket_Exception
+    * @throws             XC_Socket_Exception
     * @return
     */
 	void connect(const string &sServerAddr, uint16_t port);
@@ -215,7 +214,7 @@ public:
 	 * @brief 连接本地套接字,对AF_LOCAL的socket有效(同步连接). 
 	 *  
      * @param sPathName
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      */
     void connect(const char *sPathName);
 
@@ -224,7 +223,7 @@ public:
 	 *  	  通过connect的返回值,在异步连接的时候需要
      * @param sServerAddr  ip地址
      * @param port         端口
-	 * @throws             TC_Socket_Exception: 
+	 * @throws             XC_Socket_Exception: 
 	 *  				   其他错误还是通过异常返回(例如),例如地址错误
      * @return int
      */
@@ -235,7 +234,7 @@ public:
 	 * @brief 发起连接，连接失败的状态不通过异常返回, 
 	 *  	  通过connect的返回值,在异步连接的时候需要
      * @param addr socket直接可用的地址
-	 * @throws TC_Socket_Exception  
+	 * @throws XC_Socket_Exception  
 	 *  	  其他错误还是通过异常返回(例如),例如地址错误
      * @return int
      */
@@ -245,7 +244,7 @@ public:
 	 * @brief 发起连接，连接失败的状态不通过异常返回, 
 	 *  	  通过connect的返回值,在异步连接的时候需要
      * @param sPathName
-     * @throws TC_Socket_Exception:其他错误还是通过异常返回(例如),例如地址错误
+     * @throws XC_Socket_Exception:其他错误还是通过异常返回(例如),例如地址错误
      * @return int
      */
     int connectNoThrow(const char *sPathName);
@@ -254,7 +253,7 @@ public:
 	* @brief 在socket上监听. 
 	*  
     * @param connBackLog  连接队列个数
-    * @throws             TC_Socket_Exception
+    * @throws             XC_Socket_Exception
     */
 	void listen(int connBackLog);
 
@@ -330,7 +329,7 @@ public:
 	* @brief 关闭. 
 	*  
     * @param iHow 关闭方式:SHUT_RD|SHUT_WR|SHUT_RDWR
-    * @throws     TC_Socket_Exception
+    * @throws     XC_Socket_Exception
     * @return
     */
 	void shutdown(int iHow);
@@ -339,7 +338,7 @@ public:
 	* @brief 设置socket方式 .
 	*  
     * @param   bBlock true, 阻塞; false, 非阻塞
-    * @throws  TC_Socket_Exception
+    * @throws  XC_Socket_Exception
     * @return
     */
     void setblock(bool bBlock = false);
@@ -347,7 +346,7 @@ public:
     /**
 	* @brief 设置非closewait状态, 可以重用socket. 
 	*  
-    * @throws TC_Socket_Exception
+    * @throws XC_Socket_Exception
     * @return void
     */
     void setNoCloseWait();
@@ -356,28 +355,28 @@ public:
 	 * @brief 设置为closewait状态, 最常等待多久. 
 	 *  
      * @param delay  等待时间秒
-     * @throws       TC_Socket_Exception
+     * @throws       XC_Socket_Exception
      */
     void setCloseWait(int delay = 30);
 
     /**
 	 * @brief 设置closewait缺省状态， 
 	 *  	  close以后马上返回并尽量把数据发送出去
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      */
     void setCloseWaitDefault();
 
     /**
 	 * @brief 设置nodelay(只有在打开keepalive才有效).
 	 *  
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      */
     void setTcpNoDelay();
 
     /**
 	 * @brief 设置keepalive. 
 	 *  
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      * @return 
      */
     void setKeepAlive();
@@ -385,7 +384,7 @@ public:
     /**
 	* @brief 获取recv buffer 大小. 
 	*  
-    * @throws TC_Socket_Exception
+    * @throws XC_Socket_Exception
     * @return recv buffer 的大小
     */
     int getRecvBufferSize();
@@ -393,21 +392,21 @@ public:
     /**
 	* @brief 设置recv buffer 大小. 
 	* @param  recv buffer 大小 
-	* @throws TC_Socket_Exception 
+	* @throws XC_Socket_Exception 
     */
     void setRecvBufferSize(int sz);
 
     /**
 	* @brief 获取发送buffer大小.
 	* @param 发送buffer大小  
-    * @throws TC_Socket_Exception 
+    * @throws XC_Socket_Exception 
      */
     int getSendBufferSize();
 
     /**
 	 * @brief 设置发送buffer大小. 
 	 *  
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      * @param  发送buffer大小
      */
     void setSendBufferSize(int sz);
@@ -415,7 +414,7 @@ public:
     /**
      * @brief  获取本地所有ip.
      * 
-     * @throws TC_Socket_Exception
+     * @throws XC_Socket_Exception
      * @return 本地所有ip
      */
     static vector<string> getLocalHosts();
@@ -425,7 +424,7 @@ public:
 	*  
     * @param fd      句柄
     * @param bBlock  true, 阻塞; false, 非阻塞
-    * @throws        TC_Socket_Exception
+    * @throws        XC_Socket_Exception
     * @return
     */
     static void setblock(int fd, bool bBlock);
@@ -435,7 +434,7 @@ public:
 	 *  
      * @param fds    句柄
      * @param bBlock true, 阻塞; false, 非阻塞
-     * @throws       TC_Socket_Exception
+     * @throws       XC_Socket_Exception
      */
     static void createPipe(int fds[2], bool bBlock);
 
@@ -444,7 +443,7 @@ public:
 	*  
     * @param sAddr   字符串
     * @param stAddr  地址
-    * @throws        TC_Socket_Exception
+    * @throws        XC_Socket_Exception
     * @return
     */
 	static void parseAddr(const string &sAddr, struct in_addr &stAddr);
@@ -454,7 +453,7 @@ public:
 	*  
 	* @param pstBindAddr  需要绑定的地址
 	* @param iAddrLen      pstBindAddr指向的结构的长度
-	* @throws              TC_Socket_Exception
+	* @throws              XC_Socket_Exception
 	* @return
 	*/
 	void bind(struct sockaddr *pstBindAddr, socklen_t iAddrLen);
@@ -476,7 +475,7 @@ protected:
 	*  
     * @param pstPeerAddr 地址指针
     * @param iPeerLen    pstPeerAddr指向的结构长度
-    * @throws            TC_Socket_Exception
+    * @throws            XC_Socket_Exception
     * @return 
     */
     void getPeerName(struct sockaddr *pstPeerAddr, socklen_t &iPeerLen);
@@ -486,7 +485,7 @@ protected:
 	*  
     * @param pstSockAddr 地址指针
     * @param iSockLen    pstSockAddr
-    * @throws            TC_Socket_Exception
+    * @throws            XC_Socket_Exception
     * @return
     */
     void getSockName(struct sockaddr *pstSockAddr, socklen_t &iSockLen);
@@ -496,12 +495,12 @@ private:
 	* @brief no implementation. 
 	*  
     */
-	TC_Socket(const TC_Socket &tcSock);
+	XC_Socket(const XC_Socket &tcSock);
 
     /**
     * @brief  no implementation.
     */
-	TC_Socket& operator=(const TC_Socket &tcSock);
+	XC_Socket& operator=(const XC_Socket &tcSock);
 
 protected:
 	static const int INVALID_SOCKET = -1;
