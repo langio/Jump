@@ -1,8 +1,8 @@
-TC_DIR := $(shell dirname `echo $(MAKEFILE_LIST) | awk '{for(i=1;i<=NF;++i){if(\$$i~"tc.mk") {print \$$i;exit}}}'`)
+YAC_DIR := $(shell dirname `echo $(MAKEFILE_LIST) | awk '{for(i=1;i<=NF;++i){if(\$$i~"yac.mk") {print \$$i;exit}}}'`)
 
-INCLUDE += -I$(TC_DIR)/include
-LIBS += -L$(TC_DIR)/lib -ltcutil
+INCLUDE += -I$(YAC_DIR)/include
+LIBS += -L$(YAC_DIR)/lib -lyacutil
 
-DEP_MAKE_SUBDIRS += $(TC_DIR)
-TARGET_DEP_OBJS += $(TC_DIR)/lib/libtcutil.a
+DEP_MAKE_SUBDIRS += $(YAC_DIR)
+TARGET_DEP_OBJS += $(YAC_DIR)/lib/libyacutil.a
 

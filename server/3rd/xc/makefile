@@ -1,4 +1,4 @@
-TARGET = lib/libtcutil.a
+TARGET = lib/libyacutil.a
 
 SRC_DIR_RECURSION = Y
 
