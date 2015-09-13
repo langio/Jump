@@ -2,11 +2,12 @@
 #include <sys/file.h>
 #include "util/yac_file_mutex.h"
 #include "util/yac_lock.h"
+#include <unistd.h>
 
 namespace util
 {
-	
-YAC_FileMutex::YAC_FileMutex() 
+
+YAC_FileMutex::YAC_FileMutex()
 {
 	_fd = -1;
 }
@@ -28,7 +29,7 @@ void YAC_FileMutex::init(const std::string& filename)
 		close(_fd);
 	}
 	_fd = open(filename.c_str(), O_RDWR|O_CREAT, 0660);
-	if (_fd < 0) 
+	if (_fd < 0)
 	{
 		throw YAC_FileMutex_Exception("[YAC_FileMutex::init] open '" + filename + "' error", errno);
 	}
@@ -41,7 +42,7 @@ int YAC_FileMutex::rlock()
 	return lock(_fd, F_SETLKW, F_RDLCK, 0, 0, 0);
 }
 
-int YAC_FileMutex::unrlock() 
+int YAC_FileMutex::unrlock()
 {
 	return unlock();
 }
@@ -58,7 +59,7 @@ int YAC_FileMutex::wlock()
 	return lock(_fd, F_SETLKW, F_WRLCK, 0, 0, 0);
 }
 
-int YAC_FileMutex::unwlock() 
+int YAC_FileMutex::unwlock()
 {
 	return unlock();
 }
@@ -101,7 +102,7 @@ bool YAC_FileMutex::hasLock(int fd, int type, off_t offset, int whence, off_t le
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 

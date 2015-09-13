@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <cerrno>
 #include <cassert>
+#include <unistd.h>
 
 namespace util
 {
@@ -83,7 +84,7 @@ void YAC_Mmap::mmap(const char *file, size_t length)
     _iLength    = length;
     if(fd != -1)
     {
-       close(fd); 
+       close(fd);
     }
 }
 
