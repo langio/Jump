@@ -30,7 +30,7 @@ public:
 		return m_dispatcher;
 	};
 
-	void dispatch(const void * msg, size_t sz);
+	void dispatch(struct skynet_context * ctx, const void * msg, size_t sz);
 
 private:
 	int get_sys_cmd(const void * msg, size_t sz, int& cmd);

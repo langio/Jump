@@ -4,6 +4,9 @@
 
 #include "login.pb.h"
 #include "service_dispatcher.h"
+#include "util/yac_common.h"
+
+using namespace util;
 
 
 DispatcherData * dispatcher_create(void)
@@ -38,7 +41,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 	{
 		case PTYPE_TEXT:
 			//_ctrl(g, msg, (int) sz);
-			dispatcher::getInstance().dispatch(msg, sz);
+			dispatcher::getInstance().dispatch(ctx, msg, sz);
 			break;
 	}
 
@@ -60,7 +63,7 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 
 }
 
-void dispatcher::dispatch(const void * msg, size_t sz)
+void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t sz)
 {
 	//解析msg头部
 	uint32_t iSpaceCounter = 0;
@@ -77,11 +80,20 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 		++iPbHeaderIndex;
 	}
 
-	string s = string(tmp, iPbHeaderIndex);
+	string sExtHead = string(tmp, iPbHeaderIndex);
 
-	cout << s << endl;
+	cout << sExtHead << endl;
 
-	int8_t tmp_str[20];
+	vector<string> vExtHead = YAC_Common::sepstr<string>(sExtHead, " ");
+
+	__BEGIN_PROC__
+
+	//发到这里的消息应该是 fd open/close/data head body
+	if(vExtHead.size() < 2)
+	{
+		skynet_error(ctx, "invalid msg. sExtHead:%s", sExtHead.c_str());
+		break;
+	}
 
 	if(2 == iSpaceCounter)
 	{
@@ -102,6 +114,8 @@ void dispatcher::dispatch(const void * msg, size_t sz)
 	{
 		req.add_item(i);
 	}
+
+	__END_PROC__
 
 };
 
