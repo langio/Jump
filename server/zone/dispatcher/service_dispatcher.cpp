@@ -101,6 +101,19 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 		int8_t * msg_body = const_cast<int8_t*>((const int8_t*)msg + iPbHeaderIndex);
 		PkgHead *head = (PkgHead*)msg_body;
 		head->unpack();
+		head->client_fd = YAC_Common::strto<uint32_t>(vExtHead[0]);
+
+		//根据命令字将消息发到对应的so中
+		uint32_t iCmdType = GET_CMD_SVR_TYPE(head->cmd);
+
+		switch(iCmdType)
+		{
+		case AUTH_SVR:
+			break;
+
+		case LOGIN_SVR:
+			break;
+		}
 	}
 	else
 	{

@@ -31,6 +31,9 @@ struct PkgHead
 //命令字为4个字节整形，字节从高到底依次编号为1~4，第1个字节保留，第2字节表示服务，第3、4字节表示服务内的命令
 #define GET_CMD_SVR_TYPE(cmd) (cmd >> 16)
 
+const int AUTH_SVR = 0x0001;		//鉴权服务
+const int LOGIN_SVR = 0x0002;			//登录服务
+
 
 //鉴权相关命令0x0001xxxx
 const int CMD_AUTH_REQ = 0x00010000;		//鉴权请求
