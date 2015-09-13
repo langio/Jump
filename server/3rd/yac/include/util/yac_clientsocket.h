@@ -11,7 +11,6 @@ namespace util
  * @file  yac_clientsocket.h 
  * @brief 客户端发包收包类.
  *  
- * @author  jarodruan@tencent.com 
  */             
 /////////////////////////////////////////////////
 /**

@@ -10,7 +10,6 @@ namespace util
 /** 
 * @file  yac_ex.h 
 * @brief 异常类 
-* @author  jarodruan@tencent.com  
 */           
 /////////////////////////////////////////////////
 

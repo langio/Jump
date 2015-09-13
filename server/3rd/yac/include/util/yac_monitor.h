@@ -11,7 +11,6 @@ namespace util
  * @file yac_monitor.h 
  * @brief 锁监控器类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 /**

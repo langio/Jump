@@ -11,7 +11,6 @@ namespace util
  * @file  yac_epoller.h 
  * @brief  epoll操作封装类 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
  

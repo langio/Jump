@@ -15,7 +15,6 @@ namespace util
  * @file  yac_bitmap.h 
  * @brief  多位bitmap类. 
  *  
- * @author  jarodruan@tencent.com,kevintian
  */             
 /////////////////////////////////////////////////
 /**

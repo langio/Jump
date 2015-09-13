@@ -19,7 +19,6 @@ namespace util
  * @file yac_thread_pool.h
  * @brief 线程池类,借鉴loki以及wbl的思想.
  *  
- * @author  jarodruan@tencent.com
  */         
 /////////////////////////////////////////////////
 /**

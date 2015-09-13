@@ -13,7 +13,6 @@ namespace util
  * @file yac_thread_queue.h
  * @brief 线程队列类.
  *  
- * @author jarodruan@tencent.com
  */
        
 /////////////////////////////////////////////////

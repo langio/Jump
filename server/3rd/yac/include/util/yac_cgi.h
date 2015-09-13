@@ -14,7 +14,6 @@ namespace util
 * @file yac_cgi.h
 * @brief CGI处理类
 *  
-* @author jarodruan@tencent.com 
 */            
 /////////////////////////////////////////////////
 class YAC_Cgi;

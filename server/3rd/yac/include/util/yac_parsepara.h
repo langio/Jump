@@ -13,7 +13,6 @@ namespace util
 * @file yac_parsepara.h 
 * @brief  name=value格式解析类(非标准的http协议) 
 *  
-* @author  jarodruan@tencent.com   
 */            
 /////////////////////////////////////////////////
 

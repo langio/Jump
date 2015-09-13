@@ -13,7 +13,6 @@ namespace util
  * @file  yac_atomic.h 
  * @brief  原子计数类. 
  *  
- * @author  jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 

@@ -13,7 +13,6 @@ namespace util
  * @file yac_md5.h
  * @brief md5类(修改并完善至md5的c版本)
  *  
- * @author jarodruan@tencent.com ,coonzhang@tencent.com  
  */            
 /////////////////////////////////////////////////
 

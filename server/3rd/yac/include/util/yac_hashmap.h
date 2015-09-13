@@ -18,7 +18,6 @@ namespace util
 /**
 * @file yac_hashmap.h 
 * @brief  hashmap类 
-* @author  jarodruan@tencent.com,joeyzhong@tencent.com
 */            
 /////////////////////////////////////////////////
 /**

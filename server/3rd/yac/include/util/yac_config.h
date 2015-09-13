@@ -14,7 +14,6 @@ namespace util
  * @file  yac_config.h 
  * @brief  配置文件读取类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
 

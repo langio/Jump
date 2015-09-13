@@ -18,7 +18,6 @@ namespace util
 * @file yac_rbtree.h 
 * @brief rbtree map类
 *  
-* @author  jarodruan@tencent.com
 */           
 /////////////////////////////////////////////////
 /**

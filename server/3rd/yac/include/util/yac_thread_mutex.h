@@ -10,7 +10,6 @@ namespace util
  * @file yac_thread_mutex.h 
  * @brief 线程锁互斥类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com  
  */
              
 /////////////////////////////////////////////////

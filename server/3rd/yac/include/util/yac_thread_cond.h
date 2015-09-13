@@ -13,7 +13,6 @@ namespace util
  * @file yac_thread_cond.h 
  * @brief 条件变量类(修改至ICE源码). 
  *  
- * @author  jarodruan@tencent.com,skingfan@tencent.com   
  */             
 /////////////////////////////////////////////////
 class YAC_ThreadMutex;

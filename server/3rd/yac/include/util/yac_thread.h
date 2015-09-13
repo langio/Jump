@@ -14,7 +14,6 @@ namespace util
  * @file yac_thread.h 
  * @brief  线程类(修改至ICE源码). 
  *  
- * @author jarodruan@tencent.com  
  */          
 /////////////////////////////////////////////////
 

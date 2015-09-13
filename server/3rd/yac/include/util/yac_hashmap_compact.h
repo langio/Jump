@@ -20,7 +20,6 @@ namespace util
  * @file yac_hashmap_compact.h
  * @brief  hashmap类(紧凑型, 64位os下, 每个chunk的额外内存占用比yac_hashmap要小30个字节)
  *
- * @author  jarodruan@tencent.com,skingfan@tencent.com
  */
 /////////////////////////////////////////////////
 /**

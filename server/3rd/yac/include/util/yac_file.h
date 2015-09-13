@@ -18,7 +18,6 @@ namespace util
  * @file yac_file.h 
  * @brief  文件处理类. 
  *  
- * @author  jarodruan@tencent.com,skingfan@tencent.com          
  */
 /////////////////////////////////////////////////
 

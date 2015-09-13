@@ -12,7 +12,6 @@ namespace util
  * @file   yac_mem_queue.h 
  * @brief  共享内存循环队列类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 	         
 /////////////////////////////////////////////////

@@ -12,7 +12,6 @@ namespace util
 * @file yac_base64.h 
 * @brief  base64编解码类. 
 *  
-* @author  jarodruan@tencent.com,kirkdai@tencent.com
 */
 
 /////////////////////////////////////////////////

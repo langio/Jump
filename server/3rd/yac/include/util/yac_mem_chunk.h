@@ -13,7 +13,6 @@ namespace util
 * @file yac_mem_chunk.h
 * @brief 内存分配器 
 *  
-* @author jarodruan@tencent.com,hendysutencent.com          
 */ 
 /////////////////////////////////////////////////
 /**

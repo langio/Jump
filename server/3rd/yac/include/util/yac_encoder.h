@@ -12,7 +12,6 @@ namespace util
 * @file yac_encoder.h 
 * @brief  转码类 
 *  
-* @author  jarodruan@tencent.com ,coonzhang@tencent.com
 * 
 * 
 */

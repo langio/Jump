@@ -11,7 +11,6 @@ namespace util
 * @file yac_autoptr.h 
 * @brief 智能指针类(修改至ICE源码, 智能指针不能相互引用, 否则内存泄漏). 
 *  
-* @author jarodruan@tencent.com 
 */              
 //////////////////////////////////////////////////////
 

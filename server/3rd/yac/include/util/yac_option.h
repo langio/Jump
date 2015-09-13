@@ -14,7 +14,6 @@ namespace util
  * @file yac_option.h 
  * @brief 命令行参数解析类.
  *  
- * @author jarodruan@tencent.com 
  */
             
 /////////////////////////////////////////////////

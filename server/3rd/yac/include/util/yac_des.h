@@ -13,7 +13,6 @@ namespace util
  * @file yac_des.h
  * @brief des加解密类.
  *  
- * @author  jarodruan@tencent.com
  */             
 /////////////////////////////////////////////////
 

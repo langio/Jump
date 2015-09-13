@@ -13,7 +13,6 @@ namespace util
  * @file  yac_shm.h 
  * @brief  共享内存封装类. 
  *  
- * @author  jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
 

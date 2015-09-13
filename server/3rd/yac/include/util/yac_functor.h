@@ -134,7 +134,6 @@ namespace util
  *
  * 具体示例请参见test/test_yac_functor.cpp.
  
- * @author jarodruan@tencent.com 
  */
 
 template<typename R, class TList>

@@ -17,7 +17,6 @@ namespace util
  * @file yac_tea.h 
  * @brief tea加解密类(修改至c版本) . 
  *  
- * @author jarodruan@tencent.com 
  */
 /////////////////////////////////////////////////
            

@@ -13,7 +13,6 @@ namespace util
  * @file yac_hash_fun.h 
  * @brief hash算法.
  *可以对输入的字节流进行hash得到相当均匀的hash值 
- * @author jarodruan@tencent.com 
  *  
  *
  */             

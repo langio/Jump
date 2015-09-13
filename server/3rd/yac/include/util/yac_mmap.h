@@ -13,7 +13,6 @@ namespace util
 * @file yac_mmap.h 
 * @brief  mmap封装类. 
 *  
-* @author  jarodruan@tencent.com   
 */           
 /////////////////////////////////////////////////
 /**

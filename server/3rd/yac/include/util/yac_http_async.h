@@ -16,7 +16,6 @@ namespace util
 * @brief http异步调用类. 
 *  
 * http同步调用使用YAC_HttpRequest::doRequest就可以了  
-* @author jarodruan@tencent.com 
 */            
 /////////////////////////////////////////////////
 

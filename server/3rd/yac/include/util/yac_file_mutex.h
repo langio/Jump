@@ -10,7 +10,6 @@ namespace util
 * @file yac_file_mutex.h 
 * @brief  文件锁类. 
 *  
-* @author  jarodruan@tencent.com      
 * 
 */
 /////////////////////////////////////////////////

@@ -25,7 +25,6 @@ namespace util
  * @file  yac_epoll_server.h
  * @brief  EpollServer类
  *
- * @author  jarodruan@tencent.com,
  *  		coonzhang@tencent.com,
  *  		skingfan@tencent.com,
  *  	    kevintian@tencent.com

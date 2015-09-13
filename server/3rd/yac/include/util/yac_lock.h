@@ -14,7 +14,6 @@ namespace util
 /**
  * @file yac_lock.h 
  * @brief  锁类 
- * @author  jarodruan@tencent.com 
  */           
 /////////////////////////////////////////////////
 

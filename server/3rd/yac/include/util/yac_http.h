@@ -40,7 +40,6 @@ namespace util
  *  
  * 5 增加Cookie管理类 
  *  
- * @author  jarodruan@tencent.com,markzhang@tencent.com
  */             
 /////////////////////////////////////////////////
 

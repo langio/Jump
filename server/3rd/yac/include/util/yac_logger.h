@@ -64,7 +64,6 @@ namespace util
  * 
  *  TAF的远程log实现例子,可以参见src/libtaf/taf_logger.h
  * 
- * @author : jarodruan@tencent.com,devinchen@tencent.com,skingfan@tencent.com              
  */              
 
 

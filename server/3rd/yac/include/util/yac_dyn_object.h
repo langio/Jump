@@ -10,7 +10,6 @@ namespace util
  * @file yac_dyn_object.h
  * @brief 动态生成类. 
  *  
- * @author jarodruan@tencent.com
 */             
 /////////////////////////////////////////////////
 

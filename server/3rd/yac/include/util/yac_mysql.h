@@ -15,7 +15,6 @@ namespace util
 * @file  yac_mysql.h 
 * @brief mysql操作类. 
 *  
-* @author  jarodruan@tencent.com  
 */           
 /////////////////////////////////////////////////
 

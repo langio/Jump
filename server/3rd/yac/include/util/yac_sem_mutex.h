@@ -13,7 +13,6 @@ namespace util
 * @file yac_sem_mutex.h 
 * @brief 信号量锁类. 
 *  
-* @author jarodruan@tencent.com 
 */              
 /////////////////////////////////////////////////
 

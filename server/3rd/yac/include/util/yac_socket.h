@@ -17,7 +17,6 @@ namespace util
 * @file yac_socket.h 
 * @brief  socket封装类. 
 *  
-* @author  jarodruan@tencent.com
 */
 /////////////////////////////////////////////////
 

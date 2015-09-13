@@ -12,7 +12,6 @@ namespace util
 * @file yac_mem_vector.h 
 * @brief  共享内存数组类. 
 *  
-* @author  jarodruan@tencent.com
 */            
 /////////////////////////////////////////////////
 

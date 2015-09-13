@@ -17,7 +17,6 @@ namespace util
  * @file yac_timeprovider.h
  * @brief 秒级、微妙级时间提供类. 
  *  
- * @author jarodruan@tencent.com,skingfan@tencent.com 
  */                    
 /////////////////////////////////////////////////
 class YAC_TimeProvider;
