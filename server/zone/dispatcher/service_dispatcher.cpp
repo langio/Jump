@@ -91,7 +91,7 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 	//发到这里的消息应该是 fd open/close/data head body
 	if(vExtHead.size() < 2)
 	{
-		skynet_error(ctx, "invalid msg. sExtHead:%s", sExtHead.c_str());
+		LOG_ERROR(ctx, "invalid msg. sExtHead:%s", sExtHead.c_str());
 		break;
 	}
 
