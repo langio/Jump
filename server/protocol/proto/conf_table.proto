@@ -1,0 +1,7 @@
+package protocol;
+
+message conf_test
+{
+	required int32 id = 1;
+	required string name = 2;
+};
