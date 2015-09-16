@@ -1,5 +1,7 @@
 //import "pkg_head.proto";
 
+package protocol;
+
 message login_req
 {
 	required int32 id = 1;

@@ -7,6 +7,7 @@
 #include "util/yac_common.h"
 
 using namespace util;
+using namespace protocol;
 
 
 DispatcherData * dispatcher_create(void)

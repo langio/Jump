@@ -1,3 +1,5 @@
+package protocol;
+
 message reg_req
 {
 	required string account = 1;
