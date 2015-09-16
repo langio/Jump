@@ -23,6 +23,7 @@ using namespace util;
 #define UINT32 "uint32"			//使用可变长编码										对应于c++ uint32
 #define UINT64 "uint64"			//使用可变长编码										对应于c++ uint64
 #define SINT32 "sint32"			//使用可变长编码. Signed int value. 编码负数比int32更高效	对应于c++ int32
+#define SINT64 "sint64"			//使用可变长编码. Signed int value. 编码负数比int64更高效	对应于c++ int64
 
 
 //Message使用完之后需要delete
