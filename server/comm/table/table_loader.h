@@ -16,14 +16,21 @@ using namespace util;
 
 
 //protobuf的数据类型
-#define DOUBLE "double"			//												对应于c++ double
-#define FLOAT "float"			//												对应于c++ float
-#define INT32 "int32"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint32	对应于c++ int32
-#define INT64 "int64"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint64	对应于c++ int64
-#define UINT32 "uint32"			//使用可变长编码										对应于c++ uint32
-#define UINT64 "uint64"			//使用可变长编码										对应于c++ uint64
-#define SINT32 "sint32"			//使用可变长编码. Signed int value. 编码负数比int32更高效	对应于c++ int32
-#define SINT64 "sint64"			//使用可变长编码. Signed int value. 编码负数比int64更高效	对应于c++ int64
+#define DOUBLE "double"			//													对应于c++ double
+#define FLOAT "float"			//													对应于c++ float
+#define INT32 "int32"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint32		对应于c++ int32
+#define INT64 "int64"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint64		对应于c++ int64
+#define UINT32 "uint32"			//使用可变长编码											对应于c++ uint32
+#define UINT64 "uint64"			//使用可变长编码											对应于c++ uint64
+#define SINT32 "sint32"			//使用可变长编码. Signed int value. 编码负数比int32更高效		对应于c++ int32
+#define SINT64 "sint64"			//使用可变长编码. Signed int value. 编码负数比int64更高效		对应于c++ int64
+#define FIXED32 "fixed32"		//恒定四个字节。如果数值几乎总是大于2的28次方，该类型比unit32更高效	对应于c++ uint32
+#define FIXED64 "fixed64"		//恒定四个字节。如果数值几乎总是大于2的56次方，该类型比unit64更高效	对应于c++ uint64
+#define SFIXED32 "sfixed32"		//恒定四个字节											对应于c++ int32
+#define SFIXED64 "sfixed64"		//恒定八个字节											对应于c++ int64
+#define BOOL "bool"				//													对应于c++ bool
+#define STRING "string"			//A string must always contain UTF-8 encoded or 7-bit ASCII text	对应于c++ string
+#define BYTES "bytes"			//包含任意数量顺序的字节									对应于c++ string
 
 
 //Message使用完之后需要delete
