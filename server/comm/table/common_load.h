@@ -202,7 +202,7 @@ key CommLoad<key, value>::defaultGetKey(const value& v)
 }
 
 template<typename key, typename value>
-bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<key, value>& map_out, getKeyFunc getKey)
+bool CommLoad<key, value>::load2Map(const string& excel_file, int32_t index, map<key, value>& map_out, getKeyFunc getKey)
 {
 
 	bool bRet = true;
@@ -218,9 +218,9 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 		break;
 	}
 
-	if(book->load(conf_file.c_str()))
+	if(book->load(excel_file.c_str()))
 	{
-		CFG_LOG_ERROR("load file %s failed!", conf_file.c_str());
+		CFG_LOG_ERROR("load file %s failed!", excel_file.c_str());
 		bRet = false;
 		break;
 	}
