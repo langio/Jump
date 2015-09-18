@@ -17,23 +17,25 @@ using namespace util;
 
 //protobuf的数据类型，excel中只支持下面几种，另外支持vector、map，最多嵌套两层
 //#define DOUBLE "double"			//													对应于c++ double
-#define FLOAT "float"			//													对应于c++ float
-#define INT32 "int32"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint32		对应于c++ int32
-#define INT64 "int64"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint64		对应于c++ int64
-#define UINT32 "uint32"			//使用可变长编码											对应于c++ uint32
-#define UINT64 "uint64"			//使用可变长编码											对应于c++ uint64
+//#define FLOAT "float"			//													对应于c++ float
+//#define INT32 "int32"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint32		对应于c++ int32
+//#define INT64 "int64"			//使用可变长编码. 对于负数比较低效，如果负数较多，请使用sint64		对应于c++ int64
+//#define UINT32 "uint32"			//使用可变长编码											对应于c++ uint32
+//#define UINT64 "uint64"			//使用可变长编码											对应于c++ uint64
 //#define SINT32 "sint32"			//使用可变长编码. Signed int value. 编码负数比int32更高效		对应于c++ int32
 //#define SINT64 "sint64"			//使用可变长编码. Signed int value. 编码负数比int64更高效		对应于c++ int64
 //#define FIXED32 "fixed32"		//恒定四个字节。如果数值几乎总是大于2的28次方，该类型比unit32更高效	对应于c++ uint32
 //#define FIXED64 "fixed64"		//恒定四个字节。如果数值几乎总是大于2的56次方，该类型比unit64更高效	对应于c++ uint64
 //#define SFIXED32 "sfixed32"		//恒定四个字节											对应于c++ int32
 //#define SFIXED64 "sfixed64"		//恒定八个字节											对应于c++ int64
-#define BOOL "bool"				//													对应于c++ bool
+//#define BOOL "bool"				//													对应于c++ bool
 //#define STRING "string"			//A string must always contain UTF-8 encoded or 7-bit ASCII text	对应于c++ string
 //#define BYTES "bytes"			//包含任意数量顺序的字节									对应于c++ string
 
-#define VECTOR "vector"
-#define MAP "map"
+//#define VECTOR "vector"
+//#define MAP "map"
+
+//对于一个单元格表示复合数据类型来说，分别用逗号（ ，）、分号（;）、竖线（|）来分割，逗号分割最里层的，竖线分割最外层的
 
 
 //Message使用完之后需要delete
@@ -57,6 +59,13 @@ Message* createMessage(const string &typeName)
     return message;
 }
 
+template<typename value_type>
+void getSimpleValue(const Reflection* reflection, Message *msg, const FieldDescriptor* field_descriptor, const string& unit)
+{
+	value_type v;
+	reflection->SetInt64(msg, field_descriptor, 100);
+}
+
 template<typename key, typename value>
 class CommLoad
 {
@@ -76,7 +85,7 @@ key CommLoad<key, value>::defaultGetKey(const value& v)
 }
 
 template<typename key, typename value>
-bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<key, value>& mOut, getKeyFunc getKey)
+bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<key, value>& map_out, getKeyFunc getKey)
 {
 
 	bool bRet = true;
@@ -122,17 +131,17 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 
 	const string message_name("protocol." + string(message));
 
-	static map<string, int32_t> simple_type;
-	simple_type[FLOAT] = 1;
-	simple_type[INT32] = 1;
-	simple_type[INT64] = 1;
-	simple_type[UINT32] = 1;
-	simple_type[UINT64] = 1;
-	simple_type[BOOL] = 1;
-
-	static map<string, int32_t> complex_type;
-	complex_type[VECTOR] = 1;
-	complex_type[MAP] = 1;
+//	static map<string, int32_t> simple_type;
+//	simple_type[FLOAT] = 1;
+//	simple_type[INT32] = 1;
+//	simple_type[INT64] = 1;
+//	simple_type[UINT32] = 1;
+//	simple_type[UINT64] = 1;
+//	simple_type[BOOL] = 1;
+//
+//	static map<string, int32_t> complex_type;
+//	complex_type[VECTOR] = 1;
+//	complex_type[MAP] = 1;
 
 	//从（2,1）开始，处理这一行的所有字段，解析字段中标明的message的字段类型和名字
 	map<string, int32_t> fields;		//map<字段名，列号>
@@ -190,35 +199,136 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 //			    MAX_CPPTYPE         = 10,    // Constant useful for defining lookup tables
 //			                                 // indexed by CppType.
 //			  };
-			switch(field_descriptor->cpp_type())
+
+			//找到该字段所在的列
+			map<string, int32_t>::const_iterator it = fields.find(strFieldName);
+			assert(it != fields.end());
+			int32_t col = it->second;
+
+			//读取单元格
+			string unit = "";
+			const char* pu = sheet->readStr(row, col);
+			if(NULL != pu)
+			{
+				unit = string(pu);
+			}
+
+			FieldDescriptor::Label lable = field_descriptor->label();
+			FieldDescriptor::CppType cpp_type = field_descriptor->cpp_type();
+
+			switch(cpp_type)
 			{
 
 				case FieldDescriptor::CPPTYPE_INT32:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetInt32(msg, field_descriptor, YAC_Common::strto<int32_t>(unit));
+					}
+					else
+					{
+						vector<int32_t> v = YAC_Common::sepstr<int32_t>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedInt32(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_UINT32:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetUInt32(msg, field_descriptor, YAC_Common::strto<uint32_t>(unit));
+					}
+					else
+					{
+						vector<uint32_t> v = YAC_Common::sepstr<uint32_t>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedUInt32(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_INT64:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetInt64(msg, field_descriptor, YAC_Common::strto<int64_t>(unit));
+					}
+					else
+					{
+						vector<int64_t> v = YAC_Common::sepstr<int64_t>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedInt64(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_UINT64:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetUInt64(msg, field_descriptor, YAC_Common::strto<uint64_t>(unit));
+					}
+					else
+					{
+						vector<uint64_t> v = YAC_Common::sepstr<uint64_t>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedUInt64(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_STRING:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetString(msg, field_descriptor, unit);
+					}
+					else
+					{
+						vector<string> v = YAC_Common::sepstr<string>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedString(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_FLOAT:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetFloat(msg, field_descriptor, YAC_Common::strto<float>(unit));
+					}
+					else
+					{
+						vector<float> v = YAC_Common::sepstr<float>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedFloat(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_DOUBLE:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetDouble(msg, field_descriptor, YAC_Common::strto<double>(unit));
+					}
+					else
+					{
+						vector<double> v = YAC_Common::sepstr<double>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedDouble(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_MESSAGE:
@@ -227,6 +337,18 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 				}
 				case FieldDescriptor::CPPTYPE_BOOL:
 				{
+					if(lable != FieldDescriptor::LABEL_REPEATED)
+					{
+						reflection->SetBool(msg, field_descriptor, YAC_Common::strto<bool>(unit));
+					}
+					else
+					{
+						vector<bool> v = YAC_Common::sepstr<bool>(unit, ",");
+						for(size_t i=0; i<v.size(); ++i)
+						{
+							reflection->SetRepeatedBool(msg, field_descriptor, i, v[i]);
+						}
+					}
 					break;
 				}
 				case FieldDescriptor::CPPTYPE_ENUM:
@@ -235,13 +357,14 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 				}
 			}
 		}
+
+		value record = *((value*)msg);
+		key map_key;
+
+		map_key = getKey(record);
+
+		map_out[map_key] = record;
 	}
-
-	double d = sheet->readNum(3, 1);
-	cout << d << endl;
-
-	int h = sheet->lastRow();
-	cout << h << endl;
 
 
 	__END_PROC__
