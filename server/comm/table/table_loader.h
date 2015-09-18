@@ -356,7 +356,8 @@ bool CommLoad<key, value>::load2Map(const string& conf_file, int32_t index, map<
 			setValue(reflection, msg, field_descriptor, lable, cpp_type, unit, 1);
 		}
 
-		value record = *((value*)msg);
+		value* realType = dynamic_cast<value*>(msg);
+		value record = *(realType);
 		key map_key;
 
 		map_key = getKey(record);
