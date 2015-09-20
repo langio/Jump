@@ -1,4 +1,4 @@
-#°üº¬ÎÄ¼şĞèÒªÖ¸¶¨ÏÂÃæ¼¸¸ö²ÎÊı
+#åŒ…å«æ–‡ä»¶éœ€è¦æŒ‡å®šä¸‹é¢å‡ ä¸ªå‚æ•°
 TARGET ?= 
 SRC_DIR_RECURSION ?= Y
 SRC_FILE_DIRS += 
@@ -8,15 +8,15 @@ RECURSION_INCLUDE +=
 LIBS += 
 
 
-#makeÄ¿±êÖ®Ç°ĞèÒªÌáÇ°makeµÄÄ¿Â¼»òmakefile
+#makeç›®æ ‡ä¹‹å‰éœ€è¦æå‰makeçš„ç›®å½•æˆ–makefile
 NEED_MAKE_DEP ?= N
 DEP_MAKE_SUBDIRS +=
 RECURSION_DEP_MAKE_SUBDIRS +=
 DEP_MAKE_MAKEFILES += 
-#Ä¿±êĞèÒª¶îÍâ¼ì²âÒÀÀµµÄÆäËü¶ÔÏó
+#ç›®æ ‡éœ€è¦é¢å¤–æ£€æµ‹ä¾èµ–çš„å…¶å®ƒå¯¹è±¡
 TARGET_DEP_OBJS +=
 
-#ÖĞ¼äÎÄ¼ş±£´æÄ¿Â¼
+#ä¸­é—´æ–‡ä»¶ä¿å­˜ç›®å½•
 BUILD_DIR ?=
 
 #------------------------------------------------------------------------------------
@@ -65,6 +65,10 @@ DEP_MAKE_SUBDIRS += $(foreach D,$(RECURSION_DEP_MAKE_SUBDIRS),$(shell find $(D) 
 
 define compile_src_file
     $(COMPILER) $(CFLAGS) $(INCLUDE) -c $1 -o $2
+endef
+
+define compile_src_file_C
+    gcc $(CFLAGS) $(INCLUDE) -c $1 -o $2
 endef	
 
 define create_src_dep_file
@@ -144,12 +148,12 @@ ifneq ($(strip $(MAKECMDGOALS)),cleanall)
 ifneq ($(strip $(MAKECMDGOALS)),unittest)
 ifneq ($(strip $(MAKECMDGOALS)),rununittest)
 
-#Éú³ÉÔ´ÎÄ¼şÒÀÀµÎÄ¼ş
+#ç”Ÿæˆæºæ–‡ä»¶ä¾èµ–æ–‡ä»¶
 ifneq ($(strip $(SRC_DEP_FILE)),)
 -include $(SRC_DEP_FILE)
 endif
 
-#Èç¹ûÓĞÖ¸¶¨±àÒëÖĞ¼äÄ¿Â¼£¬ÔòĞèÒªÌáÇ°Éú³ÉÏà¹Ø±àÒëÃüÁîÎÄ¼ş
+#å¦‚æœæœ‰æŒ‡å®šç¼–è¯‘ä¸­é—´ç›®å½•ï¼Œåˆ™éœ€è¦æå‰ç”Ÿæˆç›¸å…³ç¼–è¯‘å‘½ä»¤æ–‡ä»¶
 ifneq ($(strip $(BUILD_DIR)),)
 BUILDDIR_RULES_FILE = $(BUILD_DIR)/builddir_rules_file.ruled
 ifneq ($(strip $(BUILDDIR_RULES_FILE)),)
@@ -158,7 +162,7 @@ endif
 endif
 
 
-#Ö´ĞĞmakefileÒÀÀµ¹ØÏµ
+#æ‰§è¡Œmakefileä¾èµ–å…³ç³»
 MAKEFILE_DEP_FILE = .make.makefiled
 ifneq ($(strip $(NEED_MAKE_DEP)),N)
 ifneq ($(strip $(MAKEFILE_DEP_FILE)),)
@@ -172,7 +176,7 @@ endif
 endif
 
 #------------------------------------------------------------------------------------
-#Ô´ÎÄ¼ş±àÒë¹æÔò
+#æºæ–‡ä»¶ç¼–è¯‘è§„åˆ™
 %.o:%.cpp
 	$(call compile_src_file, $<, $@)
 
@@ -180,9 +184,9 @@ endif
 	$(call compile_src_file, $<, $@)
 
 %.o:%.c
-	$(call compile_src_file, $<, $@)
+	$(call compile_src_file_C, $<, $@)
 
-#Ô´ÎÄ¼şÒÀÀµÎÄ¼şÉú³É¹æÔò
+#æºæ–‡ä»¶ä¾èµ–æ–‡ä»¶ç”Ÿæˆè§„åˆ™
 %.d: %.cpp
 	@$(call create_src_dep_file, $<, $@)
 	
@@ -192,14 +196,14 @@ endif
 %.d: %.c
 	@$(call create_src_dep_file, $<, $@)
 
-#Èç¹ûÓĞÖ¸¶¨±àÒëÖĞ¼äÄ¿Â¼£¬Éú³ÉÏà¹Ø±àÒëÃüÁîÎÄ¼ş¹æÔò
+#å¦‚æœæœ‰æŒ‡å®šç¼–è¯‘ä¸­é—´ç›®å½•ï¼Œç”Ÿæˆç›¸å…³ç¼–è¯‘å‘½ä»¤æ–‡ä»¶è§„åˆ™
 ifneq ($(strip $(BUILD_DIR)),)
 $(BUILDDIR_RULES_FILE) : $(ALL_SOURCE_FILES)
 	@$(call create_builddir_rules_file)
 endif
 
 
-#makefileÒÀÀµ¹æÔò
+#makefileä¾èµ–è§„åˆ™
 $(MAKEFILE_DEP_FILE) :
 	$(call make_subdir, $(DEP_MAKE_SUBDIRS), $(MAKECMDGOALS))
 	$(call make_submakefile, $(DEP_MAKE_MAKEFILES), $(MAKECMDGOALS))
