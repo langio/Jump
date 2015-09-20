@@ -5,6 +5,7 @@
 #include "login.pb.h"
 #include "service_dispatcher.h"
 #include "util/yac_common.h"
+#include "ini_parse.h"
 
 using namespace util;
 using namespace protocol;
@@ -60,8 +61,62 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 	//fprintf(stderr, "dispatcher_init\n");
 	cout << "dispatcher_init" << endl;
 
+	if(loadSo(ctx))
+	{
+		return -1;
+	}
+
 	return 0;
 
+}
+
+bool loadSo(struct skynet_context * ctx)
+{
+	bool ret = true;
+
+	string ini_file("../cfg/game.ini");
+	INIParse ini(ini_file.c_str());
+
+	__BEGIN_PROC__
+
+	if(!ini.CheckINI())
+	{
+		LOG_ERROR(ctx, "check ini file %s failed", ini_file.c_str());
+		ret = false;
+		break;
+	}
+
+	const char* so_file_name = ini.GetStringValue("SO_FILE_NAME", "so");
+	if(NULL == so_file_name)
+	{
+		LOG_ERROR(ctx, "get so file name failed");
+		ret = false;
+		break;
+	}
+
+	vector<string> v_so_file_name = YAC_Common::sepstr<string>(string(so_file_name), ";");
+
+	//加载so
+	for(size_t i=0; i<v_so_file_name.size(); ++i)
+	{
+		struct skynet_context *so_ctx = skynet_context_new(v_so_file_name[i].c_str(), NULL);
+		if(NULL == so_ctx)
+		{
+			LOG_ERROR(ctx, "Can't launch %s service", v_so_file_name[i].c_str());
+
+			ret = false;
+			break;
+		}
+	}
+
+	if(!ret)
+	{
+		break;
+	}
+
+	__END_PROC__
+
+	return ret;
 }
 
 void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t sz)

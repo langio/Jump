@@ -13,12 +13,14 @@ extern "C"
 {
 
 #include "skynet.h"
+#include "skynet_server.h"
 
 	DispatcherData * dispatcher_create(void);
 	void gate_release(DispatcherData *d);
 	static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 			uint32_t source, const void * msg, size_t sz);
 	int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm);
+	bool loadSo(struct skynet_context * ctx);
 };
 
 class dispatcher
