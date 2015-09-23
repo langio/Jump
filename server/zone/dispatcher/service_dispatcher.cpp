@@ -7,6 +7,8 @@
 #include "util/yac_common.h"
 #include "ini_parse.h"
 
+#include "table_mgr.h"
+
 using namespace util;
 using namespace protocol;
 
@@ -60,6 +62,16 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 
 	//fprintf(stderr, "dispatcher_init\n");
 	cout << "dispatcher_init" << endl;
+
+	static int32_t confMacroArray[] = {
+			CONFIG_TEST
+	    };
+
+	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
+	if (!ret)
+	{
+		cout << "load conf failed" << endl;
+	}
 
 	if(loadSo(ctx))
 	{
