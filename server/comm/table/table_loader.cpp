@@ -9,7 +9,7 @@ bool TableLoader::load(const string &sPath, const int iConfMacro)
     {
         case CONFIG_TEST:
         {
-            ret = test_load(sPath + "conf/test.xls");
+            ret = test_load(sPath + "excel/test.xls");
             break;
         }
     }
