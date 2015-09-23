@@ -67,13 +67,13 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 			CONFIG_TEST
 	    };
 
-	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
-	if (!ret)
-	{
-		cout << "load conf failed" << endl;
-	}
+//	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
+//	if (!ret)
+//	{
+//		cout << "load conf failed" << endl;
+//	}
 
-	if(loadSo(ctx))
+	if(!loadSo(ctx))
 	{
 		return -1;
 	}
