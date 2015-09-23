@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include "util/yac_common.h"
 
-#define CFG_LOG_ERROR(msg, args...) printf(msg, ##args)
+#define CFG_LOG_ERROR(msg, args...) printf("[Conf load info] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
 
 using namespace libxl;
 using namespace protocol;
