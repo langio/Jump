@@ -3,7 +3,11 @@ PROTO_DIR := $(shell dirname `echo $(MAKEFILE_LIST) | awk '{for(i=1;i<=NF;++i){i
 
 INCLUDE += -I$(PROTO_DIR)/pb -I$(PROTO_DIR)/proto
 
-LIBS += -L$(PROTO_DIR) -lproto -lprotobuf
+PB_LIB_DIR = /usr/local/lib/
+
+LIBS += -L$(PROTO_DIR) -lproto -L$(PB_LIB_DIR) -lprotobuf -Wl,-rpath,$(PB_LIB_DIR)
+
+#LIBS += -L $(LIBPATH) -lxl -Wl,-rpath,$(LIBPATH),-rpath,../$(LIBPATH)
 
 DEP_MAKE_SUBDIRS += $(PROTO_DIR)
 TARGET_DEP_OBJS += $(PROTO_DIR)/libproto.a
