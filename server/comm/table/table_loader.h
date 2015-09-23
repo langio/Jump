@@ -15,7 +15,15 @@ public:
 
 	bool load(const string &sPath, const int iConfMacro);
 
-	bool test_load(const string& file_name);
+	bool test_load(const string& excel_name);
+	static int32_t getTestKey(const conf_test& stTest)
+	{
+		return stTest.id();
+	}
+
+
+private:
+	map<int32_t, conf_test> m_test_conf;
 
 };
 
