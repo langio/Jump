@@ -13,9 +13,9 @@ public:
 
     TableLoader();
 
-bool load(const string &sPath, const int iConfMacro);
+	bool load(const string &sPath, const int iConfMacro);
 
-bool test_load(const string& file_name);
+	bool test_load(const string& file_name);
 
 };
 

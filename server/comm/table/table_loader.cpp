@@ -1,6 +1,5 @@
 #include "table_loader.h"
 
-
 bool TableLoader::load(const string &sPath, const int iConfMacro)
 {
     bool ret = false;
