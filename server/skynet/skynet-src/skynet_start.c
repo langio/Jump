@@ -279,7 +279,7 @@ void skynet_start(struct skynet_config * config)
 				NULL);
 	if (dis == NULL)
 	{
-		fprintf(stderr, "Can't launch %s service\n", "dispatcher");
+		fprintf(stderr, "%s:%d Can't launch %s service\n", __FILE__, __LINE__, "dispatcher");
 		exit(1);
 	}
 
