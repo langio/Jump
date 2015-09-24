@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <unistd.h>
 #include "util/yac_common.h"
 
 using namespace std;
@@ -10,6 +11,8 @@ using namespace std;
 #define __BEGIN_PROC__  do{
 #define __END_PROC__ }while(0);
 
+
+#define CFG_LOG_ERROR(msg, args...) printf("[Conf load info] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
 #define LOG_ERROR(ctx, msg, args...) skynet_error(ctx, msg, ##args)
 
 

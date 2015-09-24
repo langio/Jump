@@ -20,7 +20,8 @@ bool TableMgr::reload(const int iConfMacro)
         return true;
     else
     {
-        cout << "CommTableMgr::reload error:" << iConfMacro << endl;
+        //cout << "TableMgr::reload error. Macro:%d" << iConfMacro << endl;
+        CFG_LOG_ERROR("TableMgr::reload error. Macro:%d", iConfMacro);
         return false;
     }
 

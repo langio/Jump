@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include "util/yac_common.h"
 
-#define CFG_LOG_ERROR(msg, args...) printf("[Conf load info] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
 
 using namespace libxl;
 using namespace protocol;
@@ -55,10 +54,38 @@ bool CommLoad<key, value>::load2Map(const string& excel_file, int32_t index, map
 		break;
 	}
 
-	if(book->load(excel_file.c_str()))
+	char cur_path[256]={0};
+	if(getcwd(cur_path, sizeof(cur_path)) != NULL)
 	{
-		CFG_LOG_ERROR("load file %s failed!", excel_file.c_str());
+		CFG_LOG_ERROR("path:%s\n", cur_path);
+	}
+	string full_excel_file = string(cur_path) + excel_file;
+
+	if(book->load(full_excel_file.c_str()))
+	{
+		CFG_LOG_ERROR("load file %s failed!", full_excel_file.c_str());
 		bRet = false;
+
+//		char path[256]={0};
+//		if (realpath("/", path) != NULL)
+//		{
+//			CFG_LOG_ERROR("path:%s\n", path);
+//		}
+
+//		if(getcwd(path, sizeof(path)) != NULL)
+//		{
+//			//path[rslt] = '\0';
+//			CFG_LOG_ERROR("path:%s\n", path);
+//		}
+//
+//		int rslt = readlink("/proc/self/exe", path, 256);
+//		if (rslt >= 0 && rslt < 256)
+//		{
+//			path[rslt] = '\0';
+//			CFG_LOG_ERROR("path:%s\n", path);
+//		}
+
+
 		break;
 	}
 
@@ -66,7 +93,7 @@ bool CommLoad<key, value>::load2Map(const string& excel_file, int32_t index, map
 
 	if(NULL == sheet)
 	{
-		CFG_LOG_ERROR("getSheet failed, index:%d", index);
+		CFG_LOG_ERROR("getSheet failed, index:%d, err:%s, totalSheets:%d", index, book->errorMessage(), book->sheetCount());
 		bRet = false;
 		break;
 	}
