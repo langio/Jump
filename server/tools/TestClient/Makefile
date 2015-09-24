@@ -4,7 +4,7 @@ SRC_DIR_RECURSION = Y
 
 SRC_FILE_DIRS += . 
 INCLUDE += -I.
-LIBS += 
+LIBS += -lpthread
 
 NEED_MAKE_DEP = Y
 
