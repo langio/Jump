@@ -1127,6 +1127,7 @@ static int ctrl_cmd(struct socket_server *ss, struct socket_message *result)
 	int len = header[1];
 	block_readpipe(fd, buffer, len);
 	// ctrl command only exist in local fd, so don't worry about endian.
+	printf("%s:%d ctrl_cmd:%c\n", __FILE__, __LINE__, type);
 	switch (type)
 	{
 		case 'S':
@@ -1350,7 +1351,19 @@ static int report_accept(struct socket_server *ss, struct socket *s,
 	int client_fd = accept(s->fd, &u.s, &len);
 	if (client_fd < 0)
 	{
-		return 0;
+		if (errno == EMFILE || errno == ENFILE)
+		{
+			result->opaque = s->opaque;
+			result->id = s->id;
+			result->ud = 0;
+			result->data = strerror(errno);
+			return -1;
+		}
+		else
+		{
+			return 0;
+		}
+
 	}
 	int id = reserve_id(ss);
 	if (id < 0)
@@ -1463,11 +1476,22 @@ int socket_server_poll(struct socket_server *ss, struct socket_message * result,
 			case SOCKET_TYPE_CONNECTING:
 				return report_connect(ss, s, result);
 			case SOCKET_TYPE_LISTEN:
-				if (report_accept(ss, s, result))
+			{
+				int ok = report_accept(ss, s, result);
+				if (ok > 0)
 				{
 					return SOCKET_ACCEPT;
 				}
+				if (ok < 0 )
+				{
+					return SOCKET_ERROR;
+				}
+//				if (report_accept(ss, s, result))
+//				{
+//					return SOCKET_ACCEPT;
+//				}
 				break;
+			}
 			case SOCKET_TYPE_INVALID:
 				fprintf(stderr, "socket-server: invalid socket\n");
 				break;

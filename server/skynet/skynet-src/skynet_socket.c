@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 static struct socket_server * SOCKET_SERVER = NULL;
 
@@ -94,18 +95,23 @@ int skynet_socket_poll()
 			forward_message(SKYNET_SOCKET_TYPE_DATA, false, &result);
 			break;
 		case SOCKET_CLOSE:
+			printf("SOCKET_CLOSE\n");
 			forward_message(SKYNET_SOCKET_TYPE_CLOSE, false, &result);
 			break;
 		case SOCKET_OPEN:
+			printf("SOCKET_OPEN\n");
 			forward_message(SKYNET_SOCKET_TYPE_CONNECT, true, &result);
 			break;
 		case SOCKET_ERROR:
+			printf("SOCKET_ERROR\n");
 			forward_message(SKYNET_SOCKET_TYPE_ERROR, false, &result);
 			break;
 		case SOCKET_ACCEPT:
+			printf("SOCKET_ACCEPT\n");
 			forward_message(SKYNET_SOCKET_TYPE_ACCEPT, true, &result);
 			break;
 		case SOCKET_UDP:
+			printf("SOCKET_UDP\n");
 			forward_message(SKYNET_SOCKET_TYPE_UDP, false, &result);
 			break;
 		default:

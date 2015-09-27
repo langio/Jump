@@ -242,13 +242,24 @@ static void bootstrap(struct skynet_context * logger, const char * cmdline)
 
 static void load_service(struct skynet_context * logger, const char * cmdline)
 {
-	struct skynet_context *ctx = skynet_context_new("gate",
+	char gate_name[] = ".gate";
+
+	struct skynet_context *ctx = skynet_context_new(gate_name+1,
 				"S .dispatcher 127.0.0.1:8888 0 10");
-		if (ctx == NULL)
-		{
-			fprintf(stderr, "Can't launch %s service\n", "gate");
-			exit(1);
-		}
+	if (ctx == NULL)
+	{
+		fprintf(stderr, "Can't launch %s service\n", "gate");
+		exit(1);
+	}
+
+	//注册gate的名字，以便后面可以通过名字来访问
+	skynet_command(ctx, "REG", gate_name);
+
+	//向gate发送socket start命令
+	char cmd[] = "start";
+	skynet_sendname(ctx, 0, gate_name, PTYPE_TEXT, 0, cmd, sizeof(cmd));
+
+	//skynet_send(ctx, 0, ctx->handle, PTYPE_TEXT, 0, cmd, sizeof(cmd));
 }
 
 void skynet_start(struct skynet_config * config)
