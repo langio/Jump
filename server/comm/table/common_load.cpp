@@ -1,5 +1,9 @@
 #include "common_load.h"
 
+//复合字段中的分割副不适用逗号(,)、冒号(:)和横线(-)，因为csv文件适用逗号分割不同字段，日期格式的字段中可能包含冒号(:)和横线(-)
+const string separator1 = ";";
+const string separator2 = "|";
+
 //Message使用完之后需要delete
 Message* createMessage(const string &typeName)
 {
@@ -34,7 +38,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<int32_t> v = YAC_Common::sepstr<int32_t>(unit, ",");
+				vector<int32_t> v = YAC_Common::sepstr<int32_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedInt32(msg, field_descriptor, i, v[i]);
@@ -50,7 +54,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<uint32_t> v = YAC_Common::sepstr<uint32_t>(unit, ",");
+				vector<uint32_t> v = YAC_Common::sepstr<uint32_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedUInt32(msg, field_descriptor, i, v[i]);
@@ -66,7 +70,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<int64_t> v = YAC_Common::sepstr<int64_t>(unit, ",");
+				vector<int64_t> v = YAC_Common::sepstr<int64_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedInt64(msg, field_descriptor, i, v[i]);
@@ -82,7 +86,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<uint64_t> v = YAC_Common::sepstr<uint64_t>(unit, ",");
+				vector<uint64_t> v = YAC_Common::sepstr<uint64_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedUInt64(msg, field_descriptor, i, v[i]);
@@ -98,7 +102,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<string> v = YAC_Common::sepstr<string>(unit, ",");
+				vector<string> v = YAC_Common::sepstr<string>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedString(msg, field_descriptor, i, v[i]);
@@ -114,7 +118,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<float> v = YAC_Common::sepstr<float>(unit, ",");
+				vector<float> v = YAC_Common::sepstr<float>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedFloat(msg, field_descriptor, i, v[i]);
@@ -130,7 +134,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<double> v = YAC_Common::sepstr<double>(unit, ",");
+				vector<double> v = YAC_Common::sepstr<double>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedDouble(msg, field_descriptor, i, v[i]);
@@ -140,6 +144,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 		}
 		case FieldDescriptor::CPPTYPE_MESSAGE:
 		{
+
 			break;
 		}
 		case FieldDescriptor::CPPTYPE_BOOL:
@@ -150,7 +155,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
-				vector<bool> v = YAC_Common::sepstr<bool>(unit, ",");
+				vector<bool> v = YAC_Common::sepstr<bool>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					reflection->SetRepeatedBool(msg, field_descriptor, i, v[i]);
