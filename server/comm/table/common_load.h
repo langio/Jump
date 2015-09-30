@@ -244,7 +244,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 	{
 		CFG_LOG_ERROR("path:%s\n", cur_path);
 	}
-	string full_csv_file = string(cur_path) + csv_file;
+	string full_csv_file = string(cur_path) + "/" + csv_file;
 
 	ifstream fin(full_csv_file.c_str());
 	if(!fin.is_open() || fin.bad())
@@ -254,6 +254,8 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 		break;
 	}
 
+	int32_t row = 1;
+
 	//获取message名称，固定位置，在第一行
 	string line;
 	if(getline(fin, line) == 0)
@@ -262,6 +264,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 		bRet = false;
 		break;
 	}
+	++row;
 
 	vector<string> vUnits = YAC_Common::sepstr<string>(line, ",");
 	if(vUnits.size() == 0)
@@ -272,15 +275,25 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 	}
 	const string message_name("protocol." + vUnits[0]);
 
-
-
-	//获取字段名，字段名放在第二行
+	//第二行的字段描述是给策划看的
 	if(getline(fin, line) == 0)
 	{
-		CFG_LOG_ERROR("file %s has no fields!", full_csv_file.c_str());
+		CFG_LOG_ERROR("file %s has no planner fields!", full_csv_file.c_str());
 		bRet = false;
 		break;
 	}
+	CFG_LOG_ERROR("row:%d %s", row, line.c_str());
+	++row;
+
+	//获取字段名，字段名放在第三行
+	if(getline(fin, line) == 0)
+	{
+		CFG_LOG_ERROR("file %s has no programer fields!", full_csv_file.c_str());
+		bRet = false;
+		break;
+	}
+	CFG_LOG_ERROR("row:%d %s", row, line.c_str());
+	++row;
 
 	vUnits = YAC_Common::sepstr<string>(line, ",");
 	if(vUnits.size() == 0)
@@ -294,6 +307,8 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 	for(size_t i=0; i<vUnits.size(); ++i)
 	{
 		mFields[vUnits[i]] = i;
+
+		CFG_LOG_ERROR("field:%s col:%lu", vUnits[i].c_str(), i);
 	}
 
 
@@ -303,7 +318,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 	{
 		// 创建失败，可能是消息名错误，也可能是编译后message解析器
 		// 没有链接到主程序中。
-		CFG_LOG_ERROR("createMessage failed");
+		CFG_LOG_ERROR("createMessage failed! msg_name:%s", message_name.c_str());
 		bRet = false;
 		break;
 	}
@@ -313,8 +328,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 	// 获取message的反射接口，可用于获取和修改字段的值
 	const Reflection* reflection = msg->GetReflection();
 
-	//从第三行开始是数据
-	int32_t row = 3;
+	//从第四行开始是数据
 	while(getline(fin, line))
 	{
 		vector<string> vUnits = YAC_Common::sepstr<string>(line, ",", true);
@@ -335,6 +349,9 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 
 			//找到该字段所在的列
 			map<string, int32_t>::const_iterator it = mFields.find(strFieldName);
+
+//			CFG_LOG_ERROR("row:%d field:%s", row, strFieldName.c_str());
+
 			assert(it != mFields.end());
 			int32_t col = it->second;
 
