@@ -29,8 +29,7 @@ bool TableLoader::test_load(const string& csv_name)
 
 	ret = CommLoad<google::protobuf::int32, conf_test>::loadCSV2Map(csv_name, 0, m_test_conf, getTestKey);
 
-
-	//cout << __FILE__ << "|" << __LINE__ << "|" << __FUNCTION__ << endl << CommFunc::printMapJce<Int32_t, JSuitConfTable>(mSuit);
+    CommLoad<google::protobuf::int32, conf_test>::printMap(m_test_conf);
 
 	__END_PROC__
 

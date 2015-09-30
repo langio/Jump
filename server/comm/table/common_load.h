@@ -30,6 +30,8 @@ public:
 
     static bool loadCSV2Map(const string& csv_file, int32_t index, map<key, value>& mOut, getKeyFunc getKey = defaultGetKey);
 
+    static void printMap(const map<key, value>& mIn);
+
 private:
     static key defaultGetKey(const value& v);
 };
@@ -375,8 +377,6 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 		++row;
 	}
 
-
-
 	__END_PROC__
 
 	if(msg)
@@ -391,6 +391,18 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 
 	return false;
 
+}
+
+
+template<typename key, typename value>
+void CommLoad<key, value>::printMap(const map<key, value>& mIn)
+{
+	typename map<key, value>::const_iterator it = mIn.begin();
+	for(; it != mIn.end(); ++it)
+	{
+		cout << "key:" << it->first << endl;
+		cout << "value:" << endl << it->second.DebugString() << endl;
+	}
 }
 
 #endif
