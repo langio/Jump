@@ -4,4 +4,6 @@ message conf_test
 {
 	required int32 id = 1;
 	required string name = 2;
+	repeated int32 items = 3;
+	repeated string nicks = 4;
 };
