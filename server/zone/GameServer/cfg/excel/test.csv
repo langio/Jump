@@ -1,0 +1,6 @@
+conf_test,,,,
+ch,f1,f2,,
+类型名和字段名以空格分割,id,name,items,nicks
+,10,ttString,1;2;3;4;99,tom;jerry
+,11,tad,0;2;4,jack
+,12,tac,102;8,f;q;c;t
