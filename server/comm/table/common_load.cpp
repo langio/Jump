@@ -144,8 +144,19 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 		}
 		case FieldDescriptor::CPPTYPE_MESSAGE:
 		{
+//			for (int i = 0; i < field_descriptor->message_type()->field_count(); i++)
+//			{
+//				//descriptor->message_type()->field(i),
+//				Message* m = reflection->MutableMessage(message, field_descriptor, factory);
+//				const Reflection * ref = m->GetReflection();
+//				const FieldDescriptor *f = field_descriptor->message_type()->field(i);
+//				reflectionFill(m, descriptor->message_type()->field(i), ref, factory);
+//				printf("name : %s\n", field_descriptor->message_type()->field(i)->name());
+//			}
+//			field_descriptor->message_type()->field_count();
 
 			break;
+
 		}
 		case FieldDescriptor::CPPTYPE_BOOL:
 		{
