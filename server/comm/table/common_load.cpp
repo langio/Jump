@@ -27,6 +27,8 @@ Message* createMessage(const string &typeName)
 
 void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor* field_descriptor, FieldDescriptor::Label lable, FieldDescriptor::CppType cpp_type, const string& unit, int32_t depth)
 {
+	reflection->ClearField(msg, field_descriptor);
+
 	switch(cpp_type)
 	{
 
@@ -41,7 +43,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<int32_t> v = YAC_Common::sepstr<int32_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedInt32(msg, field_descriptor, i, v[i]);
+					reflection->AddInt32(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -57,7 +59,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<uint32_t> v = YAC_Common::sepstr<uint32_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedUInt32(msg, field_descriptor, i, v[i]);
+					reflection->AddUInt32(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -73,7 +75,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<int64_t> v = YAC_Common::sepstr<int64_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedInt64(msg, field_descriptor, i, v[i]);
+					reflection->AddInt64(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -89,7 +91,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<uint64_t> v = YAC_Common::sepstr<uint64_t>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedUInt64(msg, field_descriptor, i, v[i]);
+					reflection->AddUInt64(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -105,7 +107,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<string> v = YAC_Common::sepstr<string>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedString(msg, field_descriptor, i, v[i]);
+					reflection->AddString(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -121,7 +123,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<float> v = YAC_Common::sepstr<float>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedFloat(msg, field_descriptor, i, v[i]);
+					reflection->AddFloat(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -137,7 +139,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<double> v = YAC_Common::sepstr<double>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedDouble(msg, field_descriptor, i, v[i]);
+					reflection->AddDouble(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
@@ -169,7 +171,7 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				vector<bool> v = YAC_Common::sepstr<bool>(unit, separator1);
 				for(size_t i=0; i<v.size(); ++i)
 				{
-					reflection->SetRepeatedBool(msg, field_descriptor, i, v[i]);
+					reflection->AddBool(msg, field_descriptor, v[i]);
 				}
 			}
 			break;
