@@ -286,6 +286,7 @@ static void dispatch_socket_message(struct gate *g,
 				struct connection *c = &g->conn[id];
 //				_report(g, "%d open %d %s:0", message->id, message->id,
 //						c->remote_name);
+				printf("%s:%d open %d\n", __FILE__, __LINE__, message->id);
 				_report(g, "%d open ", message->id);
 			}
 			else
@@ -416,7 +417,12 @@ static int start_listen(struct gate *g, char * listen_addr)
 	return 0;
 }
 
-//初始化gate相关参数
+//初始化gate相关参数，header表示消息的长度，S表示消息长度是2字节，L表示消息长度是4字节
+//watchdog是要将消息转发到的服务的名字
+//binding是要绑定的监听的地址
+//client_tag
+//max是最大连接数
+//buffer
 int gate_init(struct gate *g, struct skynet_context * ctx, char * parm)
 {
 	fprintf(stderr, "begin gate_init\n");
