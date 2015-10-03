@@ -245,7 +245,7 @@ static void load_service(struct skynet_context * logger, const char * cmdline)
 	char gate_name[] = ".gate";
 
 	struct skynet_context *ctx = skynet_context_new(gate_name+1,
-				"S .dispatcher 127.0.0.1:8888 0 10");
+				"L .dispatcher 127.0.0.1:8888 0 10");
 	if (ctx == NULL)
 	{
 		fprintf(stderr, "Can't launch %s service\n", "gate");
@@ -259,6 +259,7 @@ static void load_service(struct skynet_context * logger, const char * cmdline)
 	char cmd[] = "start";
 	skynet_sendname(ctx, 0, gate_name, PTYPE_TEXT, 0, cmd, sizeof(cmd));
 
+	printf("%s:%d gate handle:%d\n", __FILE__, __LINE__, skynet_handle_findname(gate_name+1));
 	//skynet_send(ctx, 0, ctx->handle, PTYPE_TEXT, 0, cmd, sizeof(cmd));
 }
 
