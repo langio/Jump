@@ -1,0 +1,15 @@
+package storage;
+
+message PBase
+{
+	required string name = 1;
+	required int32 register_time = 2;
+	required int32 login_time = 3;
+};
+
+message PProfile
+{
+	required int32 uid = 1;
+	required int32 zone_id = 2;
+	required PBase base = 3;
+};
