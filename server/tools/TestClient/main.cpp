@@ -1,13 +1,16 @@
 #include "login.pb.h"
-#include "comm_def.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <string.h>
+#include <arpa/inet.h>
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 #undef __STDC_FORMAT_MACROS
+
+#include "comm_def.h"
+#include "public.h"
 
 using namespace protocol;
 
@@ -16,6 +19,11 @@ extern "C"
 #include "socket_server.h"
 };
 
+#undef LOG_ERROR
+#define LOG_ERROR(ctx, msg, args...) printf("[ERROR] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
+
+const int32_t MAX_BUFF = 102400;
+struct socket_server * ss = NULL;
 
 static void * _poll(void * ud)
 {
@@ -50,36 +58,110 @@ static void * _poll(void * ud)
 	}
 }
 
+void send_msg(const PkgHead& pkg_head, const google::protobuf::Message& message)
+{
+	char buff[MAX_BUFF];
+
+	char *p = buff;
+
+	int32_t pkg_head_size = sizeof(pkg_head);
+	int32_t pkg_msg_size = message.ByteSize();
+
+	int32_t pkg_total_size = pkg_head_size + pkg_msg_size;
+
+	__BEGIN_PROC__
+
+	//消息头
+	int32_t *header = (int32_t *)p;
+	*header = htonl(pkg_total_size);
+	p += sizeof(*header);
+
+	int32_t send_len = sizeof(*header) + pkg_total_size;
+
+	if(send_len > MAX_BUFF)
+	{
+		LOG_ERROR(0, "there is no enough buff. buff size:%d, real size:%d", MAX_BUFF, send_len);
+		break;
+	}
+
+
+	//协议包头
+	PkgHead *p_pkg_head = (PkgHead *)p;
+	*p_pkg_head = pkg_head;
+	p_pkg_head->pack();
+	p += sizeof(PkgHead);
+
+	//协议包体
+	if (!message.SerializeToArray(p, pkg_msg_size))
+	{
+		LOG_ERROR(0, "message.SerializeToArray failed");
+		break;
+	}
+
+	char* sendbuf = (char*)malloc(send_len + 1);
+	memcpy(sendbuf, buff, send_len + 1);
+
+	socket_server_send(ss, pkg_head.client_fd, sendbuf, send_len);
+
+	__END_PROC__
+}
+
 int main(int argc, char* argv[])
 {
 
-	struct socket_server * ss = socket_server_create();
+	ss = socket_server_create();
 	int32_t conn_id = socket_server_connect(ss, 100, "127.0.0.1", 8888);
 
 	pthread_t pid;
 	pthread_create(&pid, NULL, _poll, (void*)ss);
 
-	char buf[1024];
+	//char buf[1024] = {0};
 
 	login_req req;
 
 	req.set_id(10);
-	req.add_item(100);
-
-	int32_t byte_size = req.ByteSize();
-	if (!req.SerializeToArray(buf, byte_size))
+	for(int32_t i=0; i<10; ++i)
 	{
-
+		req.add_item(100+i);
 	}
 
-	while (fgets(buf, sizeof(buf), stdin) != NULL)
+//	int32_t byte_size = req.ByteSize();
+//	if (!req.SerializeToArray(buf+sizeof(byte_size), byte_size))
+//	{
+//
+//	}
+//	int32_t *header = (int32_t*)buf;
+//
+//	int32_t data_len = byte_size;
+//
+//	printf("data_len:%d\n", data_len);
+//
+//	int32_t send_len = data_len + sizeof(byte_size);
+//
+//	*header = htonl(data_len);
+
+	PkgHead pkg_head;
+
+	pkg_head.cmd = CMD_LOGIN_REQ;
+	pkg_head.client_fd = conn_id;
+
+	int32_t counter = 0;
+	//while (fgets(buf, sizeof(buf), stdin) != NULL)
+	while(1)
 	{
-		if (strncmp(buf, "quit", 4) == 0)
-			break;
-		buf[strlen(buf)-1] = '\n';		// 去除\n
-		char* sendbuf = (char*)malloc(sizeof(buf)+1);
-		memcpy(sendbuf, buf, strlen(buf)+1);
-		socket_server_send(ss, conn_id, sendbuf, strlen(sendbuf));
+//		char* sendbuf = (char*)malloc(send_len + 1);
+//		memcpy(sendbuf, buf, send_len + 1);
+//
+//		socket_server_send(ss, conn_id, sendbuf, send_len);
+
+		send_msg(pkg_head, req);
+		++counter;
+
+		printf("counter:%d\n", counter);
+
+		sleep(1);
+
+
 	}
 
 
