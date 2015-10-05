@@ -133,24 +133,24 @@ bool loadSo(struct skynet_context * ctx)
 
 void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t sz)
 {
-	//解析msg头部
-	uint32_t iSpaceCounter = 0;
-	uint32_t iPbHeaderIndex = 0;
+	//解析消息头部
+	uint32_t space_counter = 0;
+	uint32_t header_index = 0;
 
 	const char* tmp = (const char*)msg;
-	while(iSpaceCounter < 2 && iPbHeaderIndex < sz)
+	while(space_counter < 2 && header_index < sz)
 	{
-		if(' ' == tmp[iPbHeaderIndex])
+		if(' ' == tmp[header_index])
 		{
-			++iSpaceCounter;
+			++space_counter;
 		}
 
-		++iPbHeaderIndex;
+		++header_index;
 	}
 
-	string sExtHead = string(tmp, iPbHeaderIndex);
+	string sExtHead = string(tmp, header_index);
 
-	cout << sExtHead << endl;
+	//cout << sExtHead << endl;
 
 	vector<string> vExtHead = YAC_Common::sepstr<string>(sExtHead, " ");
 
@@ -163,37 +163,51 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 		break;
 	}
 
-	if(2 == iSpaceCounter)
+	if(2 == space_counter)
 	{
-		//解析包头
-		int8_t * msg_body = const_cast<int8_t*>((const int8_t*)msg + iPbHeaderIndex);
-		PkgHead *head = (PkgHead*)msg_body;
+		//解析消息
+		int8_t * p = const_cast<int8_t*>((const int8_t*)msg + header_index);
+
+		//协议包头
+		PkgHead *head = (PkgHead*)p;
 		head->unpack();
 		head->client_fd = YAC_Common::strto<uint32_t>(vExtHead[0]);
+		p += sizeof(*head);
 
-		//根据命令字将消息发到对应的so中
-		uint32_t iCmdType = GET_CMD_SVR_TYPE(head->cmd);
-
-		switch(iCmdType)
+		//协议内容--测试代码
+		if("data" == vExtHead[1])
 		{
-		case AUTH_SVR:
-			break;
+			static int32_t counter = 0;
 
-		case LOGIN_SVR:
-			break;
+			LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", head->cmd, head->body_len, head->client_fd);
+
+			login_req req;
+			if (!req.ParseFromArray(p, head->body_len))
+			{
+				LOG_ERROR(ctx, "login_req ParseFromArray failed!");
+				break;
+			}
+			LOG_ERROR(ctx, "login_req:\ncounter:%d\n%s", counter, req.DebugString().c_str());
+
+
+			//根据命令字将消息发到对应的so中
+			uint32_t cmd_type = GET_CMD_SVR_TYPE(head->cmd);
+
+			switch(cmd_type)
+			{
+			case AUTH_SVR:
+				break;
+
+			case LOGIN_SVR:
+				break;
+			}
 		}
+
+
 	}
 	else
 	{
 		//出错
-	}
-
-	login_req req;
-
-	int i = 0;
-	for(i=0; i<100; ++i)
-	{
-		req.add_item(i);
 	}
 
 	__END_PROC__
