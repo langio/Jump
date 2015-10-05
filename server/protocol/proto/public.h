@@ -1,3 +1,6 @@
+#ifndef __PUBLIC_H_
+#define __PUBLIC_H_
+
 #include <netinet/in.h>
 
 //此文件中只定义与客户端相关的结构体，命令字
@@ -41,3 +44,7 @@ const int CMD_AUTH_REQ = 0x00010000;		//鉴权请求
 
 //注册、登录相关命令0x0002xxxx
 const int CMD_LOGIN_REQ = 0x00020001;		//登录请求
+
+
+#endif
+
