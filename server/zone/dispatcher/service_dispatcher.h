@@ -16,7 +16,7 @@ extern "C"
 #include "skynet_server.h"
 
 	DispatcherData * dispatcher_create(void);
-	void gate_release(DispatcherData *d);
+	void dispatcher_release(DispatcherData *d);
 	static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 			uint32_t source, const void * msg, size_t sz);
 	int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm);
@@ -28,14 +28,12 @@ class dispatcher
 public:
 	static dispatcher& getInstance()
 	{
-		static dispatcher m_dispatcher;
-		return m_dispatcher;
+		static dispatcher _instance;
+		return _instance;
 	};
 
 	void dispatch(struct skynet_context * ctx, const void * msg, size_t sz);
 
-private:
-	int get_sys_cmd(const void * msg, size_t sz, int& cmd);
 
 private:
 	dispatcher(){}

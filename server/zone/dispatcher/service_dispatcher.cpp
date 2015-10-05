@@ -26,7 +26,7 @@ DispatcherData * dispatcher_create(void)
 }
 
 //释放相关资源
-void gate_release(DispatcherData *d)
+void dispatcher_release(DispatcherData *d)
 {
 	skynet_free(d);
 }
@@ -213,12 +213,4 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 	__END_PROC__
 
 };
-
-
-int dispatcher::get_sys_cmd(const void * msg, size_t sz, int& cmd)
-{
-	int ret = -1;
-
-	return ret;
-}
 
