@@ -1,5 +1,9 @@
+extern "C"
+{
 #include "skynet_socket.h"
 #include "skynet.h"
+}
+
 #include <google/protobuf/message.h>
 #include "comm_def.h"
 #include "public.h"
@@ -46,8 +50,9 @@ bool sendToClinet(const PkgHead& pkg_head, const google::protobuf::Message& mess
 		break;
 	}
 
+	int32_t ret = 0;
 
-	int32_t ret = skynet_socket_send(0, pkg_head.client_fd, buff, send_len);
+	ret = skynet_socket_send(0, pkg_head.client_fd, buff, send_len);
 
 	if(-1 == ret)
 	{
