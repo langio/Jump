@@ -88,6 +88,7 @@ void send_msg(const PkgHead& pkg_head, const google::protobuf::Message& message)
 	//协议包头
 	PkgHead *p_pkg_head = (PkgHead *)p;
 	*p_pkg_head = pkg_head;
+	p_pkg_head->body_len = pkg_msg_size;
 	p_pkg_head->pack();
 	p += sizeof(PkgHead);
 
