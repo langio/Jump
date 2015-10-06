@@ -1,9 +1,14 @@
 package protocol;
 
+message base
+{
+	required string name = 1;
+	required string gender = 2;
+	repeated string title = 3;
+};
+
 message conf_test
 {
 	required int32 id = 1;
-	required string name = 2;
-	repeated int32 items = 3;
-	repeated string nicks = 4;
+	required base baseInfo = 2;
 };
