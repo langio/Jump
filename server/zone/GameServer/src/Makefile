@@ -3,6 +3,7 @@ TARGET = ../lib/game.so
 SRC_DIR_RECURSION = Y
 
 SRC_FILE_DIRS += . 
+RECURSION_INCLUDE += .
 INCLUDE += -I.
 LIBS += 
 
