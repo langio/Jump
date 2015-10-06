@@ -27,9 +27,9 @@ bool TableLoader::test_load(const string& csv_name)
 
     __BEGIN_PROC__
 
-	ret = CommLoad<google::protobuf::int32, conf_test>::loadCSV2Map(csv_name, 0, m_test_conf, getTestKey);
+	ret = CommLoad<int32_t, conf_test>::loadCSV2Map(csv_name, 0, m_test_conf, getTestKey);
 
-    CommLoad<google::protobuf::int32, conf_test>::printMap(m_test_conf);
+    CommLoad<int32_t, conf_test>::printMap(m_test_conf);
 
 	__END_PROC__
 

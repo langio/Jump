@@ -1,8 +1,9 @@
 #include "common_load.h"
 
-//复合字段中的分割副不适用逗号(,)、冒号(:)和横线(-)，因为csv文件适用逗号分割不同字段，日期格式的字段中可能包含冒号(:)和横线(-)
+//复合字段中的分割副不使用逗号(,)、冒号(:)、横线(-)和斜杠(/)，因为csv文件适用逗号分割不同字段，日期格式的字段中可能包含冒号(:)、横线(-)和斜杠(/)
 const string separator1 = ";";
 const string separator2 = "|";
+const string separator3 = "\\";
 
 //Message使用完之后需要delete
 Message* createMessage(const string &typeName)
@@ -146,22 +147,36 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 		}
 		case FieldDescriptor::CPPTYPE_MESSAGE:
 		{
+			string separator = separator2;
+			if(3 == depth)
+			{
+				separator = separator3;
+			}
+
 			vector<string> v = YAC_Common::sepstr<string>(unit, separator2);
 			size_t field_count = field_descriptor->message_type()->field_count();
 			assert(v.size() == field_count);
 
-			//按顺序依次对应字段
-			for (size_t i = 0; i < field_count; i++)
+			if(lable != FieldDescriptor::LABEL_REPEATED)
 			{
-				Message* m = reflection->MutableMessage(msg, field_descriptor, MessageFactory::generated_factory());
-				const Reflection* ref = m->GetReflection();
-				const FieldDescriptor* f = field_descriptor->message_type()->field(i);
+				//按顺序依次对应字段
+				for (size_t i = 0; i < field_count; i++)
+				{
+					Message* m = reflection->MutableMessage(msg, field_descriptor, MessageFactory::generated_factory());
+					const Reflection* ref = m->GetReflection();
+					const FieldDescriptor* f = field_descriptor->message_type()->field(i);
 
-				FieldDescriptor::Label l = field_descriptor->label();
-				FieldDescriptor::CppType c = field_descriptor->cpp_type();
+					FieldDescriptor::Label l = f->label();
+					FieldDescriptor::CppType c = f->cpp_type();
 
-				setValue(ref, m, f, l, c, v[i], depth + 1);
+					setValue(ref, m, f, l, c, v[i], depth + 1);
+				}
 			}
+			else
+			{
+
+			}
+
 
 			break;
 
