@@ -10,5 +10,5 @@ message base
 message conf_test
 {
 	required int32 id = 1;
-	required base baseInfo = 2;
+	repeated base baseInfo = 2;
 };

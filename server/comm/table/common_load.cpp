@@ -2,8 +2,10 @@
 
 //复合字段中的分割副不使用逗号(,)、冒号(:)、横线(-)和斜杠(/)，因为csv文件适用逗号分割不同字段，日期格式的字段中可能包含冒号(:)、横线(-)和斜杠(/)
 const string separator1 = ";";
-const string separator2 = "|";
-const string separator3 = "\\";
+const string msg_sep2 = "|";
+const string field_sep2 = "\\";
+const string msg_sep3 = "";
+const string field_sep3 = "";
 
 //Message使用完之后需要delete
 Message* createMessage(const string &typeName)
@@ -147,23 +149,38 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 		}
 		case FieldDescriptor::CPPTYPE_MESSAGE:
 		{
-			string separator = separator2;
-			if(3 == depth)
+			string msg_sep = "";
+			string field_sep = "";
+			if(1 == depth)
 			{
-				separator = separator3;
+				msg_sep = msg_sep2;
+				field_sep = field_sep2;
+			}
+			else if(2 == depth)
+			{
+				msg_sep = msg_sep3;
+				field_sep = field_sep3;
+			}
+			else
+			{
+				CFG_LOG_ERROR("not implement");
+				assert(false);
 			}
 
-			vector<string> v = YAC_Common::sepstr<string>(unit, separator2);
+			vector<string> v = YAC_Common::sepstr<string>(unit, msg_sep);
 			size_t field_count = field_descriptor->message_type()->field_count();
-			assert(v.size() == field_count);
 
 			if(lable != FieldDescriptor::LABEL_REPEATED)
 			{
+
+				assert(v.size() == field_count);
+
+				Message* m = reflection->MutableMessage(msg, field_descriptor, MessageFactory::generated_factory());
+				const Reflection* ref = m->GetReflection();
+
 				//按顺序依次对应字段
 				for (size_t i = 0; i < field_count; i++)
 				{
-					Message* m = reflection->MutableMessage(msg, field_descriptor, MessageFactory::generated_factory());
-					const Reflection* ref = m->GetReflection();
 					const FieldDescriptor* f = field_descriptor->message_type()->field(i);
 
 					FieldDescriptor::Label l = f->label();
@@ -174,7 +191,27 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
+				for(size_t i=0; i<v.size(); ++i)
+				{
+					vector<string> vv = YAC_Common::sepstr<string>(v[i], field_sep);
+					assert(vv.size() == field_count);
 
+					Message* m = reflection->AddMessage(msg, field_descriptor);
+					const Reflection* ref = m->GetReflection();
+
+					//按顺序依次对应字段
+					for (size_t j = 0; j < field_count; j++)
+					{
+						const FieldDescriptor* f = field_descriptor->message_type()->field(j);
+
+						FieldDescriptor::Label l = f->label();
+						FieldDescriptor::CppType c = f->cpp_type();
+
+						setValue(ref, m, f, l, c, vv[j], depth + 1);
+					}
+
+
+				}
 			}
 
 
