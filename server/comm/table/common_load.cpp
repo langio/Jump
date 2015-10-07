@@ -1,9 +1,13 @@
 #include "common_load.h"
 
 //复合字段中的分割副不使用逗号(,)、冒号(:)、横线(-)和斜杠(/)，因为csv文件适用逗号分割不同字段，日期格式的字段中可能包含冒号(:)、横线(-)和斜杠(/)
-const string separator1 = ";";
-const string msg_sep2 = "|";
-const string field_sep2 = "\\";
+const string separator1 = ";";			//原始数据类型的repeated字段用这个分割
+
+//第二层message分割符
+const string msg_sep2 = "|";			//message类型的repeated字段用这个分割
+const string field_sep2 = "\\";			//message中的字段分割符
+
+//第三层message分割符
 const string msg_sep3 = "}";
 const string field_sep3 = "]";
 
