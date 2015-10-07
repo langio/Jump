@@ -1,10 +1,17 @@
 package protocol;
 
+message inner
+{
+	required int32 ii = 1;
+	repeated int32 repeat = 2;
+};
+
 message base
 {
 	required string name = 1;
 	required string gender = 2;
 	repeated string title = 3;
+	repeated inner inner_filed = 4;
 };
 
 message conf_test

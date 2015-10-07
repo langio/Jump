@@ -4,8 +4,8 @@
 const string separator1 = ";";
 const string msg_sep2 = "|";
 const string field_sep2 = "\\";
-const string msg_sep3 = "";
-const string field_sep3 = "";
+const string msg_sep3 = "}";
+const string field_sep3 = "]";
 
 //Message使用完之后需要delete
 Message* createMessage(const string &typeName)
@@ -151,12 +151,12 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 		{
 			string msg_sep = "";
 			string field_sep = "";
-			if(1 == depth)
+			if(2 == depth)
 			{
 				msg_sep = msg_sep2;
 				field_sep = field_sep2;
 			}
-			else if(2 == depth)
+			else if(3 == depth)
 			{
 				msg_sep = msg_sep3;
 				field_sep = field_sep3;
@@ -167,11 +167,10 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 				assert(false);
 			}
 
-			vector<string> v = YAC_Common::sepstr<string>(unit, msg_sep);
-			size_t field_count = field_descriptor->message_type()->field_count();
-
 			if(lable != FieldDescriptor::LABEL_REPEATED)
 			{
+				vector<string> v = YAC_Common::sepstr<string>(unit, field_sep);
+				size_t field_count = field_descriptor->message_type()->field_count();
 
 				assert(v.size() == field_count);
 
@@ -191,6 +190,9 @@ void setValue(const Reflection* reflection, Message *msg, const FieldDescriptor*
 			}
 			else
 			{
+				vector<string> v = YAC_Common::sepstr<string>(unit, msg_sep);
+				size_t field_count = field_descriptor->message_type()->field_count();
+
 				for(size_t i=0; i<v.size(); ++i)
 				{
 					vector<string> vv = YAC_Common::sepstr<string>(v[i], field_sep);

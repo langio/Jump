@@ -177,7 +177,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 			FieldDescriptor::Label lable = field_descriptor->label();
 			FieldDescriptor::CppType cpp_type = field_descriptor->cpp_type();
 
-			setValue(reflection, msg, field_descriptor, lable, cpp_type, unit, 1);
+			setValue(reflection, msg, field_descriptor, lable, cpp_type, unit, 2);
 		}
 
 		value* realType = dynamic_cast<value*>(msg);
