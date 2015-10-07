@@ -8,6 +8,7 @@
 #include "ini_parse.h"
 
 #include "table_mgr.h"
+#include "logic.h"
 
 using namespace util;
 using namespace protocol;
@@ -46,6 +47,8 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 		case PTYPE_TEXT:
 			game::getInstance().dispatch(ctx, pkg_head, msg_body);
 			break;
+		default:
+			LOG_ERROR(ctx, "unknow type:%d", type);
 	}
 
 	return 0;
@@ -68,7 +71,7 @@ int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm)
 	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
 	if (!ret)
 	{
-		cout << "load conf failed" << endl;
+		LOG_ERROR(ctx, "load conf failed");
 	}
 
 	return 0;
@@ -77,6 +80,11 @@ int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm)
 
 void game::dispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body)
 {
+	switch(pkg_head.cmd)
+	{
+	case CMD_LOGIN_REQ:
+		break;
+	}
 }
 
 
