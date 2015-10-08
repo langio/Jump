@@ -71,7 +71,11 @@ public:
 		return sizeof(t) / sizeof(T);
 	}
 
-
+	template<typename T, int32_t size>
+	static int32_t sizeOf(const T (&t)[size])
+	{
+		return size;
+	}
 };
 
 #endif
