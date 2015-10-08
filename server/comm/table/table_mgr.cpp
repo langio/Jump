@@ -17,10 +17,11 @@ bool TableMgr::reload(const int iConfMacro)
 {
 
     if(_tableLoader.load(TABLE_PATH, iConfMacro))
+    {
         return true;
+    }
     else
     {
-        //cout << "TableMgr::reload error. Macro:%d" << iConfMacro << endl;
         CFG_LOG_ERROR("TableMgr::reload error. Macro:%d", iConfMacro);
         return false;
     }
