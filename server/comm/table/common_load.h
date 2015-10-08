@@ -26,14 +26,14 @@ class CommLoad
 public:
     typedef key (*getKeyFunc)(const value&);
 
-    static bool loadExcel2Map(const string& excel_file, int32_t index, map<key, value>& mOut, getKeyFunc getKey = defaultGetKey);
+    static bool loadCSV2Map(const string& csv_file, getKeyFunc getKey = defaultGetKey);
 
-    static bool loadCSV2Map(const string& csv_file, int32_t index, map<key, value>& mOut, getKeyFunc getKey = defaultGetKey);
-
-    static void printMap(const map<key, value>& mIn);
+    static void printMap();
 
 private:
     static key defaultGetKey(const value& v);
+
+    static map<key, value> _conf;
 };
 
 template<typename key, typename value>
@@ -42,9 +42,11 @@ key CommLoad<key, value>::defaultGetKey(const value& v)
     return v.id;
 }
 
+template<typename key, typename value>
+map<key, value> CommLoad<key, value>::_conf;
 
 template<typename key, typename value>
-bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, map<key, value>& map_out, getKeyFunc getKey)
+bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, getKeyFunc getKey)
 {
 
 	bool bRet = true;
@@ -186,7 +188,7 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 
 		map_key = getKey(record);
 
-		map_out[map_key] = record;
+		_conf[map_key] = record;
 
 		++row;
 	}
@@ -209,10 +211,10 @@ bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, int32_t index, ma
 
 
 template<typename key, typename value>
-void CommLoad<key, value>::printMap(const map<key, value>& mIn)
+void CommLoad<key, value>::printMap()
 {
-	typename map<key, value>::const_iterator it = mIn.begin();
-	for(; it != mIn.end(); ++it)
+	typename map<key, value>::const_iterator it = _conf.begin();
+	for(; it != _conf.end(); ++it)
 	{
 		cout << "key:" << it->first << endl;
 		cout << "value:" << endl << it->second.DebugString() << endl;
