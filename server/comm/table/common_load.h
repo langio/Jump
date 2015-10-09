@@ -34,6 +34,8 @@ public:
 
     static bool loadCSV2Map(const string& csv_file, getKeyFunc getKey = defaultGetKey);
 
+    static const value* find(key k);
+
     static void printMap();
 
 private:
@@ -50,6 +52,18 @@ key CommLoad<key, value>::defaultGetKey(const value& v)
 
 template<typename key, typename value>
 map<key, value> CommLoad<key, value>::_conf;
+
+template<typename key, typename value>
+const value* CommLoad<key, value>::find(key k)
+{
+	typename map<key, value>::const_iterator it = _conf.find(k);
+	if(it != _conf.end())
+	{
+		return &it->second;
+	}
+
+	return NULL;
+}
 
 template<typename key, typename value>
 bool CommLoad<key, value>::loadCSV2Map(const string& csv_file, getKeyFunc getKey)
