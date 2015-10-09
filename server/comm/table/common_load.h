@@ -4,6 +4,12 @@
 #include "libxl.h"
 #include "comm_def.h"
 #include "conf_table.pb.h"
+//#include <google/protobuf/stubs/common.h>
+//#include <google/protobuf/generated_message_util.h>
+//#include <google/protobuf/message.h>
+//#include <google/protobuf/repeated_field.h>
+//#include <google/protobuf/extension_set.h>
+//#include <google/protobuf/unknown_field_set.h>
 #include <stdio.h>
 #include <fstream>
 #include "util/yac_common.h"

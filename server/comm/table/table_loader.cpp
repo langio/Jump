@@ -7,36 +7,32 @@ bool TableLoader::load(const string &sPath, const int iConfMacro)
 {
     bool ret = false;
 
+    __TRY__
+
     switch (iConfMacro)
     {
         case CONFIG_TEST:
         {
-            ret = test_load(sPath + "excel/test.csv");
+        	ret = CommLoad<int32_t, conf_test>::loadCSV2Map(sPath + "excel/test.csv", getTestKey);
+        	CommLoad<int32_t, conf_test>::printMap();
+
             break;
+        }
+        case CONFIG_TEST1:
+        {
+        	ret = CommLoad<int32_t, conf_test1>::loadCSV2Map(sPath + "excel/test1.csv", getTestKey1);
+        	CommLoad<int32_t, conf_test1>::printMap();
+
+        	break;
         }
     }
 
-    return ret;
-}
-
-
-bool TableLoader::test_load(const string& csv_name)
-{
-    bool ret = true;
-    __TRY__
-
-    __BEGIN_PROC__
-
-	ret = CommLoad<int32_t, conf_test>::loadCSV2Map(csv_name, 0, m_test_conf, getTestKey);
-
-    CommLoad<int32_t, conf_test>::printMap(m_test_conf);
-
-	__END_PROC__
 
 	return ret;
 
-    __CATCH__
+	__CATCH__
 
     return false;
 }
+
 
