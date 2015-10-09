@@ -5,8 +5,7 @@ package protocol;
 
 message login_req
 {
-	required int32 id = 1;
-	repeated int32 item = 2;
+	required int32 uid = 1;
 };
 
 message login_rsp
