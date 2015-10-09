@@ -64,7 +64,7 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 	cout << "dispatcher_init" << endl;
 
 	static int32_t confMacroArray[] = {
-			CONFIG_TEST
+			CONFIG_TEST, CONFIG_TEST1
 	    };
 
 	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
