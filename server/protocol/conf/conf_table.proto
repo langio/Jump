@@ -1,5 +1,9 @@
 package protocol;
 
+message stub
+{
+};
+
 message inner
 {
 	required int32 ii = 1;
@@ -18,4 +22,11 @@ message conf_test
 {
 	required int32 id = 1;
 	repeated base baseInfo = 2;
+};
+
+
+message conf_test1
+{
+	required int32 id = 1;
+	repeated inner inner_filed = 2;
 };

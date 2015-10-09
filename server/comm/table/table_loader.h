@@ -29,6 +29,7 @@ public:
 
 
 private:
+	stub s;
 };
 
 #endif
