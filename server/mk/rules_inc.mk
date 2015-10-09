@@ -24,7 +24,7 @@ COMPILER ?= g++
 AR = ar
 RM = rm -vrf
 
-CFLAGS += -g -Wall -Wno-deprecated -pipe -fPIC -D_GNU_SOURCE -D_REENTRANT -std=c++0x
+CFLAGS += -g -Wall -Wno-deprecated -pipe -fPIC -D_GNU_SOURCE -D_REENTRANT -std=c++0x -Wno-literal-suffix
 #CFLAGS += -pg -Wextra -D_NEW_LIC
 
 #SHARED_FLAGS = -shared -z defs -fPIC 
