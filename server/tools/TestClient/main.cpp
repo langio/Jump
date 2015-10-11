@@ -120,11 +120,11 @@ int main(int argc, char* argv[])
 
 	login_req req;
 
-	req.set_id(10);
-	for(int32_t i=0; i<10; ++i)
-	{
-		req.add_item(100+i);
-	}
+	req.set_uid(10);
+//	for(int32_t i=0; i<10; ++i)
+//	{
+//		req.add_item(100+i);
+//	}
 
 //	int32_t byte_size = req.ByteSize();
 //	if (!req.SerializeToArray(buf+sizeof(byte_size), byte_size))
@@ -162,6 +162,7 @@ int main(int argc, char* argv[])
 
 		sleep(1);
 
+		break;
 
 	}
 
