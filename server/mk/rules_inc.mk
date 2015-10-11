@@ -24,7 +24,7 @@ COMPILER ?= g++
 AR = ar
 RM = rm -vrf
 
-CFLAGS += -g -Wall -Wno-deprecated -pipe -fPIC -D_GNU_SOURCE -D_REENTRANT -std=c++0x -Wno-literal-suffix
+CFLAGS += -g -Wall -Wno-deprecated -pipe -fPIC -D_GNU_SOURCE -D_REENTRANT -std=c++11 -Wno-literal-suffix
 #CFLAGS += -pg -Wextra -D_NEW_LIC
 
 #SHARED_FLAGS = -shared -z defs -fPIC 
@@ -74,7 +74,7 @@ endef
 define create_src_dep_file
     echo "update $2 ..."; \
     set -e; rm -f $2; \
-    DCONTENT=`$(COMPILER) -MM $(INCLUDE) $1 | sed "s,.*\.o[ ]*:,$(2:.d=.o) $2 :,g"`; \
+    DCONTENT=`$(COMPILER) -std=c++11 -MM $(INCLUDE) $1 | sed "s,.*\.o[ ]*:,$(2:.d=.o) $2 :,g"`; \
     echo "$$DCONTENT" > $2; \
     echo "$$DCONTENT" | sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
                 -e '/^$$/d' -e 's/$$/ :/' >> $2; \
