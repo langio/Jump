@@ -7,7 +7,7 @@
 #include "util/yac_common.h"
 #include "ini_parse.h"
 
-#include "table_mgr.h"
+#include "server_env.h"
 #include "logic.h"
 
 using namespace util;
@@ -45,7 +45,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 	switch (type)
 	{
 		case PTYPE_TEXT:
-			game::getInstance().dispatch(ctx, pkg_head, msg_body);
+			Game::getInstance().cmdDispatch(ctx, pkg_head, msg_body);
 			break;
 		default:
 			LOG_ERROR(ctx, "unknow type:%d", type);
@@ -64,21 +64,17 @@ int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm)
 
 	LOG_DEBUG(0, "game_init");
 
-	static int32_t confMacroArray[] = {
-			CONFIG_TEST
-	    };
-
-	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
+	bool ret = ServerEnv::getInstance().init();
 	if (!ret)
 	{
-		LOG_ERROR(ctx, "load conf failed");
+		INIT_LOG_ERROR("ServerEnv init failed");
 	}
 
 	return 0;
 
 }
 
-void game::dispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body)
+void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body)
 {
 	switch(pkg_head.cmd)
 	{

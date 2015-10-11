@@ -19,21 +19,22 @@ extern "C"
 	int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm);
 };
 
-class game
+class Game
 {
 public:
-	static game& getInstance()
+	static Game& getInstance()
 	{
-		static game _instance;
+		static Game _instance;
 		return _instance;
 	};
 
-	void dispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body);
+	void cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body);
 
 
 private:
-	game(){}
-	~game(){}
+	Game(){}
+	Game(const Game&);
+	Game& operator=(const Game&);
 };
 
 #endif
