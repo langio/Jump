@@ -12,11 +12,11 @@ using namespace std;
 #define __END_PROC__ }while(0);
 
 
-#define CFG_LOG_ERROR(msg, args...) printf("[Conf load info] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
-#define INIT_LOG_ERROR(msg, args...) printf("[Init info] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
-#define LOG_ERROR(ctx, msg, args...) skynet_error(ctx, "[ERROR] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
-#define LOG_WARN(ctx, msg, args...) skynet_error(ctx, "[WARN] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
-#define LOG_DEBUG(ctx, msg, args...) skynet_error(ctx, "[DEBUG] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
+#define CFG_LOG_ERROR(msg, args...) printf("[Conf load info] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
+#define INIT_LOG_ERROR(msg, args...) printf("[Init info] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
+#define LOG_ERROR(ctx, msg, args...) skynet_error(ctx, "[ERROR] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
+#define LOG_WARN(ctx, msg, args...) skynet_error(ctx, "[WARN] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
+#define LOG_DEBUG(ctx, msg, args...) skynet_error(ctx, "[DEBUG] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
 
 
 // 捕捉异常
