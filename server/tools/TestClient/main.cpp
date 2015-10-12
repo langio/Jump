@@ -20,7 +20,7 @@ extern "C"
 };
 
 #undef LOG_ERROR
-#define LOG_ERROR(ctx, msg, args...) printf("[ERROR] %s:%d|"msg"\n", __FILE__, __LINE__, ##args)
+#define LOG_ERROR(ctx, msg, args...) printf("[ERROR] %s:%d|" msg "\n", __FILE__, __LINE__, ##args)
 
 const int32_t MAX_BUFF = 102400;
 struct socket_server * ss = NULL;
