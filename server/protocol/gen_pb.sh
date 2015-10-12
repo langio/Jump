@@ -49,5 +49,4 @@ do
 	gen $dir
 done
 
-
 rm -rf $new_file_dir
