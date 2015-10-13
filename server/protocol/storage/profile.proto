@@ -1,6 +1,6 @@
 package S;
 
-message id
+message PPlayerId
 {
 	required int32 uid = 1;
 	required int32 zone_id = 2;
@@ -15,6 +15,6 @@ message PBase
 
 message PProfile
 {
-	required id player_id = 1;
+	required PPlayerId player_id = 1;
 	required PBase base = 2;
 };

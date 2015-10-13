@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include "util/yac_common.h"
 
+//此文件中只定义协议不相关的一些通用方法、宏等
+
 using namespace std;
 
 #define __BEGIN_PROC__  do{
