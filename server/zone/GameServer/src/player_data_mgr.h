@@ -3,6 +3,12 @@
 
 #include "comm_util.h"
 #include "hash_mem_pool.h"
+#include "util/yac_shm.h"
+#include "util/yac_sem_mutex.h"
+#include <atomic>
+
+using namespace std;
+using namespace util;
 
 class PlayerDataMgr
 {
@@ -16,9 +22,9 @@ public:
 		return _instance;
 	}
 
-    size_t GetMaxSize(unsigned int bucket, unsigned int node);
+    size_t GetMaxSize(uint32_t bucket, uint32_t node);
 
-    int Init(void* mem, uint32_t bucket_num, uint32_t max_node, bool check_header = false);
+    int32_t Init();
 
     PProfile * Add(PlayerID player_id, bool & exist);
 
@@ -27,8 +33,7 @@ public:
      */
     PProfile *GetProfile(PlayerID player_id);
 
-    PProfile * Get(PlayerID player_id, bool need_login);
-    int Del(PlayerID player_id);
+    int32_t Del(PlayerID player_id);
 
     size_t Ref(PProfile *profile);
 
@@ -36,12 +41,17 @@ public:
 
 
 private:
-    PlayerDataMgr(){}
+    PlayerDataMgr():_count(0){}
     PlayerDataMgr(const PlayerDataMgr&);
     PlayerDataMgr& operator=(const PlayerDataMgr&);
 
 
+    YAC_Shm _shm;
+    YAC_SemMutex _sem_mutex;	//读写锁
+
     PlayerDataPool _player_data_pool;
+
+    atomic_int _count;	//Init只能被调用1次，用count来计算
 };
 
 
