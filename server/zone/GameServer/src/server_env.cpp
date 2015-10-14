@@ -18,7 +18,8 @@ bool ServerEnv::init()
 
 
 	//连接redis
-	if(!_rdx.connect("localhost", 6379))
+	ret = _rdx.connect("localhost", 6379);
+	if(!ret)
 	{
 		INIT_LOG_ERROR("rdx connect err");
 	}

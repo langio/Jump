@@ -8,6 +8,7 @@
 #include "util/yac_common.h"
 #include "ini_parse.h"
 #include "server_env.h"
+#include "player_data_mgr.h"
 
 
 using namespace util;
@@ -58,19 +59,22 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 //初始化game
 int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm)
 {
+	int ret = 0;
 
 	skynet_callback(ctx, p_game_data, _cb);
 	skynet_command(ctx, "REG", ".game");
 
 	LOG_DEBUG(0, "game_init");
 
-	bool ret = ServerEnv::getInstance().init();
-	if (!ret)
+	if (!ServerEnv::getInstance().init())
 	{
 		INIT_LOG_ERROR("ServerEnv init failed");
+		ret = -1;
 	}
 
-	return 0;
+	ret = PlayerDataMgr::getInstance().Init();
+
+	return ret;
 
 }
 
