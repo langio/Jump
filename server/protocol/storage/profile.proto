@@ -2,8 +2,8 @@ package S;
 
 message PPlayerId
 {
-	required int32 uid = 1;
-	required int32 zone_id = 2;
+	required uint32 uid = 1;
+	required uint32 zone_id = 2;
 }
 
 message PBase

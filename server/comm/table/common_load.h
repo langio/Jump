@@ -1,7 +1,6 @@
 #ifndef __COMMON_LOAD_H_
 #define __COMMON_LOAD_H_
 
-#include "libxl.h"
 #include "comm_def.h"
 #include "conf_table.pb.h"
 //#include <google/protobuf/stubs/common.h>
