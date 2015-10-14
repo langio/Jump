@@ -13,8 +13,6 @@
 #include <fstream>
 #include "util/yac_common.h"
 
-
-using namespace libxl;
 using namespace protocol;
 using namespace google::protobuf;
 using namespace util;

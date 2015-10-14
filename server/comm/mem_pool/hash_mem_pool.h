@@ -5,6 +5,8 @@
 #include "mem_pool/must_be_pod.h"
 #include <sys/types.h>
 #include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
 
 
 template <typename KeyType, typename ValueType>
