@@ -1,14 +1,14 @@
-#include "comm_def.h"
+#include "login.pb.h"
+
+#include "logic.h"
+
 #include "send_util.h"
 #include "public.h"
-
-#include "login.pb.h"
 #include "service_game.h"
 #include "util/yac_common.h"
 #include "ini_parse.h"
-
 #include "server_env.h"
-#include "logic.h"
+
 
 using namespace util;
 using namespace protocol;

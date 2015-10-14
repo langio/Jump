@@ -9,7 +9,7 @@ typedef struct game_data
 extern "C"
 {
 
-#include "skynet.h"
+//#include "skynet.h"
 #include "skynet_server.h"
 
 	GameData * game_create(void);

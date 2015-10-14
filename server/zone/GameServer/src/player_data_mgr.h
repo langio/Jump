@@ -25,9 +25,14 @@ public:
     /*
      * 游戏上层逻辑取在线玩家数据，保证数据已经加载,并且玩家在线
      */
-    PProfile *GetPlayerData(PlayerID player_id);
+    PProfile *GetProfile(PlayerID player_id);
 
+    PProfile * Get(PlayerID player_id, bool need_login);
     int Del(PlayerID player_id);
+
+    size_t Ref(PProfile *profile);
+
+    PProfile* Deref(size_t p);
 
 
 private:

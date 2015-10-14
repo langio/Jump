@@ -6,6 +6,12 @@
 #include <unistd.h>
 #include "util/yac_common.h"
 
+extern "C"
+{
+#include "skynet.h"
+#include "skynet_socket.h"
+};
+
 //此文件中只定义协议不相关的一些通用方法、宏等
 
 using namespace std;

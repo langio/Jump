@@ -1,6 +1,7 @@
 #ifndef _SERVICE_DISPATCHER_H
 #define _SERVICE_DISPATCHER_H
 
+#include "comm_def.h"
 
 //根据命令字将消息发到对应的服务中
 //命令字为4个字节整形，字节从高到底依次编号为1~4，第1个字节保留，第2字节表示服务，第3、4字节表示服务内的命令
@@ -12,7 +13,7 @@ typedef struct dispatcher_data
 extern "C"
 {
 
-#include "skynet.h"
+//#include "skynet.h"
 #include "skynet_server.h"
 
 	DispatcherData * dispatcher_create(void);

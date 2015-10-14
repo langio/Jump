@@ -1,8 +1,5 @@
-extern "C"
-{
-#include "skynet_socket.h"
-#include "skynet.h"
-}
+#ifndef __SEND_UTIL_H_
+#define __SEND_UTIL_H_
 
 #include <google/protobuf/message.h>
 #include "comm_def.h"
@@ -67,4 +64,6 @@ bool sendToClinet(const PkgHead& pkg_head, const google::protobuf::Message& mess
 
 	return false;
 }
+
+#endif
 
