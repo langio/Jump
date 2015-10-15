@@ -40,8 +40,8 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 
 	}
 
-	PkgHead pkg_head;
-	const char* msg_body;
+	PkgHead pkg_head = *(PkgHead*)msg;
+	const char* msg_body = msg + sizeof(PkgHead);
 
 	switch (type)
 	{
