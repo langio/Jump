@@ -62,15 +62,15 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 	//fprintf(stderr, "dispatcher_init\n");
 	cout << "dispatcher_init" << endl;
 
-	static int32_t confMacroArray[] = {
-			CONFIG_TEST, CONFIG_TEST1
-	    };
-
-	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
-	if (!ret)
-	{
-		cout << "load conf failed" << endl;
-	}
+//	static int32_t confMacroArray[] = {
+//			CONFIG_TEST, CONFIG_TEST1
+//	    };
+//
+//	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
+//	if (!ret)
+//	{
+//		cout << "load conf failed" << endl;
+//	}
 
 	if(!loadSo(ctx))
 	{
@@ -165,28 +165,30 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 	if(2 == space_counter)
 	{
 		//解析消息
-		int8_t * p = const_cast<int8_t*>((const int8_t*)msg + header_index);
+		int8_t * pkg = const_cast<int8_t*>((const int8_t*)msg + header_index);
 
 		//协议包头
-		PkgHead *head = (PkgHead*)p;
+		PkgHead *head = (PkgHead*)pkg;
 		head->unpack();
 		head->client_fd = YAC_Common::strto<uint32_t>(vExtHead[0]);
-		p += sizeof(*head);
+		size_t pkg_len = sz - header_index;
+
+//		p += sizeof(*head);
 
 		//协议内容--测试代码
 		if("data" == vExtHead[1])
 		{
-			static int32_t counter = 0;
-
-			LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", head->cmd, head->body_len, head->client_fd);
-
-			login_req req;
-			if (!req.ParseFromArray(p, head->body_len))
-			{
-				LOG_ERROR(ctx, "login_req ParseFromArray failed!");
-				break;
-			}
-			LOG_ERROR(ctx, "login_req:\ncounter:%d\n%s", counter, req.DebugString().c_str());
+//			static int32_t counter = 0;
+//
+//			LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", head->cmd, head->body_len, head->client_fd);
+//
+//			login_req req;
+//			if (!req.ParseFromArray(p, head->body_len))
+//			{
+//				LOG_ERROR(ctx, "login_req ParseFromArray failed!");
+//				break;
+//			}
+//			LOG_ERROR(ctx, "login_req:\ncounter:%d\n%s", counter, req.DebugString().c_str());
 
 
 			//根据命令字将消息发到对应的so中
@@ -194,11 +196,24 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 
 			switch(cmd_type)
 			{
-			case AUTH_SVR:
-				break;
+				case AUTH_SVR:
+					break;
 
-			case LOGIN_SVR:
-				break;
+				case LOGIN_SVR:
+				{
+					static uint32_t game_handler = 0;
+					if (game_handler == 0)
+					{
+						game_handler = skynet_handle_findname("game");
+					}
+					if (0 == game_handler)
+					{
+						LOG_ERROR(ctx, "can't find game_handler");
+						break;
+					}
+					skynet_send(ctx, 0, game_handler, PTYPE_TEXT, 0, pkg, pkg_len);
+					break;
+				}
 			}
 		}
 
