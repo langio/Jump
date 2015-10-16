@@ -82,8 +82,16 @@ void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, con
 {
 	switch(pkg_head.cmd)
 	{
-	case CMD_LOGIN_REQ:
-		break;
+		case CMD_LOGIN_REQ:
+		{
+			break;
+		}
+
+		default:
+		{
+			LOG_ERROR(ctx, "unknown cmd:%d", pkg_head.cmd);
+			break;
+		}
 	}
 }
 

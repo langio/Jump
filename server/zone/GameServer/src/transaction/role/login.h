@@ -1,8 +1,9 @@
 #ifndef __LOGIN_H_
 #define __LOGIN_H_
 
+#include "base_transaction.h"
 
-class Login
+class Login : public BaseTransaction
 {
 public:
 	Login(){};
