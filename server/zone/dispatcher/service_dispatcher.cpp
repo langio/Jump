@@ -194,6 +194,8 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 			//根据命令字将消息发到对应的so中
 			uint32_t cmd_type = GET_CMD_SVR_TYPE(head->cmd);
 
+			int32_t module = 0;
+
 			switch(cmd_type)
 			{
 				case AUTH_SVR:
@@ -201,19 +203,24 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 
 				case LOGIN_SVR:
 				{
-					static uint32_t game_handler = 0;
-					if (game_handler == 0)
+					static uint32_t module_game = 0;
+					if (module_game == 0)
 					{
-						game_handler = skynet_handle_findname("game");
+						module_game = skynet_handle_findname("game");
 					}
-					if (0 == game_handler)
-					{
-						LOG_ERROR(ctx, "can't find game_handler");
-						break;
-					}
-					skynet_send(ctx, 0, game_handler, PTYPE_TEXT, 0, pkg, pkg_len);
+					module = module_game;
+
 					break;
 				}
+			}
+
+			if(module > 0)
+			{
+				skynet_send(ctx, 0, module, PTYPE_TEXT, 0, pkg, pkg_len);
+			}
+			else
+			{
+				LOG_ERROR(ctx, "can't find module");
 			}
 		}
 
