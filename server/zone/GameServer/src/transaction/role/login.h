@@ -3,13 +3,15 @@
 
 #include "base_transaction.h"
 
-class Login : public BaseTransaction
+class Login : public Base
 {
 public:
 	Login(){};
 	~Login(){};
 
-	int32_t DoLogin();
+	int32_t Init();
+
+	int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body);
 };
 
 #endif

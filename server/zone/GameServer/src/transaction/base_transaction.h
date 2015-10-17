@@ -1,11 +1,16 @@
 #ifndef __BASE_TRANSACTION_H_
 #define __BASE_TRANSACTION_H_
+#include "server_env.h"
 
-class BaseTransaction
+
+class Base
 {
 public:
-	BaseTransaction():_finished(false){}
-	virtual ~BaseTransaction(){}
+	Base():counter(1), _finished(false){}
+	virtual ~Base(){}
+
+	virtual int32_t Init() = 0;
+	virtual int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body) = 0;
 
 protected:
 	void SetFinished(){_finished = true;}
@@ -13,6 +18,7 @@ protected:
 	bool IsFinished(){return _finished;}
 
 private:
+	atomic_int counter;
 	bool _finished;
 };
 

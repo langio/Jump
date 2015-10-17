@@ -1,6 +1,7 @@
 #ifndef __SERVER_ENV_H_
 #define __SERVER_ENV_H_
 
+#include "send_util.h"
 #include "redox.hpp"
 
 using namespace redox;

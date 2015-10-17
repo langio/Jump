@@ -41,7 +41,7 @@ static int _cb(struct skynet_context * ctx, void * ud, int type, int session,
 	}
 
 	PkgHead pkg_head = *(PkgHead*)msg;
-	const char* msg_body = msg + sizeof(PkgHead);
+	const char* msg_body = (const char*)msg + sizeof(PkgHead);
 
 	switch (type)
 	{
@@ -80,10 +80,13 @@ int game_init(GameData *p_game_data, struct skynet_context * ctx, char * parm)
 
 void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body)
 {
+	Base* p_transaction = NULL;
+
 	switch(pkg_head.cmd)
 	{
 		case CMD_LOGIN_REQ:
 		{
+			p_transaction = new Login();
 			break;
 		}
 
@@ -92,6 +95,11 @@ void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, con
 			LOG_ERROR(ctx, "unknown cmd:%d", pkg_head.cmd);
 			break;
 		}
+	}
+
+	if(p_transaction != NULL)
+	{
+		p_transaction->Enter(ctx, pkg_head, msg_body);
 	}
 }
 
