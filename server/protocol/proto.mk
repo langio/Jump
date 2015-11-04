@@ -13,15 +13,11 @@ exist := $(shell if [ -f $(FILE) ]; then echo "exist"; else echo "notexist"; fi;
 
 ifneq ($(exist), "exist")
 PB_LIB_DIR = /usr/lib/x86_64-linux-gnu/
-PB_LIB_DIR = /usr/local/lib/
 endif
 
 #PB_LIB_DIR = /usr/lib/x86_64-linux-gnu/
 
-#SO_LIBS += -L$(PROTO_DIR) -lproto -L$(PB_LIB_DIR) -lprotobuf -Wl,-rpath,$(PB_LIB_DIR)
 LIBS += -L$(PROTO_DIR) -lproto -L$(PB_LIB_DIR) -lprotobuf -Wl,-rpath,$(PB_LIB_DIR)
-
-#LIBS += -L $(LIBPATH) -lxl -Wl,-rpath,$(LIBPATH),-rpath,../$(LIBPATH)
 
 DEP_MAKE_SUBDIRS += $(PROTO_DIR)
 TARGET_DEP_OBJS += $(PROTO_DIR)/libproto.a
