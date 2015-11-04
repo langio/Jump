@@ -15,6 +15,7 @@ extern "C"
 
 //#include "skynet.h"
 #include "skynet_server.h"
+#include "skynet_handle.h"
 
 	DispatcherData * dispatcher_create(void);
 	void dispatcher_release(DispatcherData *d);

@@ -62,16 +62,6 @@ int dispatcher_init(DispatcherData *d, struct skynet_context * ctx, char * parm)
 	//fprintf(stderr, "dispatcher_init\n");
 	cout << "dispatcher_init" << endl;
 
-//	static int32_t confMacroArray[] = {
-//			CONFIG_TEST, CONFIG_TEST1
-//	    };
-//
-//	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
-//	if (!ret)
-//	{
-//		cout << "load conf failed" << endl;
-//	}
-
 	if(!loadSo(ctx))
 	{
 		return -1;
@@ -173,7 +163,8 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 		head->client_fd = YAC_Common::strto<uint32_t>(vExtHead[0]);
 		size_t pkg_len = sz - header_index;
 
-//		p += sizeof(*head);
+//		pkg += sizeof(*head);
+
 
 		//协议内容--测试代码
 		if("data" == vExtHead[1])
