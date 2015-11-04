@@ -2,6 +2,8 @@
 #define __BASE_TRANSACTION_H_
 #include "server_env.h"
 
+using namespace util;
+using namespace protocol;
 
 class Base
 {
@@ -10,7 +12,7 @@ public:
 	virtual ~Base(){}
 
 	virtual int32_t Init() = 0;
-	virtual int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* msg_body) = 0;
+	virtual int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body) = 0;
 
 protected:
 	void SetFinished(){_finished = true;}
