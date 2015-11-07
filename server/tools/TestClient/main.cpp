@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
 	login_req req;
 
 	req.set_uid(10);
+	req.set_zone_id(1);
 //	for(int32_t i=0; i<10; ++i)
 //	{
 //		req.add_item(100+i);
