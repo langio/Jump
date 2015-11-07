@@ -7,7 +7,7 @@ using namespace protocol;
 bool ServerEnv::init()
 {
 	static int32_t confMacroArray[] = {
-				CONFIG_TEST, CONFIG_TEST1
+				CONFIG_TEST
 		    };
 
 	bool ret = TableMgr::getInstance()->reload(confMacroArray, CommFunc::sizeOf(confMacroArray));
