@@ -8,10 +8,9 @@ LIBS += -lpthread
 
 NEED_MAKE_DEP = Y
 
-#include ../../skynet/include.mk
+include ../../skynet/include.mk
 include ../socket-server-master/socket.mk
 include ../../protocol/proto.mk
-include ../../3rd/libxl-3.6.2.0/libxl.mk
 include ../../3rd/yac/yac.mk
 include ../../comm/comm.mk
 include ../../mk/rules_inc.mk
