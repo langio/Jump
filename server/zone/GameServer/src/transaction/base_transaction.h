@@ -8,7 +8,7 @@ using namespace protocol;
 class Base
 {
 public:
-	Base():counter(1), _finished(false){}
+	Base():_finished(false){}
 	virtual ~Base(){}
 
 	virtual int32_t Init() = 0;
@@ -20,7 +20,7 @@ protected:
 	bool IsFinished(){return _finished;}
 
 private:
-	atomic_int counter;
+	//atomic_int counter;
 	bool _finished;
 };
 

@@ -21,7 +21,7 @@ int32_t Login::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const
 	}
 	__END_PROC__
 
-	LOG_ERROR(ctx, "login_req:\ncounter:%d\n%s", counter, req.DebugString().c_str());
+	LOG_ERROR(ctx, "login_req:\n%s", req.DebugString().c_str());
 
 	return 0;
 }
