@@ -6,6 +6,7 @@ package protocol;
 message login_req
 {
 	required int32 uid = 1;
+	required int32 zone_id = 2;
 };
 
 message login_rsp

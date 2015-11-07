@@ -1,6 +1,7 @@
 #ifndef __BASE_TRANSACTION_H_
 #define __BASE_TRANSACTION_H_
 #include "server_env.h"
+#include "player_data_mgr.h"
 
 using namespace util;
 using namespace protocol;

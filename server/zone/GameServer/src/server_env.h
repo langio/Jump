@@ -17,6 +17,8 @@ public:
 
     bool init();
 
+    Redox& getRdx(){ return _rdx;}
+
 private:
     ServerEnv(){}
     ServerEnv(const ServerEnv&);
