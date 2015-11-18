@@ -1,7 +1,16 @@
+import "profile.proto";
+
 package protocol;
 
 message reg_req
 {
 	required string account = 1;
 	required string passwd = 2;
+	required string zone_id = 3;
+	required string name = 4;
+}
+
+message reg_rsp
+{
+	required S.PProfile profile = 1;
 }

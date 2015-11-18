@@ -6,15 +6,40 @@ message PPlayerId
 	required uint32 zone_id = 2;
 }
 
-message PBase
+//基础信息
+message PBaseInfo
 {
 	required string name = 1;
 	required int32 register_time = 2;
 	required int32 login_time = 3;
+	required int32 gender = 4;
 };
+
+//账户充值信息
+message PAccount
+{
+	required int32 history_total = 1;		//历史总充值
+	required int32 balance = 2;				//当前余额
+	required int32 last_recharge_time = 3;	//上一次充值时间
+	required int32 last_consume_time = 4;	//上一次消费时间
+}
+
+//游戏内代币
+message PTokenMoney
+{
+	required int32 gold = 1;				//金币
+}
+
 
 message PProfile
 {
 	required PPlayerId player_id = 1;
-	required PBase base = 2;
+	required PAccount account = 2;
+	required PTokenMoney token_money = 3;
+	required PBaseInfo base_info = 4;
 };
+
+
+
+
+
