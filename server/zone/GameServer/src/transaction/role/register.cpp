@@ -143,6 +143,7 @@ void Register::SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, 
 	};
 
 	ServerEnv::getInstance().getRdx().command<string>({"SET", key + " " + value}, got_reply);
+
 }
 
 void Register::InitProfile(PProfile& profile)
