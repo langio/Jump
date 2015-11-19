@@ -6,7 +6,7 @@ message reg_req
 {
 	required string account = 1;
 	required string passwd = 2;
-	required string zone_id = 3;
+	required int32 zone_id = 3;
 	required string name = 4;
 }
 

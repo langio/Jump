@@ -5,6 +5,7 @@
 
 using namespace util;
 using namespace protocol;
+using namespace google::protobuf;
 
 class Base
 {
@@ -14,6 +15,18 @@ public:
 
 	virtual int32_t Init() = 0;
 	virtual int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body) = 0;
+
+	void End()
+	{
+		//销毁自己
+		delete this;
+	}
+
+	void Send2Client(const PkgHead& pkg_head, const Message& message)
+	{
+		sendToClinet(pkg_head, message);
+		End();
+	}
 
 protected:
 	void SetFinished(){_finished = true;}

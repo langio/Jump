@@ -20,111 +20,134 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 		break;
 	}
 
+	reg_rsp rsp;
+
 	//从redis拉取uid, uid和昵称全局唯一
 	{
 		//验证name是否唯一
 		auto got_name_reply = [=, &rsp](Command<string>& c)
 		{
-			if(c.status() == redox::Command::NIL_REPLY)
+			if(c.status() == c.NIL_REPLY)
 			{
 				//name不存在，写name并且获取uid
+				SetName(ctx, pkg_head, req, rsp);
+
 			}
 			else if(c.ok())
 			{
+				//给客户端回包，流程结束
 				LOG_DEBUG(ctx, "name duplicate. %s", req.name().c_str());
 			}
 			else
 			{
+				//给客户端回包，流程结束
 				LOG_ERROR(ctx, "get name err. cmd:%s status:%d", c.cmd().c_str(), c.status());
-				return;
 			}
 
-			LOG_DEBUG(ctx, "cmd:%s", c.cmd().c_str());
-
-			PProfile profile;
-			if (!profile.ParseFromString(c.reply()))
-			{
-				LOG_ERROR(ctx, "profile ParseFromArray failed!");
-				return;
-			}
-
-			bool exist;
-			PProfile *p_profile = PlayerDataMgr::getInstance().Add(player_id, exist);
-			if(exist)
-			{
-				//从cache中读数据理论上不应该走到这里
-				LOG_ERROR(ctx, "profile exist!!!");
-				return;
-			}
-			*p_profile = profile;
-
-			PProfile *rsp_profile = rsp.mutable_profile();
-			*rsp_profile = *p_profile;
-
-			sendToClinet(pkg_head, rsp);
 		};
 
 		string key = req.name();
 		ServerEnv::getInstance().getRdx().command<string>({"GET", key}, got_name_reply);
 	}
 
-	PlayerID player_id;
-	player_id.Init(req.uid(), req.zone_id());
-	PProfile *p_profile = PlayerDataMgr::getInstance().GetProfile(player_id);
-
-	login_rsp rsp;
-	if(p_profile != NULL)
-	{
-		PProfile *rsp_profile = rsp.mutable_profile();
-		*rsp_profile = *p_profile;
-
-		sendToClinet(pkg_head, rsp);
-	}
-	else
-	{
-		auto got_reply = [=, &rsp](Command<string>& c)
-		{
-			if(!c.ok())
-			{
-				LOG_ERROR(ctx, "cmd:%s status:%d", c.cmd().c_str(), c.status());
-				return;
-			}
-
-			LOG_DEBUG(ctx, "cmd:%s", c.cmd().c_str());
-
-			PProfile profile;
-			if (!profile.ParseFromString(c.reply()))
-			{
-				LOG_ERROR(ctx, "profile ParseFromArray failed!");
-				return;
-			}
-
-			bool exist;
-			PProfile *p_profile = PlayerDataMgr::getInstance().Add(player_id, exist);
-			if(exist)
-			{
-				//从cache中读数据理论上不应该走到这里
-				LOG_ERROR(ctx, "profile exist!!!");
-				return;
-			}
-			*p_profile = profile;
-
-			PProfile *rsp_profile = rsp.mutable_profile();
-			*rsp_profile = *p_profile;
-
-			sendToClinet(pkg_head, rsp);
-		};
-
-		string key = player_id.ToString();
-		ServerEnv::getInstance().getRdx().command<string>({"GET", key}, got_reply);
-
-	}
-
 
 
 	__END_PROC__
 
-	LOG_ERROR(ctx, "login_req:\n%s", req.DebugString().c_str());
+	LOG_ERROR(ctx, "reg_req:\n%s", req.DebugString().c_str());
 
 	return 0;
+}
+
+
+void Register::SetName(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp)
+{
+	auto got_reply = [=, &rsp](Command<string>& c)
+	{
+		if(c.ok())
+		{
+			GetUid(ctx, pkg_head, req, rsp);
+		}
+		else
+		{
+			LOG_ERROR(ctx, "SetName failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
+
+			//给客户端回包，流程结束
+		}
+
+	};
+
+	string key = req.name();
+	ServerEnv::getInstance().getRdx().command<string>({"SET", key}, got_reply);
+}
+
+
+void Register::GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp)
+{
+	auto got_reply = [=, &rsp](Command<string>& c)
+	{
+		if(c.ok())
+		{
+			int32_t uid = UIDBASE + S2I(c.reply());
+			SetProfile(ctx, pkg_head, req, rsp, uid);
+		}
+		else
+		{
+			LOG_ERROR(ctx, "GetUid failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
+
+			//给客户端回包，流程结束
+			Send2Client(pkg_head, rsp);
+		}
+
+
+	};
+
+	string key = UIDKEY;
+	ServerEnv::getInstance().getRdx().command<string>({"INCR", key}, got_reply);
+}
+
+void Register::SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp, int32_t uid)
+{
+	PProfile profile;
+
+	profile.mutable_player_id()->set_uid(uid);
+	profile.mutable_player_id()->set_zone_id(req.zone_id());
+	profile.mutable_base_info()->set_name(req.name());
+
+	InitProfile(profile);
+	PPlayerId *player_id = profile.mutable_player_id();
+	string key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
+	string value = profile.SerializeAsString();
+
+	auto got_reply = [=, &rsp](Command<string>& c)
+	{
+		if(c.ok())
+		{
+			//本地缓存profile
+			PlayerID id;
+			id.ToPlayerId(player_id);
+			PProfile *p_profile = PlayerDataMgr::getInstance().GetProfile(id);
+			*p_profile = profile;
+
+			//给客户端回包，流程结束
+			Send2Client(pkg_head, rsp);
+		}
+		else
+		{
+			LOG_ERROR(ctx, "SetProfile failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
+
+			//给客户端回包，流程结束
+			Send2Client(pkg_head, rsp);
+		}
+
+	};
+
+	ServerEnv::getInstance().getRdx().command<string>({"SET", key + " " + value}, got_reply);
+}
+
+void Register::InitProfile(PProfile& profile)
+{
+	time_t now = YAC_TimeProvider::getInstance()->getNow();
+	profile.mutable_base_info()->set_register_time(now);
+	profile.mutable_base_info()->set_login_time(now);
 }

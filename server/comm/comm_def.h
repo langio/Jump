@@ -5,6 +5,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "util/yac_common.h"
+#include "util/yac_timeprovider.h"
 
 extern "C"
 {
@@ -87,4 +88,7 @@ public:
 	}
 };
 
+const string PROFILEPREFIX = "user_";				//GET SET profile是的key前缀
+const string UIDKEY = "sole_uid_in_one_redis";		//注册账号时获取uid的key，uid在一个redis实例内唯一
+const int32_t UIDBASE = 1000000;					//uid起始基数
 #endif

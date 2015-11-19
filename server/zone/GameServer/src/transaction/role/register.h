@@ -14,9 +14,11 @@ public:
 	int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body);
 
 private:
-	int32_t InitProfile();
-	void GetUid();
-	void
+
+	void SetName(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp);
+	void GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp);
+	void SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp, int32_t uid);
+	void InitProfile(PProfile& profile);
 };
 
 #endif
