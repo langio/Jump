@@ -1,4 +1,5 @@
 #include "login.pb.h"
+#include "register.pb.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -38,8 +39,13 @@ static void * _poll(void * ud)
 		case SOCKET_EXIT:
 			return NULL;
 		case SOCKET_DATA:
+		{
 			printf("message(%" PRIuPTR ") [id=%d] size=%d\n",result.opaque,result.id, result.ud);
+			reg_rsp rsp;
+			rsp.ParseFromString(string(result.data));
+			printf("rsp:\n%s", rsp.DebugString().c_str());
 			free(result.data);
+		}
 			break;
 		case SOCKET_CLOSE:
 			printf("close(%" PRIuPTR ") [id=%d]\n",result.opaque,result.id);
@@ -122,29 +128,17 @@ int main(int argc, char* argv[])
 
 	req.set_uid(10);
 	req.set_zone_id(1);
-//	for(int32_t i=0; i<10; ++i)
-//	{
-//		req.add_item(100+i);
-//	}
 
-//	int32_t byte_size = req.ByteSize();
-//	if (!req.SerializeToArray(buf+sizeof(byte_size), byte_size))
-//	{
-//
-//	}
-//	int32_t *header = (int32_t*)buf;
-//
-//	int32_t data_len = byte_size;
-//
-//	printf("data_len:%d\n", data_len);
-//
-//	int32_t send_len = data_len + sizeof(byte_size);
-//
-//	*header = htonl(data_len);
+	reg_req rreq;
+	rreq.set_account("langio@foxmail.com");
+	rreq.set_name("Jump");
+	rreq.set_zone_id(1);
+	rreq.set_passwd("password");
+
 
 	PkgHead pkg_head;
 
-	pkg_head.cmd = CMD_LOGIN_REQ;
+	pkg_head.cmd = CMD_REG_REQ; //CMD_LOGIN_REQ;
 	pkg_head.client_fd = conn_id;
 
 	int32_t counter = 0;
@@ -156,7 +150,7 @@ int main(int argc, char* argv[])
 //
 //		socket_server_send(ss, conn_id, sendbuf, send_len);
 
-		send_msg(pkg_head, req);
+		send_msg(pkg_head, rreq);
 		++counter;
 
 		printf("counter:%d\n", counter);

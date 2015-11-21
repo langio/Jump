@@ -1,5 +1,3 @@
-#include "login.pb.h"
-
 #include "logic.h"
 
 #include "send_util.h"
@@ -84,6 +82,11 @@ void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, con
 
 	switch(pkg_head.cmd)
 	{
+		case CMD_REG_REQ:
+		{
+			p_transaction = new Register();
+			break;
+		}
 		case CMD_LOGIN_REQ:
 		{
 			p_transaction = new Login();

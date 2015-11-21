@@ -43,7 +43,9 @@ const int CMD_AUTH_REQ = 0x00010000;		//鉴权请求
 
 
 //注册、登录相关命令0x0002xxxx
+const int CMD_REG_REQ = 0x00020000;			//注册请求
 const int CMD_LOGIN_REQ = 0x00020001;		//登录请求
+
 
 
 #endif
