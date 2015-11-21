@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include "util/yac_common.h"
 #include "util/yac_timeprovider.h"
+#include "ret_code.h"
 
 extern "C"
 {

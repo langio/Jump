@@ -15,9 +15,9 @@ public:
 
 private:
 
-	void SetName(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp);
-	void GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp);
-	void SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, const Message& rsp, int32_t uid);
+	void SetName(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, reg_rsp& rsp);
+	void GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, reg_rsp& rsp);
+	void SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, reg_rsp& rsp, int32_t uid);
 	void InitProfile(PProfile& profile);
 };
 
