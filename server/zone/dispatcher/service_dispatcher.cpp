@@ -211,7 +211,7 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 			}
 			else
 			{
-				LOG_ERROR(ctx, "can't find module");
+				LOG_ERROR(ctx, "can't find module. cmd_type:%p", cmd_type);
 			}
 		}
 

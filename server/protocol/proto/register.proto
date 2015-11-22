@@ -12,6 +12,5 @@ message reg_req
 
 message reg_rsp
 {
-	required int32 ret = 1;
-	required S.PProfile profile = 2;
+	optional S.PProfile profile = 2;
 }

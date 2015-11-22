@@ -6,10 +6,15 @@ int32_t Register::Init()
 	return 0;
 }
 
+//std::function<void(Command<ReplyT> &);
+
+
+
 int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body)
 {
 	LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.body_len, pkg_head.client_fd);
 
+	PkgHead head = pkg_head;
 	reg_req req;
 
 	__BEGIN_PROC__
@@ -25,13 +30,13 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 	//从redis拉取uid, uid和昵称全局唯一
 	{
 		//验证name是否唯一
-		auto got_name_reply = [=, &rsp](Command<string>& c)
+		auto got_name_reply = [&](Command<string>& c)
 		{
 
 			if(c.status() == c.NIL_REPLY)
 			{
 				//name不存在，获取uid
-				GetUid(ctx, pkg_head, req, rsp);
+				GetUid(ctx, head, req, rsp);
 
 			}
 			else
@@ -41,23 +46,26 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 					//昵称已被使用，给客户端回包，流程结束
 					LOG_DEBUG(ctx, "name duplicate. %s", req.name().c_str());
 
-					rsp.set_ret(RET_REG_ERR_DUPLICATE_NAME);
+					head.ret = RET_REG_ERR_DUPLICATE_NAME;
+					//rsp.set_ret(RET_REG_ERR_DUPLICATE_NAME);
 				}
 				else
 				{
 					//给客户端回包，流程结束
 					LOG_ERROR(ctx, "get name err. cmd:%s status:%d", c.cmd().c_str(), c.status());
 
-					rsp.set_ret(RET_REDIS_ERR_GET);
+					head.ret =  RET_REDIS_ERR_GET;
+					//rsp.set_ret(RET_REDIS_ERR_GET);
 				}
 
-				Send2Client(pkg_head, rsp);
+				Send2Client(head, rsp);
 			}
 
 		};
 
-		string key_value = req.name() + " 1";
-		ServerEnv::getInstance().getRdx().command<string>({"GETSET", key_value}, got_name_reply);
+		string key = req.name();
+		string value = "1";
+		ServerEnv::getInstance().getRdx().command<string>({"GETSET", key, value}, got_name_reply);
 	}
 
 
@@ -70,22 +78,23 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 }
 
 
-void Register::GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, reg_rsp& rsp)
+void Register::GetUid(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp)
 {
-	auto got_reply = [=, &rsp](Command<string>& c)
+	auto got_reply = [&](Command<string>& c1)
 	{
-		if(c.ok())
+		if(c1.ok())
 		{
-			int32_t uid = UIDBASE + S2I(c.reply());
-			SetProfile(ctx, pkg_head, req, rsp, uid);
+			int32_t uid = UIDBASE + S2I(c1.reply());
+			SetProfile(ctx, head, req, rsp, uid);
 		}
 		else
 		{
-			LOG_ERROR(ctx, "GetUid failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
+			LOG_ERROR(ctx, "GetUid failed. cmd:%s status:%d", c1.cmd().c_str(), c1.status());
 
 			//给客户端回包，流程结束
-			rsp.set_ret(RET_REDIS_ERR_INCR);
-			Send2Client(pkg_head, rsp);
+			head.ret = RET_REDIS_ERR_INCR;
+			//rsp.set_ret(RET_REDIS_ERR_INCR);
+			Send2Client(head, rsp);
 		}
 
 
@@ -95,7 +104,7 @@ void Register::GetUid(struct skynet_context * ctx, const PkgHead& pkg_head, cons
 	ServerEnv::getInstance().getRdx().command<string>({"INCR", key}, got_reply);
 }
 
-void Register::SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, const reg_req& req, reg_rsp& rsp, int32_t uid)
+void Register::SetProfile(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp, int32_t uid)
 {
 	PProfile profile;
 
@@ -109,7 +118,7 @@ void Register::SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, 
 	string key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
 	string value = profile.SerializeAsString();
 
-	auto got_reply = [=, &rsp](Command<string>& c)
+	auto got_reply = [&](Command<string>& c)
 	{
 		if(c.ok())
 		{
@@ -120,20 +129,21 @@ void Register::SetProfile(struct skynet_context * ctx, const PkgHead& pkg_head, 
 			*p_profile = profile;
 
 			//给客户端回包，流程结束
-			Send2Client(pkg_head, rsp);
+			Send2Client(head, rsp);
 		}
 		else
 		{
 			LOG_ERROR(ctx, "SetProfile failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
 
 			//给客户端回包，流程结束
-			Send2Client(pkg_head, rsp);
+			head.ret = RET_REDIS_ERR_SET;
+			Send2Client(head, rsp);
 		}
 
 	};
 
-	string key_value = key + " " + value;
-	ServerEnv::getInstance().getRdx().command<string>({"SET", key_value}, got_reply);
+
+	ServerEnv::getInstance().getRdx().command<string>({"SET", key, value}, got_reply);
 
 }
 
