@@ -12,5 +12,5 @@ message reg_req
 
 message reg_rsp
 {
-	optional S.PProfile profile = 2;
+	optional S.PProfile profile = 1;
 }
