@@ -145,10 +145,6 @@ int main(int argc, char* argv[])
 	//while (fgets(buf, sizeof(buf), stdin) != NULL)
 	while(1)
 	{
-//		char* sendbuf = (char*)malloc(send_len + 1);
-//		memcpy(sendbuf, buf, send_len + 1);
-//
-//		socket_server_send(ss, conn_id, sendbuf, send_len);
 
 		send_msg(pkg_head, rreq);
 		++counter;
