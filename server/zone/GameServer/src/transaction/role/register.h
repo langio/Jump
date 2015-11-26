@@ -14,6 +14,7 @@ public:
 	int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body);
 
 private:
+	string GetName(){ return "Register";}
 
 	void SetName(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp);
 	void GetUid(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp);

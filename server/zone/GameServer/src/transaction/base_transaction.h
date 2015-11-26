@@ -11,7 +11,7 @@ class Base
 {
 public:
 	Base():_finished(false){}
-	virtual ~Base(){}
+	virtual ~Base(){LOG_DEBUG(0, "destruct %s", GetName().c_str());}
 
 	virtual int32_t Init() = 0;
 	virtual int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body) = 0;
@@ -32,6 +32,8 @@ protected:
 	void SetFinished(){_finished = true;}
 
 	bool IsFinished(){return _finished;}
+
+	string GetName(){ return "Base";}
 
 private:
 	//atomic_int counter;
