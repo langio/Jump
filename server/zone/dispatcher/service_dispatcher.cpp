@@ -152,7 +152,7 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 		break;
 	}
 
-	if(2 == space_counter)
+	if(2 == space_counter && "data" == vExtHead[1])
 	{
 		//解析消息
 		int8_t * pkg = const_cast<int8_t*>((const int8_t*)msg + header_index);
