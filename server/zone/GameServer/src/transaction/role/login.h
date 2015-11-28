@@ -6,12 +6,14 @@
 class Login : public Base
 {
 public:
-	Login(){};
+	Login(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body)
+	:Base(ctx, pkg_head, pkg_body){};
+
 	~Login(){};
 
 	int32_t Init();
 
-	int32_t Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body);
+	int32_t Enter();
 };
 
 #endif

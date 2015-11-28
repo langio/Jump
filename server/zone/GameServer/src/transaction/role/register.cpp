@@ -1,31 +1,36 @@
 #include "register.pb.h"
 #include "register.h"
 
+
 int32_t Register::Init()
 {
-	return 0;
-}
-
-//std::function<void(Command<ReplyT> &);
-
-
-
-int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body)
-{
-	LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.body_len, pkg_head.client_fd);
-
-	PkgHead head = pkg_head;
-	reg_req req;
+	int32_t iRet = 0;
 
 	__BEGIN_PROC__
 
-	if (!req.ParseFromArray(pkg_body, pkg_head.body_len))
+	if (!_req.ParseFromArray(_pkg_body, _pkg_head.body_len))
 	{
-		LOG_ERROR(ctx, "reg_req ParseFromArray failed!");
+		LOG_ERROR(_ctx, "reg_req ParseFromArray failed!");
+		iRet = -1;
 		break;
 	}
 
-	reg_rsp rsp;
+	__END_PROC__
+
+	return iRet;
+}
+
+
+int32_t Register::Enter()
+{
+	LOG_DEBUG(_ctx, "cmd:0x%x body_len:%d client_fd:%d\n", _pkg_head.cmd, _pkg_head.body_len, _pkg_head.client_fd);
+
+	__BEGIN_PROC__
+
+	if(Init() != 0)
+	{
+		break;
+	}
 
 	//从redis拉取uid, uid和昵称全局唯一
 	{
@@ -36,7 +41,7 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 			if(c.status() == c.NIL_REPLY)
 			{
 				//name不存在，获取uid
-				GetUid(ctx, head, req, rsp);
+				GetUid(_ctx, _pkg_head, _req, _rsp);
 
 			}
 			else
@@ -44,26 +49,24 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 				if(c.ok())
 				{
 					//昵称已被使用，给客户端回包，流程结束
-					LOG_DEBUG(ctx, "name duplicate. %s", req.name().c_str());
+					LOG_DEBUG(_ctx, "name duplicate. %s", _req.name().c_str());
 
-					head.ret = RET_REG_ERR_DUPLICATE_NAME;
-					//rsp.set_ret(RET_REG_ERR_DUPLICATE_NAME);
+					_pkg_head.ret = RET_REG_ERR_DUPLICATE_NAME;
 				}
 				else
 				{
 					//给客户端回包，流程结束
-					LOG_ERROR(ctx, "get name err. cmd:%s status:%d", c.cmd().c_str(), c.status());
+					LOG_ERROR(_ctx, "get name err. cmd:%s status:%d", c.cmd().c_str(), c.status());
 
-					head.ret =  RET_REDIS_ERR_GET;
-					//rsp.set_ret(RET_REDIS_ERR_GET);
+					_pkg_head.ret =  RET_REDIS_ERR_GET;
 				}
 
-				Send2Client(head, rsp);
+				Send2Client(_pkg_head, _rsp);
 			}
 
 		};
 
-		string key = req.name();
+		string key = _req.name();
 		string value = "1";
 		ServerEnv::getInstance().getRdx().command<string>({"GETSET", key, value}, got_name_reply);
 	}
@@ -72,7 +75,7 @@ int32_t Register::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, co
 
 	__END_PROC__
 
-	LOG_ERROR(ctx, "reg_req:\n%s", req.DebugString().c_str());
+	LOG_DEBUG(_ctx, "reg_req:\n%s", _req.DebugString().c_str());
 
 	return 0;
 }

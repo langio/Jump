@@ -6,8 +6,10 @@ int32_t Login::Init()
 	return 0;
 }
 
-int32_t Login::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const char* pkg_body)
-{
+int32_t Login::Enter()
+{return 0;
+	/*
+	 *
 	LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.body_len, pkg_head.client_fd);
 
 	login_req req;
@@ -79,4 +81,6 @@ int32_t Login::Enter(struct skynet_context * ctx, const PkgHead& pkg_head, const
 	LOG_ERROR(ctx, "login_req:\n%s", req.DebugString().c_str());
 
 	return 0;
+
+	*/
 }
