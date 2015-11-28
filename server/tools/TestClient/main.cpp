@@ -30,6 +30,10 @@ static void * _poll(void * ud)
 {
 	struct socket_server *ss = (struct socket_server *)ud;
 	struct socket_message result;
+
+	char *pData = NULL;
+	PkgHead pkg_head;
+
 	for (;;)
 	{
 		int type = socket_server_poll(ss, &result, NULL);
@@ -41,8 +45,19 @@ static void * _poll(void * ud)
 		case SOCKET_DATA:
 		{
 			printf("message(%" PRIuPTR ") [id=%d] size=%d\n",result.opaque,result.id, result.ud);
+
+			pData = (char*)result.data;
+			int32_t msg_len = htonl(*(int32_t*)pData);
+			printf("msg_len:%d\n", msg_len);
+
+			pData += sizeof(int32_t);
+			pkg_head = *(PkgHead*)pData;
+			pkg_head.unpack();
+			printf("pkg_head: cmd:0x%x body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.body_len, pkg_head.client_fd);
+
+			pData += sizeof(PkgHead);
 			reg_rsp rsp;
-			rsp.ParseFromString(string(result.data));
+			rsp.ParseFromArray(pData, pkg_head.body_len);
 			printf("rsp:\n%s", rsp.DebugString().c_str());
 			free(result.data);
 		}
@@ -71,9 +86,9 @@ void send_msg(const PkgHead& pkg_head, const google::protobuf::Message& message)
 	char *p = buff;
 
 	int32_t pkg_head_size = sizeof(pkg_head);
-	int32_t pkg_msg_size = message.ByteSize();
+	int32_t pkg_body_size = message.ByteSize();
 
-	int32_t pkg_total_size = pkg_head_size + pkg_msg_size;
+	int32_t pkg_total_size = pkg_head_size + pkg_body_size;
 
 	__BEGIN_PROC__
 
@@ -94,12 +109,12 @@ void send_msg(const PkgHead& pkg_head, const google::protobuf::Message& message)
 	//协议包头
 	PkgHead *p_pkg_head = (PkgHead *)p;
 	*p_pkg_head = pkg_head;
-	p_pkg_head->body_len = pkg_msg_size;
+	p_pkg_head->body_len = pkg_body_size;
 	p_pkg_head->pack();
 	p += sizeof(PkgHead);
 
 	//协议包体
-	if (!message.SerializeToArray(p, pkg_msg_size))
+	if (!message.SerializeToArray(p, pkg_body_size))
 	{
 		LOG_ERROR(0, "message.SerializeToArray failed");
 		break;
