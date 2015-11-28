@@ -7,9 +7,9 @@ bool sendToClinet(const PkgHead& pkg_head, const google::protobuf::Message& mess
 	char *p = buff;
 
 	int32_t pkg_head_size = sizeof(pkg_head);
-	int32_t pkg_msg_size = message.ByteSize();
+	int32_t pkg_body_size = message.ByteSize();
 
-	int32_t pkg_total_size = pkg_head_size + pkg_msg_size;
+	int32_t pkg_total_size = pkg_head_size + pkg_body_size;
 
 	__BEGIN_PROC__
 
@@ -30,11 +30,12 @@ bool sendToClinet(const PkgHead& pkg_head, const google::protobuf::Message& mess
 	//协议包头
 	PkgHead *p_pkg_head = (PkgHead *)p;
 	*p_pkg_head = pkg_head;
+	p_pkg_head->body_len = pkg_body_size;
 	p_pkg_head->pack();
 	p += sizeof(PkgHead);
 
 	//协议包体
-	if (!message.SerializeToArray(p, pkg_msg_size))
+	if (!message.SerializeToArray(p, pkg_body_size))
 	{
 		LOG_ERROR(0, "message.SerializeToArray failed");
 		break;
@@ -49,6 +50,8 @@ bool sendToClinet(const PkgHead& pkg_head, const google::protobuf::Message& mess
 		LOG_ERROR(0, "skynet_socket_send failed");
 		break;
 	}
+
+	LOG_DEBUG(0, "send_len:%d  pkg_body_len:%d", send_len, pkg_body_size);
 
 	return true;
 
