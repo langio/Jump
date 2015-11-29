@@ -23,7 +23,8 @@ private:
 
 	void GetUid();
 	void SetProfile(int32_t uid);
-	void InitProfile();
+	void InitReginfo(PReginfo& reginfo, int32_t uid);
+	void InitProfile(int32_t uid);
 
 protected:
 	reg_req _req;

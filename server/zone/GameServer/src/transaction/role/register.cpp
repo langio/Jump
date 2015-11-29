@@ -66,7 +66,7 @@ int32_t Register::Enter()
 
 		};
 
-		string key = _req.name();
+		string key = NICKPREFIX + _req.name();
 		string value = "1";
 		ServerEnv::getInstance().getRdx().command<string>({"GETSET", key, value}, got_name_reply);
 	}
@@ -83,11 +83,11 @@ int32_t Register::Enter()
 
 void Register::GetUid()
 {
-	auto got_reply = [&](Command<string>& c1)
+	auto got_reply = [&](Command<int32_t>& c1)
 	{
 		if(c1.ok())
 		{
-			int32_t uid = UIDBASE + S2I(c1.reply());
+			int32_t uid = UIDBASE + c1.reply();
 			SetProfile(uid);
 		}
 		else
@@ -103,31 +103,23 @@ void Register::GetUid()
 	};
 
 	string key = UIDKEY;
-	ServerEnv::getInstance().getRdx().command<string>({"INCR", key}, got_reply);
+	ServerEnv::getInstance().getRdx().command<int32_t>({"INCR", key}, got_reply);
 }
 
 void Register::SetProfile(int32_t uid)
 {
 	//初始化账号信息
 	PReginfo reginfo;
-	reginfo.set_account(_req.account());
-	reginfo.set_passwd(_req.passwd());
-	reginfo.set_uid(uid);
-	reginfo.set_zone_id(_req.zone_id());
-	reginfo.set_name(_req.name());
+	InitReginfo(reginfo, uid);
 
-	string reginfo_key = _req.account();
+	string reginfo_key = REGINFOPREFIX + _req.account();
 	string reginfo_value = reginfo.SerializeAsString();
 
 
 	//初始化profile
+	InitProfile(uid);
+
 	PPlayerId *player_id = _profile.mutable_player_id();
-
-	player_id->set_uid(uid);
-	player_id->set_zone_id(_req.zone_id());
-	_profile.mutable_base_info()->set_name(_req.name());
-
-	InitProfile();
 	string profile_key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
 	string profile_value = _profile.SerializeAsString();
 
@@ -135,10 +127,12 @@ void Register::SetProfile(int32_t uid)
 	{
 		if(c.ok())
 		{
+			PPlayerId *player_id = _profile.mutable_player_id();
 			//本地缓存profile
 			PlayerID id;
-			id.ToPlayerId(player_id);
-			PProfile *p_profile = PlayerDataMgr::getInstance().GetProfile(id);
+			id.Init(*player_id);
+			bool exist;
+			PProfile *p_profile = PlayerDataMgr::getInstance().Add(id, exist);
 			*p_profile = _profile;
 
 			_pkg_head.ret = RET_OK;
@@ -164,9 +158,41 @@ void Register::SetProfile(int32_t uid)
 
 }
 
-void Register::InitProfile()
+void Register::InitReginfo(PReginfo& reginfo, int32_t uid)
 {
+	reginfo.set_account(_req.account());
+	reginfo.set_passwd(_req.passwd());
+	reginfo.set_uid(uid);
+	reginfo.set_zone_id(_req.zone_id());
+	reginfo.set_name(_req.name());
+}
+
+void Register::InitProfile(int32_t uid)
+{
+
 	time_t now = YAC_TimeProvider::getInstance()->getNow();
-	_profile.mutable_base_info()->set_register_time(now);
-	_profile.mutable_base_info()->set_login_time(now);
+
+	//玩家id
+	PPlayerId *player_id = _profile.mutable_player_id();
+	player_id->set_uid(uid);
+	player_id->set_zone_id(_req.zone_id());
+
+	//账户充值消费信息
+	PAccount *account = _profile.mutable_account();
+	account->set_history_total(0);
+	account->set_balance(0);
+	account->set_last_recharge_time(0);
+	account->set_last_consume_time(0);
+
+	//游戏内代币
+	PTokenMoney *token_money = _profile.mutable_token_money();
+	token_money->set_gold(0);
+
+
+	//玩家基础信息
+	PBaseInfo *base_info = _profile.mutable_base_info();
+	base_info->set_name(_req.name());
+	base_info->set_register_time(now);
+	base_info->set_login_time(now);
+	base_info->set_gender(0);
 }

@@ -6,7 +6,7 @@ message PPlayerId
 	required uint32 zone_id = 2;
 }
 
-//基础信息
+//玩家基础信息
 message PBaseInfo
 {
 	required string name = 1;			//昵称
@@ -15,7 +15,7 @@ message PBaseInfo
 	required int32 gender = 4;			//性别
 };
 
-//账户充值信息
+//账户充值消费信息
 message PAccount
 {
 	required int32 history_total = 1;		//历史总充值
@@ -34,9 +34,9 @@ message PTokenMoney
 message PProfile
 {
 	required PPlayerId player_id = 1;
-	required PAccount account = 2;
-	required PTokenMoney token_money = 3;
-	required PBaseInfo base_info = 4;
+	required PAccount account = 2;			//账户充值消费信息
+	required PTokenMoney token_money = 3;	//游戏内代币
+	required PBaseInfo base_info = 4;		//玩家基础信息
 };
 
 
