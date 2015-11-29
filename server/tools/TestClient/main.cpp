@@ -53,7 +53,7 @@ static void * _poll(void * ud)
 			pData += sizeof(int32_t);
 			pkg_head = *(PkgHead*)pData;
 			pkg_head.unpack();
-			printf("pkg_head: cmd:0x%x body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.body_len, pkg_head.client_fd);
+			printf("pkg_head: cmd:0x%x ret:%d body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.ret, pkg_head.body_len, pkg_head.client_fd);
 
 			pData += sizeof(PkgHead);
 			reg_rsp rsp;
