@@ -16,3 +16,13 @@
 * client_tag：
 * max：最大连接数
 * buffer
+
+## 系统中用到的表
+
+* 注册信息表：key是账号
+* 昵称表：key是昵称，value是1，用于确保昵称的唯一性
+* uid表：key是sole_uid_in_one_redis，每次获取1个uid，value自增1，系统中实际使用的uid是获取到的uid+1000000
+* profile表：key是 user\_uid_zoneid
+
+
+

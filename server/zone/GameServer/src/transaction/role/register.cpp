@@ -41,7 +41,7 @@ int32_t Register::Enter()
 			if(c.status() == c.NIL_REPLY)
 			{
 				//name不存在，获取uid
-				GetUid(_ctx, _pkg_head, _req, _rsp);
+				GetUid();
 
 			}
 			else
@@ -81,23 +81,22 @@ int32_t Register::Enter()
 }
 
 
-void Register::GetUid(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp)
+void Register::GetUid()
 {
 	auto got_reply = [&](Command<string>& c1)
 	{
 		if(c1.ok())
 		{
 			int32_t uid = UIDBASE + S2I(c1.reply());
-			SetProfile(ctx, head, req, rsp, uid);
+			SetProfile(uid);
 		}
 		else
 		{
-			LOG_ERROR(ctx, "GetUid failed. cmd:%s status:%d", c1.cmd().c_str(), c1.status());
+			LOG_ERROR(_ctx, "GetUid failed. cmd:%s status:%d", c1.cmd().c_str(), c1.status());
 
 			//给客户端回包，流程结束
-			head.ret = RET_REDIS_ERR_INCR;
-			//rsp.set_ret(RET_REDIS_ERR_INCR);
-			Send2Client(head, rsp);
+			_pkg_head.ret = RET_REDIS_ERR_INCR;
+			Send2Client(_pkg_head, _rsp);
 		}
 
 
@@ -107,19 +106,30 @@ void Register::GetUid(struct skynet_context * ctx, PkgHead& head, const reg_req&
 	ServerEnv::getInstance().getRdx().command<string>({"INCR", key}, got_reply);
 }
 
-void Register::SetProfile(struct skynet_context * ctx, PkgHead& head, const reg_req& req, reg_rsp& rsp, int32_t uid)
+void Register::SetProfile(int32_t uid)
 {
-	PProfile profile;
+	//初始化账号信息
+	PReginfo reginfo;
+	reginfo.set_account(_req.account());
+	reginfo.set_passwd(_req.passwd());
+	reginfo.set_uid(uid);
+	reginfo.set_zone_id(_req.zone_id());
+	reginfo.set_name(_req.name());
 
-	PPlayerId *player_id = profile.mutable_player_id();
+	string reginfo_key = _req.account();
+	string reginfo_value = reginfo.SerializeAsString();
+
+
+	//初始化profile
+	PPlayerId *player_id = _profile.mutable_player_id();
 
 	player_id->set_uid(uid);
-	player_id->set_zone_id(req.zone_id());
-	profile.mutable_base_info()->set_name(req.name());
+	player_id->set_zone_id(_req.zone_id());
+	_profile.mutable_base_info()->set_name(_req.name());
 
-	InitProfile(profile);
-	string key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
-	string value = profile.SerializeAsString();
+	InitProfile();
+	string profile_key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
+	string profile_value = _profile.SerializeAsString();
 
 	auto got_reply = [&](Command<string>& c)
 	{
@@ -129,30 +139,34 @@ void Register::SetProfile(struct skynet_context * ctx, PkgHead& head, const reg_
 			PlayerID id;
 			id.ToPlayerId(player_id);
 			PProfile *p_profile = PlayerDataMgr::getInstance().GetProfile(id);
-			*p_profile = profile;
+			*p_profile = _profile;
+
+			_pkg_head.ret = RET_OK;
+			PProfile *rsp_profile = _rsp.mutable_profile();
+			*rsp_profile = _profile;
 
 			//给客户端回包，流程结束
-			Send2Client(head, rsp);
+			Send2Client(_pkg_head, _rsp);
 		}
 		else
 		{
-			LOG_ERROR(ctx, "SetProfile failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
+			LOG_ERROR(_ctx, "SetProfile failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
 
 			//给客户端回包，流程结束
-			head.ret = RET_REDIS_ERR_SET;
-			Send2Client(head, rsp);
+			_pkg_head.ret = RET_REDIS_ERR_SET;
+			Send2Client(_pkg_head, _rsp);
 		}
 
 	};
 
 
-	ServerEnv::getInstance().getRdx().command<string>({"SET", key, value}, got_reply);
+	ServerEnv::getInstance().getRdx().command<string>({"MSET", reginfo_key, reginfo_value, profile_key, profile_value}, got_reply);
 
 }
 
-void Register::InitProfile(PProfile& profile)
+void Register::InitProfile()
 {
 	time_t now = YAC_TimeProvider::getInstance()->getNow();
-	profile.mutable_base_info()->set_register_time(now);
-	profile.mutable_base_info()->set_login_time(now);
+	_profile.mutable_base_info()->set_register_time(now);
+	_profile.mutable_base_info()->set_login_time(now);
 }
