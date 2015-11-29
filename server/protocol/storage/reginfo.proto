@@ -1,0 +1,10 @@
+package S;
+
+message PReginfo
+{
+	required string account = 1;
+	required string passwd = 2;
+	required int32 uid = 3;
+	required int32 zone_id = 4;
+	required string name = 5;
+}

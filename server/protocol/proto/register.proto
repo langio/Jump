@@ -1,3 +1,4 @@
+import "reginfo.proto";
 import "profile.proto";
 
 package protocol;
