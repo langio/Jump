@@ -100,6 +100,8 @@ bool loadSo(struct skynet_context * ctx)
 	//加载so
 	for(size_t i=0; i<v_so_file_name.size(); ++i)
 	{
+		LOG_DEBUG(ctx, "start load so %s", v_so_file_name[i].c_str());
+
 		struct skynet_context *so_ctx = skynet_context_new(v_so_file_name[i].c_str(), NULL);
 		if(NULL == so_ctx)
 		{

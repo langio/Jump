@@ -133,7 +133,12 @@ void Register::SetProfile(int32_t uid)
 			id.Init(*player_id);
 			bool exist;
 			PProfile *p_profile = PlayerDataMgr::getInstance().Add(id, exist);
-			*p_profile = _profile;
+
+			LOG_DEBUG(_ctx, "profile_addr:%p  exist:%d", p_profile, exist);
+
+			sleep(1);
+			p_profile->CopyFrom(_profile);
+			//*p_profile = _profile;
 
 			_pkg_head.ret = RET_OK;
 			PProfile *rsp_profile = _rsp.mutable_profile();

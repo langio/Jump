@@ -2,6 +2,48 @@
 #include "comm_def.h"
 #include "ini_parse.h"
 
+void* GetShm(key_t shm_key, size_t shm_size, bool &is_exist)
+{
+	LOG_DEBUG(0, "开始获取共享内存, shm_key=0x%08x, shm_size=%zu", shm_key, shm_size);
+	is_exist = true;
+	int shm_id = shmget(shm_key, shm_size, 0644);
+	if (shm_id == -1)
+	{
+		is_exist = false;
+		shm_id = shmget(shm_key, shm_size, 0644 | IPC_CREAT | IPC_EXCL);
+		if (shm_id == -1)
+		{
+			//既然获取不了该共享内存，但是又不能创建共享内存，那么只能返回错误了
+			LOG_ERROR(0, "获取共享内存失败:%s", strerror(errno));
+			return NULL;
+		}
+	}
+
+	//在连接这块内存之前,先做一次检查,看看是否有其它进程在用
+	struct shmid_ds ds_buf;
+	if (shmctl(shm_id, IPC_STAT, &ds_buf) < 0)
+	{
+		LOG_DEBUG(0, "获取共享内存的信息失败:%s", strerror(errno));
+	    return NULL;
+	}
+	if (ds_buf.shm_nattch > 0)
+	{
+		LOG_DEBUG(0, "共享内存目前有%lu个进程正在使用,创建内存的pid=%d,最后操作内存的pid=%d", ds_buf.shm_nattch, ds_buf.shm_cpid, ds_buf.shm_lpid);
+	    return NULL;
+	}
+
+	//连接共享内存
+	void *mem_begin = shmat(shm_id, NULL, 0);
+	if (mem_begin == (void *) -1)
+	{
+		LOG_DEBUG(0, "连接共享内存失败:%s", strerror(errno));
+		return NULL;
+	}
+
+	LOG_DEBUG(0, "获取共享内存成功, shm_key=0x%08x, shm_size=%zu, is_exit:%d", shm_key, shm_size, is_exist);
+
+	return mem_begin;
+}
 
 size_t PlayerDataMgr::GetMaxSize(uint32_t bucket, uint32_t node)
 {
@@ -26,17 +68,26 @@ int32_t PlayerDataMgr::Init()
 			break;
 		}
 
+		bool check_header = false;
+		void* mem = NULL;
+
 		uint32_t player_max_bucket = ini.GetUIntValue("RUN_ARGS", "player_max_bucket");
 		uint32_t player_max_node = ini.GetUIntValue("RUN_ARGS", "player_max_node");
 		size_t max_shm_size = GetMaxSize(player_max_bucket, player_max_node);
-		uint32_t shm_key = ini.GetUIntValue("game.ini", "palyer_data_mgr_key");
+		uint32_t shm_key = ini.GetUIntValue("SHM_KEY", "palyer_data_mgr_key");
 		_shm.init(max_shm_size, shm_key);
+		check_header = !_shm.iscreate();
+		mem = _shm.getPointer();
 
-		bool check_header = !_shm.iscreate();
+		//mem = GetShm(shm_key, max_shm_size, check_header);
+		mem = new char[max_shm_size];
+		check_header = false;
 
-		ret = (int32_t)_player_data_pool.Init(_shm.getPointer(), player_max_bucket, player_max_node, check_header);
+		ret = (int32_t)_player_data_pool.Init(mem, player_max_bucket, player_max_node, check_header);
 
-		uint32_t palyer_data_mutex_key = ini.GetUIntValue("RUN_ARGS", "palyer_data_mutex_key");
+		LOG_DEBUG(0, "_player_data_pool.Init|%d|%u|%u|%u|%p", ret, player_max_bucket, player_max_node, shm_key, mem);
+
+		uint32_t palyer_data_mutex_key = ini.GetUIntValue("SHM_KEY", "palyer_data_mutex_key");
 		_sem_mutex.init(palyer_data_mutex_key);
 
 		__END_PROC__
