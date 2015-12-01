@@ -16,3 +16,11 @@
 * client_tag：
 * max：最大连接数
 * buffer
+
+##头文件顺序
+* protobuf产生的头文件放在最上面
+
+## shmkey分配
+* 使用十进制  service(2位)+zone_id(4位)+key序号(3位)
+* service_dispatcher 1
+* service_game 2
