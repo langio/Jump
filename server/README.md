@@ -24,3 +24,14 @@
 * 使用十进制  service(2位)+zone_id(4位)+key序号(3位)
 * service_dispatcher 1
 * service_game 2
+* buffer
+
+## 系统中用到的表
+
+* 注册信息表：key是 reg_账号
+* 昵称表：key是 nick_昵称，value是1，用于确保昵称的唯一性
+* uid表：key是 sole_uid_in_one_redis，每次获取1个uid，value自增1，系统中实际使用的uid是获取到的uid+1000000
+* profile表：key是 user\_uid_zoneid
+
+
+

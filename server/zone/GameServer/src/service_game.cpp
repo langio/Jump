@@ -84,12 +84,12 @@ void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, con
 	{
 		case CMD_REG_REQ:
 		{
-			p_transaction = new Register();
+			p_transaction = new Register(ctx, pkg_head, msg_body);
 			break;
 		}
 		case CMD_LOGIN_REQ:
 		{
-			p_transaction = new Login();
+			p_transaction = new Login(ctx, pkg_head, msg_body);
 			break;
 		}
 
@@ -102,7 +102,7 @@ void Game::cmdDispatch(struct skynet_context * ctx, const PkgHead& pkg_head, con
 
 	if(p_transaction != NULL)
 	{
-		p_transaction->Enter(ctx, pkg_head, msg_body);
+		p_transaction->Enter();
 	}
 }
 

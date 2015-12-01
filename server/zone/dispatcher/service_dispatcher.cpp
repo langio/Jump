@@ -169,18 +169,6 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 		//协议内容--测试代码
 		if("data" == vExtHead[1])
 		{
-//			static int32_t counter = 0;
-//
-//			LOG_DEBUG(ctx, "cmd:0x%x body_len:%d client_fd:%d\n", head->cmd, head->body_len, head->client_fd);
-//
-//			login_req req;
-//			if (!req.ParseFromArray(p, head->body_len))
-//			{
-//				LOG_ERROR(ctx, "login_req ParseFromArray failed!");
-//				break;
-//			}
-//			LOG_ERROR(ctx, "login_req:\ncounter:%d\n%s", counter, req.DebugString().c_str());
-
 
 			//根据命令字将消息发到对应的so中
 			uint32_t cmd_type = GET_CMD_SVR_TYPE(head->cmd);
@@ -194,7 +182,7 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 
 				case LOGIN_SVR:
 				{
-					static uint32_t module_game = 0;
+					uint32_t module_game = 0;
 					if (module_game == 0)
 					{
 						module_game = skynet_handle_findname("game");
@@ -208,6 +196,8 @@ void dispatcher::dispatch(struct skynet_context * ctx, const void * msg, size_t 
 			if(module > 0)
 			{
 				skynet_send(ctx, 0, module, PTYPE_TEXT, 0, pkg, pkg_len);
+
+				LOG_DEBUG(ctx, "cmd_type:%p, module_handle:%p", cmd_type, module);
 			}
 			else
 			{
