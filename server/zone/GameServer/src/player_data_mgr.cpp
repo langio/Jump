@@ -74,18 +74,18 @@ int32_t PlayerDataMgr::Init()
 		uint32_t player_max_bucket = ini.GetUIntValue("RUN_ARGS", "player_max_bucket");
 		uint32_t player_max_node = ini.GetUIntValue("RUN_ARGS", "player_max_node");
 		size_t max_shm_size = GetMaxSize(player_max_bucket, player_max_node);
-		uint32_t shm_key = ini.GetUIntValue("SHM_KEY", "palyer_data_mgr_key");
-		_shm.init(max_shm_size, shm_key);
-		check_header = !_shm.iscreate();
-		mem = _shm.getPointer();
+//		uint32_t shm_key = ini.GetUIntValue("SHM_KEY", "palyer_data_mgr_key");
+//		_shm.init(max_shm_size, shm_key);
+//		check_header = !_shm.iscreate();
+//		mem = _shm.getPointer();
 
-		//mem = GetShm(shm_key, max_shm_size, check_header);
+		//不使用共享内存,与其所带来的收益(服务重启不用加载玩家数据)相比，其维护成本(数据一致性)可能会更高
 		mem = new char[max_shm_size];
 		check_header = false;
 
 		ret = (int32_t)_player_data_pool.Init(mem, player_max_bucket, player_max_node, check_header);
 
-		LOG_DEBUG(0, "_player_data_pool.Init|%d|%u|%u|%u|%p", ret, player_max_bucket, player_max_node, shm_key, mem);
+		LOG_DEBUG(0, "_player_data_pool.Init|%d|%u|%u|%p", ret, player_max_bucket, player_max_node, mem);
 
 		uint32_t palyer_data_mutex_key = ini.GetUIntValue("SHM_KEY", "palyer_data_mutex_key");
 		_sem_mutex.init(palyer_data_mutex_key);
@@ -118,7 +118,8 @@ PProfile * PlayerDataMgr::Add(PlayerID player_id, bool & exist)
 
     exist = false;
 
-    profile = _player_data_pool.Alloc(player_id.id);
+    PProfile *tmp = _player_data_pool.Alloc(player_id.id);
+    profile = new(tmp) PProfile;
 
     _sem_mutex.unwlock();
 
@@ -159,6 +160,9 @@ int32_t PlayerDataMgr::Del(PlayerID player_id)
         LOG_ERROR(0, "找不到玩家");
         ret = -1;
     }
+
+    //释放protobuf自己管理的资源
+    profile->~PProfile();
 
     _sem_mutex.wlock();
     ret = _player_data_pool.Free(player_id.id);

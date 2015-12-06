@@ -32,6 +32,36 @@ int32_t Register::Enter()
 		break;
 	}
 
+//	for(int32_t j=0; j<10000000; ++j)
+//	{
+//		PlayerID id;
+//		id._uid = j;
+//		id._zone_id = 1;
+//		bool exist;
+//		PProfile *p_profile = PlayerDataMgr::getInstance().Add(id, exist);
+//		p_profile->Clear();
+//
+//		PTokenMoney *token_money = p_profile->mutable_token_money();
+//		for(int32_t i=0; i<10000; ++i)
+//		{
+//			token_money->add_testfield(i);
+//		}
+//
+//		if(j%10000 == 0)
+//		{
+//			printf("mem pool add repeated ok\n");
+//		}
+//		PlayerDataMgr::getInstance().Del(id);
+//
+//		if(j%10000 == 0)
+//		{
+//			printf("mem pool del ok\n");
+//		}
+//	}
+//
+//	return 0;
+
+
 	//从redis拉取uid, uid和昵称全局唯一
 	{
 		//验证name是否唯一
@@ -119,36 +149,29 @@ void Register::SetProfile(int32_t uid)
 	//初始化profile
 	InitProfile(uid);
 
-	PPlayerId *player_id = _profile.mutable_player_id();
+	PPlayerId *player_id = _p_profile->mutable_player_id();
 	string profile_key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
-	string profile_value = _profile.SerializeAsString();
+	string profile_value = _p_profile->SerializeAsString();
+
 
 	auto got_reply = [&](Command<string>& c)
 	{
 		if(c.ok())
 		{
-			PPlayerId *player_id = _profile.mutable_player_id();
-			//本地缓存profile
-			PlayerID id;
-			id.Init(*player_id);
-			bool exist;
-			PProfile *p_profile = PlayerDataMgr::getInstance().Add(id, exist);
-
-			LOG_DEBUG(_ctx, "profile_addr:%p  exist:%d", p_profile, exist);
-
-			sleep(1);
-			p_profile->CopyFrom(_profile);
-			//*p_profile = _profile;
-
 			_pkg_head.ret = RET_OK;
 			PProfile *rsp_profile = _rsp.mutable_profile();
-			*rsp_profile = _profile;
+			*rsp_profile = *_p_profile;
 
 			//给客户端回包，流程结束
 			Send2Client(_pkg_head, _rsp);
 		}
 		else
 		{
+			PPlayerId *player_id = _p_profile->mutable_player_id();
+			PlayerID id;
+			id.Init(*player_id);
+			PlayerDataMgr::getInstance().Del(id);
+
 			LOG_ERROR(_ctx, "SetProfile failed. cmd:%s status:%d", c.cmd().c_str(), c.status());
 
 			//给客户端回包，流程结束
@@ -172,32 +195,62 @@ void Register::InitReginfo(PReginfo& reginfo, int32_t uid)
 	reginfo.set_name(_req.name());
 }
 
-void Register::InitProfile(int32_t uid)
+int32_t Register::InitProfile(int32_t uid)
 {
+
+	int32_t ret = 0;
+
+	PPlayerId init_id;
+	init_id.set_uid(uid);
+	init_id.set_zone_id(_req.zone_id());
+
+	__BEGIN_PROC__
+
+	PlayerID id;
+	id.Init(init_id);
+	bool exist;
+	_p_profile = PlayerDataMgr::getInstance().Add(id, exist);
+	if(NULL == _p_profile)
+	{
+		LOG_ERROR(_ctx, "alloc profile failed");
+		ret = -1;
+		break;
+	}
+	else if(exist)
+	{
+		LOG_ERROR(_ctx, "profile exist. %s", id.ToString().c_str());
+		ret = -1;
+		break;
+	}
 
 	time_t now = YAC_TimeProvider::getInstance()->getNow();
 
 	//玩家id
-	PPlayerId *player_id = _profile.mutable_player_id();
+	PPlayerId *player_id = _p_profile->mutable_player_id();
 	player_id->set_uid(uid);
 	player_id->set_zone_id(_req.zone_id());
 
 	//账户充值消费信息
-	PAccount *account = _profile.mutable_account();
+	PAccount *account = _p_profile->mutable_account();
 	account->set_history_total(0);
 	account->set_balance(0);
 	account->set_last_recharge_time(0);
 	account->set_last_consume_time(0);
 
 	//游戏内代币
-	PTokenMoney *token_money = _profile.mutable_token_money();
+	PTokenMoney *token_money = _p_profile->mutable_token_money();
 	token_money->set_gold(0);
 
 
 	//玩家基础信息
-	PBaseInfo *base_info = _profile.mutable_base_info();
+	PBaseInfo *base_info = _p_profile->mutable_base_info();
 	base_info->set_name(_req.name());
 	base_info->set_register_time(now);
 	base_info->set_login_time(now);
 	base_info->set_gender(0);
+
+	__END_PROC__
+
+	return ret;
+
 }
