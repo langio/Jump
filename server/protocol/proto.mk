@@ -12,7 +12,7 @@ FILE := $(PB_LIB_DIR)$(PB_LIB)
 exist := $(shell if [ -f $(FILE) ]; then echo "exist"; else echo "notexist"; fi;)
 
 ifneq ($(exist), "exist")
-PB_LIB_DIR = /usr/lib/x86_64-linux-gnu/
+PB_LIB_DIR = /usr/lib/
 endif
 
 #PB_LIB_DIR = /usr/lib/x86_64-linux-gnu/
