@@ -26,13 +26,51 @@ extern "C"
 const int32_t MAX_BUFF = 102400;
 struct socket_server * ss = NULL;
 
+void printRSP(char* pData)
+{
+	int32_t msg_len = htonl(*(int32_t*)pData);
+	printf("msg_len:%d\n", msg_len);
+
+	PkgHead pkg_head;
+
+	pData += sizeof(int32_t);
+	pkg_head = *(PkgHead*)pData;
+	pkg_head.unpack();
+	printf("pkg_head: cmd:0x%x ret:%d body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.ret, pkg_head.body_len, pkg_head.client_fd);
+
+	pData += sizeof(PkgHead);
+
+	switch(pkg_head.cmd)
+	{
+		case CMD_REG_REQ:
+		{
+			reg_rsp rsp;
+			rsp.ParseFromArray(pData, pkg_head.body_len);
+			printf("rsp:\n%s", rsp.DebugString().c_str());
+			break;
+		}
+
+		case CMD_LOGIN_REQ:
+		{
+			reg_rsp rsp;
+			rsp.ParseFromArray(pData, pkg_head.body_len);
+			printf("rsp:\n%s", rsp.DebugString().c_str());
+			break;
+		}
+
+		default:
+		{
+			printf("unknown cmd:0x%x", pkg_head.cmd);
+			break;
+		}
+	}
+
+}
+
 static void * _poll(void * ud)
 {
 	struct socket_server *ss = (struct socket_server *)ud;
 	struct socket_message result;
-
-	char *pData = NULL;
-	PkgHead pkg_head;
 
 	for (;;)
 	{
@@ -46,19 +84,20 @@ static void * _poll(void * ud)
 		{
 			printf("message(%" PRIuPTR ") [id=%d] size=%d\n",result.opaque,result.id, result.ud);
 
-			pData = (char*)result.data;
-			int32_t msg_len = htonl(*(int32_t*)pData);
-			printf("msg_len:%d\n", msg_len);
-
-			pData += sizeof(int32_t);
-			pkg_head = *(PkgHead*)pData;
-			pkg_head.unpack();
-			printf("pkg_head: cmd:0x%x ret:%d body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.ret, pkg_head.body_len, pkg_head.client_fd);
-
-			pData += sizeof(PkgHead);
-			reg_rsp rsp;
-			rsp.ParseFromArray(pData, pkg_head.body_len);
-			printf("rsp:\n%s", rsp.DebugString().c_str());
+			printRSP(result.data);
+//			pData = (char*)result.data;
+//			int32_t msg_len = htonl(*(int32_t*)pData);
+//			printf("msg_len:%d\n", msg_len);
+//
+//			pData += sizeof(int32_t);
+//			pkg_head = *(PkgHead*)pData;
+//			pkg_head.unpack();
+//			printf("pkg_head: cmd:0x%x ret:%d body_len:%d client_fd:%d\n", pkg_head.cmd, pkg_head.ret, pkg_head.body_len, pkg_head.client_fd);
+//
+//			pData += sizeof(PkgHead);
+//			reg_rsp rsp;
+//			rsp.ParseFromArray(pData, pkg_head.body_len);
+//			printf("rsp:\n%s", rsp.DebugString().c_str());
 			free(result.data);
 		}
 			break;
@@ -141,7 +180,7 @@ int main(int argc, char* argv[])
 
 	login_req req;
 
-	req.set_uid(10);
+	req.set_uid(1000001);
 	req.set_zone_id(1);
 
 	reg_req rreq;
@@ -153,7 +192,8 @@ int main(int argc, char* argv[])
 
 	PkgHead pkg_head;
 
-	pkg_head.cmd = CMD_REG_REQ; //CMD_LOGIN_REQ;
+	pkg_head.cmd = CMD_REG_REQ;
+	pkg_head.cmd = CMD_LOGIN_REQ;
 	pkg_head.client_fd = conn_id;
 
 	int32_t counter = 0;
@@ -161,7 +201,7 @@ int main(int argc, char* argv[])
 	while(1)
 	{
 
-		send_msg(pkg_head, rreq);
+		send_msg(pkg_head, req);
 		++counter;
 
 		printf("counter:%d\n", counter);
