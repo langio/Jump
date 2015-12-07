@@ -14,6 +14,10 @@ public:
 	int32_t Init();
 
 	int32_t Enter();
+
+private:
+	login_req _req;
+	login_rsp _rsp;
 };
 
 #endif

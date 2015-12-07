@@ -150,7 +150,8 @@ void Register::SetProfile(int32_t uid)
 	InitProfile(uid);
 
 	PPlayerId *player_id = _p_profile->mutable_player_id();
-	string profile_key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
+	//string profile_key = PROFILEPREFIX + I2S(player_id->uid()) + "_" + I2S(player_id->zone_id());
+	string profile_key = CommFunc::getProfileKey(player_id->uid(), player_id->zone_id());
 	string profile_value = _p_profile->SerializeAsString();
 
 
