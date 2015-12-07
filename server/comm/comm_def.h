@@ -17,6 +17,7 @@ extern "C"
 //此文件中只定义协议不相关的一些通用方法、宏等
 
 using namespace std;
+using namespace util;
 
 #define __BEGIN_PROC__  do{
 #define __END_PROC__ }while(0);
@@ -70,6 +71,12 @@ catch (...)\
 #define BIN2S(s) YAC_Common::bin2str(s)
 #define PRT(format, args...)	printf(format, ##args)
 
+const string REGINFOPREFIX = "reg_";				//GET SET reginfo时的key前缀
+const string NICKPREFIX = "nick_";					//GETSET 时的key前缀
+const string UIDKEY = "sole_uid_in_one_redis";		//注册账号时获取uid的key，uid在一个redis实例内唯一
+const string PROFILEPREFIX = "user_";				//GET SET profile时的key前缀
+const int32_t UIDBASE = 1000000;					//uid起始基数
+
 // 通用函数类
 class CommFunc
 {
@@ -87,12 +94,14 @@ public:
 	{
 		return size;
 	}
+
+	static string getProfileKey(uint32_t uid, uint32_t zone_id)
+	{
+		string profile_key = PROFILEPREFIX + I2S(uid) + "_" + I2S(zone_id);
+
+		return profile_key;
+	}
 };
 
-const string REGINFOPREFIX = "reg_";				//GET SET reginfo时的key前缀
-const string NICKPREFIX = "nick_";					//GETSET 时的key前缀
-const string UIDKEY = "sole_uid_in_one_redis";		//注册账号时获取uid的key，uid在一个redis实例内唯一
-const string PROFILEPREFIX = "user_";				//GET SET profile时的key前缀
-const int32_t UIDBASE = 1000000;					//uid起始基数
 
 #endif
